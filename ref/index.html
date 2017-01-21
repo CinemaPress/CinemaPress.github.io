@@ -13,8 +13,8 @@
 </p>
 <script>
     var ref = document.getElementById('ref');
-    var url = window.location.hash.split("#")[1];
-    window.location.href = url || '/index.html';
+    var url = (window.location.hash.split("#")[1]) ? window.location.hash.split("#")[1] : '/index.html';
+    window.location.href = url;
     ref.innerHTML = url;
     ref.href = url;
 </script>
