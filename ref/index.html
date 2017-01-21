@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Переход по внешней ссылке</title>
+</head>
+<body style="margin: 100px auto; width: 100%; height: 100%; text-align: center; font-family: Verdana, sans-serif">
+<p>
+    Переход по внешней ссылке!
+</p>
+<p>
+    Вы будете перенаправлены на URL <a href="/index.html" style="color: #333c4e" id="ref">index.html</a>
+</p>
+<script>
+    var ref = document.getElementById('ref');
+    var url = window.location.hash.split("#")[1];
+    window.location.href = url || '/index.html';
+    ref.innerHTML = url;
+    ref.href = url;
+</script>
+</body>
+</html>
