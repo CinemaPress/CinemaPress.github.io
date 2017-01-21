@@ -296,8 +296,8 @@
                     Теперь, когда Вы уже вошли на свой VPS сервер, самое время запустить команду установки, которая установит сайт и выполнит все настройки за 4 минуты. Для этого скопируйте эту команду, вставьте в терминал (вставка в терминале происходит по клику правой кнопки мыши, либо «Shift+Insert») и нажмите «Enter»:
                     <br><code>wget cinemapress.org/i -qO i && chmod +x i && ./i</code><br>
                     Если команда не выполнилась, выполните эту команду, а затем повторите попытку:
-                    <br><code>apt-get -y -qq update && apt-get -y -qq install ca-certificates</code><br>
-                    Когда по каким-то причинам основной сервер недоступен, можете воспользоваться одним из запасных:
+                    <br><code>apt-get -y -qq update && apt-get -y -qq install wget ca-certificates</code><br>
+                    Когда по каким-то причинам основной сервер <code>cinemapress.org</code> недоступен, можете воспользоваться одним из запасных:
                     <br><code>wget cinemapress.github.io/i -qO h && chmod +x h && ./h</code>
                     <br><code>wget cinemapress.gitlab.io/i -qO l && chmod +x l && ./l</code>
                     <br><code>wget cinemapress.coding.me/i -qO c && chmod +x c && ./c</code>
