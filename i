@@ -295,7 +295,7 @@ install_full() {
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
     if [ "${SPH}" = "" ]
     then
-        wget "https://${MAIN_SERVER}/files/sphinx/sphinxsearch_2.2.11-release-1-${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
@@ -328,7 +328,7 @@ install_sphinx() {
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
     if [ "${SPH}" = "" ]
     then
-        wget "https://${MAIN_SERVER}/files/sphinx/sphinxsearch_2.2.11-release-1-${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
     fi
 }
 
