@@ -295,7 +295,7 @@ install_full() {
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
     if [ "${SPH}" = "" ]
     then
-        wget https://github.com/CinemaPress/CinemaPress.github.io/raw/master/files/sphinx/sphinxsearch_2.2.11-release-1-${VER}_${ARCH}.deb -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        wget "https://${MAIN_SERVER}/files/sphinx/sphinxsearch_2.2.11-release-1-${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
@@ -315,7 +315,7 @@ install_cinemapress() {
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
     then
-        service apache2 stop && service nginx restart
+        service nginx stop && service apache2 stop && service nginx stop && service nginx start
     fi
 }
 
@@ -328,7 +328,7 @@ install_sphinx() {
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
     if [ "${SPH}" = "" ]
     then
-        wget https://github.com/CinemaPress/CinemaPress.github.io/raw/master/files/sphinx/sphinxsearch_2.2.11-release-1-${VER}_${ARCH}.deb -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        wget "https://${MAIN_SERVER}/files/sphinx/sphinxsearch_2.2.11-release-1-${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
     fi
 }
 
@@ -341,7 +341,7 @@ add_user() {
         echo -e "${PASSWD}\n${PASSWD}" | passwd ${DOMAIN}
     fi
     rm -rf /home/${DOMAIN}/*; rm -rf /home/${DOMAIN}/.??*
-    git clone https://github.com/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}
+    git clone https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}
     cp -r /home/${DOMAIN}/config/default/* /home/${DOMAIN}/config/
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico /home/${DOMAIN}/
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/
@@ -473,7 +473,7 @@ conf_memcached() {
 conf_cinemapress() {
     if [ "${THEME}" != "default" ]
     then
-        git clone https://github.com/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
+        git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
         chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
         sed -i "s/\"theme\":\s*\".*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
     fi
@@ -579,14 +579,14 @@ conf_mass() {
     if ! [ -f ${FILE_MASS} ]
     then
         printf "\n${NC}"
-        printf "${C}------------------------[ ${Y}ФАЙЛ НЕ НАЙДЕН${C} ]------------------------\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----         ${R}Создайте в текущей папке файл ${NC}mass.txt${R} и${C}         ----\n${NC}"
-        printf "${C}----           ${R}пропишите в нем команды с заданиями.${C}           ----\n${NC}"
-        printf "${C}----               ${R}Подробнее в этом руководстве:${C}              ----\n${NC}"
-        printf "${C}----                   ${R}https://git.io/vw72m${C}                   ----\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}------------------------------------------------------------------\n${NC}"
+        printf "${C}-------------------------[ ${Y}ФАЙЛ НЕ НАЙДЕН${C} ]------------------------\n${NC}"
+        printf "${C}----                                                           ${C}----\n${NC}"
+        printf "${C}----         ${R}Создайте в текущей папке файл ${NC}mass.txt${R} и${C}          ----\n${NC}"
+        printf "${C}----            ${R}пропишите в нем команды с заданиями.${C}           ----\n${NC}"
+        printf "${C}----                ${R}Подробнее в этом руководстве:${C}              ----\n${NC}"
+        printf "${C}----${R}cinemapress.org/article/chto-takoe-massovaya-ustanovka.html${C}----\n${NC}"
+        printf "${C}----                                                           ${C}----\n${NC}"
+        printf "${C}-------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
         exit 0
     fi
@@ -666,7 +666,7 @@ update_cinemapress() {
     mkdir -p /home/${DOMAIN}/.newCP
     mkdir -p /home/${DOMAIN}/.oldCP
 
-    git clone https://github.com/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}/.newCP
+    git clone https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}/.newCP
     cp -R /home/${DOMAIN}/* /home/${DOMAIN}/.oldCP
 
     rm -rf /home/${DOMAIN}/package.json && \
@@ -739,7 +739,7 @@ confirm_update_cinemapress() {
 update_theme() {
     if ! [ -d /home/${DOMAIN}/themes/${THEME} ]
     then
-        git clone https://github.com/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
+        git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
     else
         printf "\n${NC}"
         printf "${C}-------------------------[ ${Y}ПОДТВЕРЖДЕНИЕ${C} ]------------------------\n${NC}"
@@ -765,7 +765,7 @@ update_theme() {
             exit 0
         else
             rm -rf /home/${DOMAIN}/themes/${THEME}
-            git clone https://github.com/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
+            git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
         fi
     fi
 
@@ -966,7 +966,7 @@ check_domain() {
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}---- ${R}Мобильная версия сайта недоступена, устраните проблему${C}   ----\n${NC}"
+        printf "${C}----  ${R}Мобильная версия сайта недоступна, устраните проблему${C}   ----\n${NC}"
         printf "${C}----                  ${R}и попробуйте позже ...${C}                  ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
@@ -1145,6 +1145,29 @@ confirm_mega_backup() {
     fi
 }
 
+fail_1() {
+    INST_NODE=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
+    INST_NGINX=`dpkg --status nginx 2>/dev/null | grep "ok installed"`
+    INST_SPHINX=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
+    INST_PM2=`npm list -g --depth=0 | grep "pm2"`
+    if ! [ -n "${INST_PM2}" ] || [ "${INST_NODE}" = "" ] || [ "${INST_NGINX}" = "" ] || [ "${INST_SPHINX}" = "" ]
+    then
+        printf "\n${NC}"
+        printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}----           ${NC}Один или несколько пакетов не были${C}             ----\n${NC}"
+        printf "${C}----                ${NC}установлены в системе${C}                     ----\n${NC}"
+        printf "SPHINX : ${G}${INST_SPHINX}\n${NC}"
+        printf "NGINX  : ${G}${INST_NGINX}\n${NC}"
+        printf "NODE   : ${G}${INST_NODE}\n${NC}"
+        printf "PM2    : ${G}${INST_PM2}\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}------------------------------------------------------------------\n${NC}"
+        printf "\n${NC}"
+        exit 0
+    fi
+}
+
 success_1() {
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
@@ -1301,7 +1324,7 @@ option() {
     logo
     printf "${C}------------------------[ ${Y}СДЕЛАЙТЕ ВЫБОР${C} ]------------------------\n${NC}"
     printf "${C}---- ${G}1)${NC} Создание онлайн кинотеатра                            ${C}----\n${NC}"
-    printf "${C}---- ${G}2)${NC} Обновлние CinemaPress ACMS                            ${C}----\n${NC}"
+    printf "${C}---- ${G}2)${NC} Обновление CinemaPress ACMS                           ${C}----\n${NC}"
     printf "${C}---- ${G}3)${NC} Установка/обновление шаблона                          ${C}----\n${NC}"
     printf "${C}---- ${G}4)${NC} Добавление/обновление всех фильмов в мире             ${C}----\n${NC}"
     printf "${C}---- ${G}5)${NC} Установка CinemaPress ACMS на отдельный сервер        ${C}----\n${NC}"
@@ -1343,6 +1366,30 @@ whileStop() {
     WHILE=no
 }
 
+INSTALL_FILE=`basename "$0"`
+case ${INSTALL_FILE} in
+    h )
+        MAIN_SERVER="cinemapress.github.io"
+        GIT_SERVER="github.com"
+    ;;
+    l )
+        MAIN_SERVER="cinemapress.gitlab.io"
+        GIT_SERVER="gitlab.com"
+    ;;
+    c )
+        MAIN_SERVER="cinemapress.coding.me"
+        GIT_SERVER="git.coding.net"
+    ;;
+    b )
+        MAIN_SERVER="cinemapress.bitbucket.io"
+        GIT_SERVER="bitbucket.org"
+    ;;
+    * )
+        MAIN_SERVER="cinemapress.org"
+        GIT_SERVER="github.com"
+    ;;
+esac
+
 WHILE=yes
 while [ "${WHILE}" = "yes" ]
 do
@@ -1368,6 +1415,7 @@ do
             conf_fail2ban
             conf_iptables
             start_cinemapress
+            fail_1
             success_1
             whileStop
         ;;
