@@ -356,7 +356,6 @@ ul.list li i {
 
 .owl-item.loading{
 	min-height: 150px;
-	background: url(http://pentathemes.com/fedrex/css/AjaxLoader.gif) no-repeat center center
 }
 
 .super-title{
@@ -680,14 +679,12 @@ header.header-wrapper .banner-image img {
     transform: translateX(-50%);
 }
 header.image-bg{
-    background-image:url("../images/banner-bg.jpg");
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
 
 }
 header.gradient-bg{
-    background-image:url("../images/team.jpg");
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -1124,7 +1121,6 @@ section.functionalities ul li{
 }
 section.featured-video{
     min-height: 500px;
-    background-image: url("../images/works.jpg");
 
 }
 section.featured-video:before{
@@ -1337,6 +1333,7 @@ section.main-features .features{
 section.main-features .icon-holder{
     float: left;
     width: 15%;
+    text-align: center;
 }
 section.main-features .icon {
     padding: 20px;
@@ -1344,6 +1341,7 @@ section.main-features .icon {
     background-color: #fff;
     font-size: 30px;
     display: inline-block;
+    min-width: 70px;
 }
 section.main-features .features-content{
     min-height: 1px;
@@ -1367,15 +1365,15 @@ section.main-features .features-content h6{
 section.services .service-items span.service-icon{
     display: block;
     position: relative;
-    width: 60px;
     height: 60px;
     font-size: 35px;
-    text-align: left;
+    text-align: center;
     line-height: 60px;
 }
 section.services .service-items h4{
     margin-bottom: 10px;
     position: relative;
+    text-align: center;
 }
 
 /*-----------------------
@@ -1948,7 +1946,6 @@ section.pricing-table .pricing-col i.fa-close{
 }
 
 section.block-style-promo{
-   background-image: url("../images/office.jpg");
    margin-top: 250px;
    padding-bottom: 50px;
    padding-top: 250px;
@@ -2010,7 +2007,6 @@ section.block-style-life{
 }
 
 section.block-style-life .life-image{
-    background-image: url('../images/life.jpg');
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -2095,7 +2091,6 @@ section.job-details .form-control::-webkit-input-placeholder {
     }
 }
 .bg-login{
-    background: url('../images/geometry_bg.png') repeat;
 }
 .section_login {
     margin-top: 100px;
@@ -2501,7 +2496,6 @@ section.contact textarea.form-control{
 }
 section.contact .contact-address{
     border: 1px solid #e0dfe1;
-    background: url('../images/contact.png') bottom right no-repeat;
     padding: 20px;
     color: #fff;
 }
