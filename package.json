@@ -1,0 +1,22 @@
+{
+  "name": "cinemapress-web",
+  "version": "1.0.0",
+  "private": false,
+  "repo": "https://bitbucket.org/cinemapress/cinemapress.bitbucket.io.git",
+  "_aerobatic": {
+    "router": [
+      {
+        "module": "redirect",
+        "options": {
+          "/i": "/i.sh"
+        }
+      },
+      {
+        "module": "webpage",
+        "options": {
+          "canonicalRedirects": false
+        }
+      }
+    ]
+  }
+}
