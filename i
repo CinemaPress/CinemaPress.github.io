@@ -1384,6 +1384,10 @@ case ${INSTALL_FILE} in
         MAIN_SERVER="cinemapress.bitbucket.io"
         GIT_SERVER="bitbucket.org"
     ;;
+    a )
+        MAIN_SERVER="cinemapress.aerobatic.io"
+        GIT_SERVER="git.coding.net"
+    ;;
     * )
         MAIN_SERVER="cinemapress.org"
         GIT_SERVER="github.com"
