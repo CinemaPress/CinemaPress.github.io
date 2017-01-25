@@ -181,32 +181,115 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="h4" style="text-align: center;"><span>01</span> Домен</div>
                 <p>Регистрируете доменное имя Вашего сайта. <a href="#domain" data-scroll="#domain">Подробнее...</a></p>
-                <div class="input-group ptb-10">
-                    <span class="input-group-addon" style="border: 0">Домен:</span>
-                    <input class="form-control" name="domain" placeholder="kinogo.club" type="text">
-                </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="h4" style="text-align: center;"><span>02</span> Сервер</div>
                 <p>Арендуете VPS сервер Debian&nbsp;8&nbsp;x64 (1Gb). <a href="#server" data-scroll="#server">Подробнее...</a></p>
-                <div class="input-group ptb-10">
-                    <span class="input-group-addon" style="border: 0">IP:</span>
-                    <input class="form-control" name="ip" placeholder="123.123.123.123" type="text">
-                </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="h4" style="text-align: center;"><span>03</span> Установка</div>
                 <p>Подключаетесь к серверу для установки. <a href="#install" data-scroll="#install">Подробнее...</a></p>
-                <div class="input-group ptb-10">
-                    <span class="input-group-addon" style="border: 0">Root:</span>
-                    <input class="form-control" name="password" placeholder="Fg7dH78Hjd7" type="text">
-                </div>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="h4" style="text-align: center;"><span>04</span> Импорт</div>
                 <p>Импортируйте БД с 600&nbsp;000 фильмами. <a href="#import" data-scroll="#import">Подробнее...</a></p>
-                <div class="ptb-10">
-                    <button class="btn btn-md btn-theme-color btn-block" type="button" onclick="Chatra('openChat', true)">Установить</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 ptb-50">
+                <div class="process-title text-center">
+                    <h3>Быстрая установка CinemaPress ACMS</h3>
+                </div>
+            </div>
+            <div class="col-xs-6 p-10" style="background:#72808E; border-radius: 3px;">
+                <div class="row" id="req">
+                    <div class="col-sm-12 mb-10">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="border: 0">Домен:</span>
+                            <input class="form-control" name="req_domain" placeholder="kinogo.club" type="text">
+                            <span class="input-group-addon" style="border: 0">
+                                <a href="/article/kak-ustanovit-cinemapress-acms.html#domain" target="_blank" title="Доменное имя Вашего сайта" class="text-muted">
+                                    <span class="fa fa-info-circle"></span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-10">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="border: 0">IP сервера:</span>
+                            <input class="form-control bg-gray" name="req_ip" placeholder="123.123.123.123" type="text">
+                            <span class="input-group-addon" style="border: 0">
+                                <a href="/article/kak-ustanovit-cinemapress-acms.html#server" target="_blank" title="IP Вашего сервера" class="text-muted">
+                                    <span class="fa fa-info-circle"></span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-10">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="border: 0">Root:</span>
+                            <input class="form-control" name="req_root" placeholder="Пароль root пользователя" type="text">
+                            <span class="input-group-addon" style="border: 0">
+                                <a href="/article/kak-ustanovit-cinemapress-acms.html#server" target="_blank" title="Пароль от root пользователя на сервере" class="text-muted">
+                                    <span class="fa fa-info-circle"></span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <a href="javascript:void(0)" id="ssh" class="btn btn-md btn-white-ghost btn-block">Установить</a>
+                    </div>
+                </div>
+                <div class="row" id="user" style="display: none">
+                    <div class="col-sm-12 mb-10">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="color: #fff; background: #72808E; border: 0; height: 42px;">Логин и пароль от админ-панели и FTP:</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-10">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="border: 0">Логин:</span>
+                            <input class="form-control bg-gray" name="login" placeholder="Логин совпадает с доменом" type="text" style="border-radius: 0 4px 4px 0;">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-10">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="border: 0">Пароль:</span>
+                            <input class="form-control" name="password" placeholder="Пароль от админ-панели" type="text" style="border-radius: 0 4px 4px 0;">
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <a href="javascript:void(0)" id="go" class="btn btn-md btn-white-ghost btn-block"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 p-10" style="font-family: 'Russo One', sans-serif;">
+                <div class="row info_block" id="info_install">
+                    <div class="col-sm-12 text-center p-20">
+                        <span class="fa fa-clock-o"></span>
+                        Таймер установки
+                    </div>
+                    <div class="col-sm-12 text-center p-20" style="font-size: 80px">
+                        <span data-info="install">10:00</span>
+                    </div>
+                </div>
+                <div class="row info_block" id="info_connect" style="display: none">
+                    <div class="col-sm-12 text-center p-20">
+                        <span class="fa fa-bug"></span>
+                        Проверьте правильность IP и root, либо сервер не Debian 7 или 8
+                    </div>
+                    <div class="col-sm-12 text-center text-danger p-20" style="font-size: 80px">
+                        ERROR
+                    </div>
+                </div>
+                <div class="row info_block" id="info_time" style="display: none">
+                    <div class="col-sm-12 text-center p-20">
+                        <span class="fa fa-clock-o"></span>
+                        Ограничение на повторный запуск
+                    </div>
+                    <div class="col-sm-12 text-center p-20" style="font-size: 80px">
+                        <span data-info="time">01:00</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -334,7 +417,7 @@
             </div>
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3>Добавление всех фильмов на сайт.</h3>
+                    <h3>Добавление всех фильмов на сайт</h3>
                     <div class="seperator"></div>
                 </div>
                 <p>После установки CinemaPress ACMS на сайте будет 100 фильмов, благодаря которым Вы сможете полностью понять как работает система, настроить отображение фильмов на главной странице и в категориях, изменить URL и т.д.</p>

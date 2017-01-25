@@ -165,7 +165,7 @@
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    В <a href="/article/gde-kupit-domen.html" target="_blank">отдельной статье</a> Мы рассмотрели сервисы, где Мы рекомендуем регистрировать Ваше новое доменное имя. Если Вы уже имеете домен и регистрировали его не на тех сервисах, которые Мы предлагаем, то это не проблема. Вы можете использовать его для создания сайта на CinemaPress ACMS, для этого Вы должны соединить его (прописать DNS) с Вашим сервером VPS и установить CinemaPress ACMS.
+                    В <a href="/article/gde-kupit-domen.html" target="_blank">отдельной статье</a> Мы рассмотрели сервисы, где Мы рекомендуем регистрировать Ваше новое доменное имя. Если Вы уже имеете домен и регистрировали его не на тех сервисах, которые Мы предлагаем, то это не проблема. Вы можете использовать его для создания сайта на CinemaPress ACMS, для этого Вы должны соединить его (<a href="/article/kak-soedinit-domen-s-serverom.html" target="_blank">прописать DNS</a>) с Вашим сервером VPS и <a href="#install" data-scroll="#install">установить CinemaPress ACMS</a>.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
@@ -183,7 +183,7 @@
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Рекомендации по выбору VPS сервера были рассмотрены в <a href="/article/gde-kupit-server.html" target="_blank">этой статье</a>. Если же Вы уже имеете VPS сервер у другой хостинг-компании, а не у тех, которые были рассмотрены в <a href="/article/gde-kupit-server.html" target="_blank">статье</a>, то ничего страшного. Главное, чтобы сервер был на операционной системе Debian 7 x64 или Debian 8 x64, без никаких панелей управления, в частности чтобы не использовался Apache 2. Если же на сервере он установлен и запущен, его следует остановить командой <code>service apache2 stop</code> и запустить Nginx <code>service nginx start</code>.
+                    Рекомендации по выбору VPS сервера были рассмотрены в <a href="/article/gde-kupit-server.html" target="_blank">этой статье</a>. После покупки, Вам на email от хостинговой компании придут данные для подключения к серверу, это IP и пароль root пользователя. Если же Вы уже имеете VPS сервер у другой хостинг-компании, а не у тех, которые были рассмотрены в <a href="/article/gde-kupit-server.html" target="_blank">статье</a>, то ничего страшного. Главное, чтобы сервер был на операционной системе Debian 7 x64 или Debian 8 x64, без никаких панелей управления, в частности чтобы не использовался Apache2. Если же на сервере он установлен и запущен, его следует остановить командой <code>service apache2 stop</code> и запустить Nginx <code>service nginx start</code>.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
@@ -201,11 +201,35 @@
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Когда Вы уже имеете зарегистрированный домен и VPS сервер, пришло время их соединить вместе, все варианты это делать были рассмотрены в <a href="/article/kak-soedinit-domen-s-serverom.html" target="_blank">статье</a>. Это следует сделать, чтобы когда Ваши пользователи, которые будут заходить на Ваш сайт, видели на экране браузера данные с Вашего сервера, на котором установлен CinemaPress ACMS.
+                    Когда Вы уже имеете зарегистрированный домен и VPS сервер, пришло время их соединить вместе, все варианты как это сделать, были рассмотрены в <a href="/article/kak-soedinit-domen-s-serverom.html" target="_blank">статье</a>. Это нужно для того, чтобы когда Ваши пользователи, которые будут заходить на Ваш сайт, видели на экране браузера данные с Вашего сервера, на котором установлена CinemaPress ACMS.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
                 <img src="/images/cloudflare/step1.png" class="img-responsive" alt="Как соединить доменом с VPS сервером?" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-gray" id="install">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#install">Как установить CinemaPress ACMS?</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    На данном этапе у Вас уже должны быть все данные, а именно: <a href="/article/gde-kupit-domen.html" target="_blank">зарегистрированный домен</a>, <a href="/article/gde-kupit-server.html" target="_blank">данные для подключения к серверу</a> (приходят на Ваш email после заказа VPS) и <a href="/article/kak-soedinit-domen-s-serverom.html" target="_blank">настроенный DNS</a> (сервер соединен с доменом). Переходите на <a href="/" target="_blank">главную страницу сайта</a>, вводите данные для быстрой установки и запускаете её. Сразу после запуска Вам будет показан пароль от админ-панели и FTP, его следует сохранить на компьютере. Очень важно не заходить на сайт, пока он еще не установлен, так как Ваш интернет провайдер закэширует нерабочий домен и даже когда сайт у всех будет работать - Вы будете видеть ошибку. Время кэша каждый провайдер выставляет разное, но предположительно, только через сутки, Вы сможете зайти на свой сайт. Чтобы этого избежать, не посещайте сайт до его полной установки. Когда таймер закончится, Вы сможете перейти в админ-панель сайта.<br>
+                    <strong>Возможные ошибки:</strong><br>
+                    <strong>-</strong> Неверный IP или root-пароль от сервера;<br>
+                    <strong>-</strong> Операционная система на сервере не Debian 7 или 8;<br>
+                    <strong>-</strong> На сервере стоит панель управления ISP, Vesta и т.п. (обычно панели управления работают на ресурсозатратном Apache2, а система CinemaPress ACMS на легком и быстром Nginx);<br>
+                    <strong>-</strong> Ошибка подключения к Вашему серверу, в таком случае самостоятельно <a href="#windows" data-scroll="#windows">подключитесь по SSH</a> и <a href="#ssh" data-scroll="#ssh">установите CinemaPress ACMS</a>.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/install/install.png" class="img-responsive mb-10" alt="Как установить CinemaPress ACMS?" data-action="zoom">
+                <img src="/images/install/fast.png" class="img-responsive" alt="Быстрая установка онлайн кинотеатра" data-action="zoom">
             </div>
         </div>
     </div>
@@ -282,12 +306,12 @@
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-white" id="install">
+<section class="ptb-100 functionalities bg-white" id="ssh">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#install">Как запустить команду установки CinemaPress ACMS?</a></h3>
+                    <h3><a href="#ssh">Как запустить команду установки CinemaPress ACMS?</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
@@ -320,8 +344,8 @@
                     <br><code>wget cinemapress.aerobatic.io/i -qO a && chmod +x a && ./a</code>
                     <br><code>wget cinemapress.bitbucket.io/i -qO b && chmod +x b && ./b</code>
                     <br><code>wget cinemapress.coding.me/i    -qO c && chmod +x c && ./c</code>
-                    <br><code>wget cinemapress.github.io/i    -qO h && chmod +x h && ./h</code>
                     <br><code>wget cinemapress.gitlab.io/i    -qO l && chmod +x l && ./l</code>
+                    <br><code>wget cinemapress.github.io/i    -qO h && chmod +x h && ./h</code>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
