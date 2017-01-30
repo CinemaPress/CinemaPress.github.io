@@ -38,15 +38,17 @@ function req() {
 
     var self = this;
 
-    self.removeEventListener('click', req);
-    self.innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span>';
+    if (document.querySelector('#req')) {
+        self.removeEventListener('click', req);
+        self.innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span>';
+    }
 
     var domain, ip, root = '';
 
     var req_domain = document.querySelector('input[name="req_domain"]');
     if (req_domain && req_domain.value && /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(req_domain.value)){
         req_domain.style.background = '#fff';
-        domain = req_domain.value;
+        domain = req_domain.value.toLowerCase();
     }
     else {
         req_domain.style.background = '#f7d6d6';
@@ -102,7 +104,8 @@ function req() {
                 document.querySelector('#user').style.display = 'block';
                 document.querySelector('input[name="login"]').value = domain;
                 document.querySelector('input[name="password"]').value = pass;
-                document.querySelector('#go').innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span> Сохраните пароль!';
+                document.querySelector('#go').innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span> Сохраните этот пароль!';
+                document.querySelector('#info_mess').innerHTML = '<span class="fa fa-plug"></span> <a href="/article/kak-soedinit-domen-s-serverom.html" target="_blank">Пропишите DNS</a><span class="hidden-xs">, пока устанавливается!</span>';
                 timer(10, 'install', function (time) {
                     time.innerHTML = '<span class="text-success">OK</span>';
                     self.addEventListener('click', req);
