@@ -989,9 +989,10 @@
                     </li>
                     <li style="text-align: right; padding: 16px;">
                         <div>
-                            <img src="/images/pay/qiwi.png" style="height: 25px; border-radius: 15px 0 0 15px" alt="QIWI">
-                            <img src="/images/pay/card.png" style="height: 25px;" alt="Card">
-                            <img src="/images/pay/webmoney.png" style="height: 25px;  border-radius: 0 15px 15px 0" alt="WebMoney">
+                            <img src="/images/pay/qiwi.png" style="height: 20px; border-radius: 15px 0 0 15px" alt="QIWI">
+                            <img src="/images/pay/card.png" style="height: 20px;" alt="Card">
+                            <img src="/images/pay/bitcoin.png" style="height: 20px;" alt="Bitcoin">
+                            <img src="/images/pay/webmoney.png" style="height: 20px; border-radius: 0 15px 15px 0" alt="WebMoney">
                         </div>
                     </li>
                 </ul>
@@ -1061,10 +1062,10 @@
                             <i class="fa fa-repeat"></i>
                             Обновление БД:
                         </span>
-                        $49 (<a href="javascript:void(0)" data-wm="https://goo.gl/rXyVh0" data-usd="49" title="Купить обновление БД" class="modal-pay" data-toggle="modal" data-target="#pay">выбрать</a>)
+                        $49 (<a href="javascript:void(0)" data-wm="https://goo.gl/rXyVh0" data-btc="https://goo.gl/ni9Eft" data-usd="49" title="Купить обновление БД" class="modal-pay" data-toggle="modal" data-target="#pay">выбрать</a>)
                     </li>
                     <li class="footer">
-                        <a href="javascript:void(0)" data-wm="https://goo.gl/gRYiKI" data-usd="99" class="btn btn-rounded-white-fill modal-pay"  data-toggle="modal" data-target="#pay">Выбрать</a>
+                        <a href="javascript:void(0)" data-wm="https://goo.gl/gRYiKI" data-btc="https://goo.gl/ZuXixJ" data-usd="99" class="btn btn-rounded-white-fill modal-pay"  data-toggle="modal" data-target="#pay">Выбрать</a>
                     </li>
                 </ul>
             </div>
@@ -1100,7 +1101,7 @@
                         бесплатно (до 3 раз)
                     </li>
                     <li class="footer">
-                        <a href="javascript:void(0)" data-wm="https://goo.gl/RVVPjk" data-usd="149" class="btn btn-rounded-white-fill modal-pay" data-toggle="modal" data-target="#pay">Выбрать</a>
+                        <a href="javascript:void(0)" data-wm="https://goo.gl/RVVPjk" data-btc="https://goo.gl/VMU1jK" data-usd="149" class="btn btn-rounded-white-fill modal-pay" data-toggle="modal" data-target="#pay">Выбрать</a>
                     </li>
                 </ul>
             </div>
@@ -1139,7 +1140,7 @@
                         бесплатно (до 3 раз)
                     </li>
                     <li class="footer">
-                        <a href="javascript:void(0)" data-wm="https://goo.gl/KRGzfy" data-usd="199" class="btn btn-rounded-white-fill modal-pay" data-toggle="modal" data-target="#pay">Выбрать</a>
+                        <a href="javascript:void(0)" data-wm="https://goo.gl/KRGzfy" data-btc="https://goo.gl/CoJfwD" data-usd="199" class="btn btn-rounded-white-fill modal-pay" data-toggle="modal" data-target="#pay">Выбрать</a>
                     </li>
                 </ul>
             </div>
@@ -1401,6 +1402,9 @@
                     <a href="javascript:void(0)" class="pay" id="webmoney_pay" target="_blank">
                         <img src="/images/pay/webmoney.png">
                     </a>
+                    <a href="javascript:void(0)" class="pay" id="bitcoin_pay" target="_blank">
+                        <img src="/images/pay/bitcoin.png">
+                    </a>
                     <a href="javascript:void(0)" class="pay" id="card_pay">
                         <img src="/images/pay/card.png">
                     </a>
@@ -1438,6 +1442,8 @@
                         }
                         var webmoney_pay = document.querySelector('#webmoney_pay');
                         webmoney_pay.setAttribute('href', this.dataset.wm);
+                        var bitcoin_pay = document.querySelector('#bitcoin_pay');
+                        bitcoin_pay.setAttribute('href', this.dataset.btc);
                     });
                 }
                 document.querySelector('#qiwi_pay').addEventListener('click', function () {
