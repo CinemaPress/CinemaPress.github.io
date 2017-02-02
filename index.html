@@ -41,7 +41,7 @@
     }
     </script>
 </head>
-<body style="background: #333 url(/images/blog-1.jpg) center top no-repeat; background-size: contain; padding: 0 !important;">
+<body style="background: #333 url(/images/blog-1.jpg) center top no-repeat; background-size: contain;">
 <header class="header-wrapper" style="background-color: rgba(1, 1, 1, 0.7);">
     <nav class="navbar navbar-default navbar-fixed white no-background bootsnav">
         <div class="container-fluid">
@@ -1422,6 +1422,7 @@
             if (modal) {
                 for (i = 0; i < modal.length; i++) {
                     modal[i].addEventListener('click', function () {
+                        document.body.style.padding = 0;
                         var usd = document.querySelectorAll('.usd');
                         if (usd) {
                             for (i = 0; i < usd.length; i++) {
