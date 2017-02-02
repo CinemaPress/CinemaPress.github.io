@@ -1420,10 +1420,10 @@
             var i = 0;
             var modal = document.querySelectorAll('.modal-pay');
             if (modal) {
-                document.querySelector('#pay_qiwi').style.display = 'none';
-                document.querySelector('#pay_card').style.display = 'none';
                 for (i = 0; i < modal.length; i++) {
                     modal[i].addEventListener('click', function () {
+                        document.querySelector('#pay_qiwi').style.display = 'none';
+                        document.querySelector('#pay_card').style.display = 'none';
                         var usd = document.querySelectorAll('.usd');
                         if (usd) {
                             for (i = 0; i < usd.length; i++) {
