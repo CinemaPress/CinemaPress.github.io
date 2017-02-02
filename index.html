@@ -1420,6 +1420,8 @@
             var i = 0;
             var modal = document.querySelectorAll('.modal-pay');
             if (modal) {
+                document.querySelector('#pay_qiwi').style.display = 'none';
+                document.querySelector('#pay_card').style.display = 'none';
                 for (i = 0; i < modal.length; i++) {
                     modal[i].addEventListener('click', function () {
                         var usd = document.querySelectorAll('.usd');
