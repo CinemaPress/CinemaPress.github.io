@@ -198,7 +198,7 @@ read_key() {
                 printf "${R}WARNING:${NC} Допускаются только латинские символы и цифры! \n"
             fi
         else
-            printf "${R}WARNING:${NC} Приобрести ключ можно на https://cinemapress.org/ \n"
+            printf "${R}WARNING:${NC} Приобрести ключ можно в админ-панели Вашего сайта \n"
         fi
     done
 }
