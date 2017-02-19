@@ -275,7 +275,7 @@ update_server() {
     pre_install
     echo -e "deb http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb-src http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb http://nginx.org/packages/debian/ ${VER} nginx \ndeb-src http://nginx.org/packages/debian/ ${VER} nginx \ndeb http://mirror.de.leaseweb.net/dotdeb/ ${VER} all \ndeb-src http://mirror.de.leaseweb.net/dotdeb/ ${VER} all" > /etc/apt/sources.list
     PHP=`php -v 2>/dev/null | grep -i "php"`
-    if [ "${PHP}" = "" ]
+    if [ "${PHP}" = "" ] && [ "${VER}" = "wheezy" ]
     then
         echo "deb http://packages.dotdeb.org ${VER}-php56 all" >> /etc/apt/sources.list
         echo "deb-src http://packages.dotdeb.org ${VER}-php56 all" >> /etc/apt/sources.list
