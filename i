@@ -391,10 +391,11 @@ install_full() {
 install_cinemapress() {
     aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm
     NOD=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
-    if [ "${NOD}" = "" ]
+    NPM=`npm -v 2>/dev/null`
+    if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
         wget -qO- https://deb.nodesource.com/setup_6.x | bash -
-        aptitude -y -q install nodejs
+        aptitude -y -q install nodejs build-essential
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
