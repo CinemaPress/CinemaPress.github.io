@@ -292,11 +292,12 @@ upgrade_server() {
 
 install_full() {
     aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm
-    NOD=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
-    if [ "${NOD}" = "" ]
+    NOD=`node -v 2>/dev/null`
+    NPM=`npm -v 2>/dev/null`
+    if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
         wget -qO- https://deb.nodesource.com/setup_6.x | bash -
-        aptitude -y -q install nodejs
+        aptitude -y -q install nodejs build-essential
     fi
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
     if [ "${SPH}" = "" ]
