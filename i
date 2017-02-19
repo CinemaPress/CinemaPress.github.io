@@ -274,6 +274,12 @@ update_server() {
     apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron
     pre_install
     echo -e "deb http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb-src http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb http://nginx.org/packages/debian/ ${VER} nginx \ndeb-src http://nginx.org/packages/debian/ ${VER} nginx \ndeb http://mirror.de.leaseweb.net/dotdeb/ ${VER} all \ndeb-src http://mirror.de.leaseweb.net/dotdeb/ ${VER} all" > /etc/apt/sources.list
+    PHP=`php -v 2>/dev/null | grep -i "php"`
+    if [ "${PHP}" = "" ]
+    then
+        echo "deb http://packages.dotdeb.org ${VER}-php56 all" >> /etc/apt/sources.list
+        echo "deb-src http://packages.dotdeb.org ${VER}-php56 all" >> /etc/apt/sources.list
+    fi
     wget -q http://www.dotdeb.org/dotdeb.gpg; apt-key add dotdeb.gpg
     wget -q http://nginx.org/keys/nginx_signing.key; apt-key add nginx_signing.key
     rm -rf dotdeb.gpg; rm -rf nginx_signing.key
@@ -285,7 +291,7 @@ upgrade_server() {
 }
 
 install_full() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent
+    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm
     NOD=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
     if [ "${NOD}" = "" ]
     then
@@ -302,10 +308,88 @@ install_full() {
     then
         service apache2 stop && service nginx restart
     fi
+    PHP=`php -v 2>/dev/null | grep -i "php"`
+    if [ "${PHP}" != "" ]
+    then
+        MODULES=$(php -i | awk -F '=> ' '/extension_dir/{print $3}')
+        PHP_INI=$(php -i | awk -F '=> ' '/Loaded Configuration File/{print $2}')
+        PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
+        # FPM
+        if [ -f "${PHP_INI/cli/fpm}" ]
+        then
+            PHP_INI_FPM="${PHP_INI/cli/fpm}"
+        elif [ -f "${PHP_INI/cgi/fpm}" ]
+        then
+            PHP_INI_FPM="${PHP_INI/cgi/fpm}"
+        elif [ -f "${PHP_INI/apache2/fpm}" ]
+        then
+            PHP_INI_FPM="${PHP_INI/apache2/fpm}"
+        fi
+        # APACHE2
+        if [ -f "${PHP_INI/cli/apache2}" ]
+        then
+            PHP_INI_APACHE="${PHP_INI/cli/apache2}"
+        elif [ -f "${PHP_INI/cgi/apache2}" ]
+        then
+            PHP_INI_APACHE="${PHP_INI/cgi/apache2}"
+        elif [ -f "${PHP_INI/fpm/apache2}" ]
+        then
+            PHP_INI_APACHE="${PHP_INI/fpm/apache2}"
+        fi
+        # CGI
+        if [ -f "${PHP_INI/cli/cgi}" ]
+        then
+            PHP_INI_CGI="${PHP_INI/cli/cgi}"
+        elif [ -f "${PHP_INI/apache2/cgi}" ]
+        then
+            PHP_INI_CGI="${PHP_INI/apache2/cgi}"
+        elif [ -f "${PHP_INI/fpm/cgi}" ]
+        then
+            PHP_INI_CGI="${PHP_INI/fpm/cgi}"
+        fi
+        echo "${PHP_INI} ${PHP_INI_FPM} ${PHP_INI_APACHE} ${PHP_INI_CGI}"
+        if [ -d "${MODULES}" ]
+        then
+            if [ "`arch`" = "x86_64" ]
+            then
+                wget -qO "i.tar.gz" http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+            else
+                wget -qO "i.tar.gz" http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86.tar.gz
+            fi
+            tar xvfz "i.tar.gz"
+            cp -r "ioncube/ioncube_loader_lin_${PHP_VERSION}.so" "${MODULES}"
+            rm -rf "i.tar.gz" && rm -rf "ioncube"
+            if [ -f "${PHP_INI_FPM}" ] && [ "`grep \"ioncube\" \"${PHP_INI_FPM}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI_FPM}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI_FPM}"
+            fi
+            if [ -f "${PHP_INI_APACHE}" ] && [ "`grep \"ioncube\" \"${PHP_INI_APACHE}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI_APACHE}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI_APACHE}"
+            fi
+            if [ -f "${PHP_INI_CGI}" ] && [ "`grep \"ioncube\" \"${PHP_INI_CGI}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI_CGI}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI_CGI}"
+            fi
+            if [ -f "${PHP_INI}" ] && [ "`grep \"ioncube\" \"${PHP_INI}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI}"
+            fi
+            FPM=`dpkg --status php5-fpm 2>/dev/null | grep "ok installed"`
+            if [ "${FPM}" != "" ]
+            then
+                service php5-fpm restart
+            fi
+        fi
+    fi
 }
 
 install_cinemapress() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent
+    aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm
     NOD=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
     if [ "${NOD}" = "" ]
     then
@@ -316,6 +400,84 @@ install_cinemapress() {
     if [ "${APC}" != "" ]
     then
         service nginx stop && service apache2 stop && service nginx stop && service nginx start
+    fi
+    PHP=`php -v 2>/dev/null | grep -i "php"`
+    if [ "${PHP}" != "" ]
+    then
+        MODULES=$(php -i | awk -F '=> ' '/extension_dir/{print $3}')
+        PHP_INI=$(php -i | awk -F '=> ' '/Loaded Configuration File/{print $2}')
+        PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
+        # FPM
+        if [ -f "${PHP_INI/cli/fpm}" ]
+        then
+            PHP_INI_FPM="${PHP_INI/cli/fpm}"
+        elif [ -f "${PHP_INI/cgi/fpm}" ]
+        then
+            PHP_INI_FPM="${PHP_INI/cgi/fpm}"
+        elif [ -f "${PHP_INI/apache2/fpm}" ]
+        then
+            PHP_INI_FPM="${PHP_INI/apache2/fpm}"
+        fi
+        # APACHE2
+        if [ -f "${PHP_INI/cli/apache2}" ]
+        then
+            PHP_INI_APACHE="${PHP_INI/cli/apache2}"
+        elif [ -f "${PHP_INI/cgi/apache2}" ]
+        then
+            PHP_INI_APACHE="${PHP_INI/cgi/apache2}"
+        elif [ -f "${PHP_INI/fpm/apache2}" ]
+        then
+            PHP_INI_APACHE="${PHP_INI/fpm/apache2}"
+        fi
+        # CGI
+        if [ -f "${PHP_INI/cli/cgi}" ]
+        then
+            PHP_INI_CGI="${PHP_INI/cli/cgi}"
+        elif [ -f "${PHP_INI/apache2/cgi}" ]
+        then
+            PHP_INI_CGI="${PHP_INI/apache2/cgi}"
+        elif [ -f "${PHP_INI/fpm/cgi}" ]
+        then
+            PHP_INI_CGI="${PHP_INI/fpm/cgi}"
+        fi
+        echo "${PHP_INI} ${PHP_INI_FPM} ${PHP_INI_APACHE} ${PHP_INI_CGI}"
+        if [ -d "${MODULES}" ]
+        then
+            if [ "`arch`" = "x86_64" ]
+            then
+                wget -qO "i.tar.gz" http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+            else
+                wget -qO "i.tar.gz" http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86.tar.gz
+            fi
+            tar xvfz "i.tar.gz"
+            cp -r "ioncube/ioncube_loader_lin_${PHP_VERSION}.so" "${MODULES}"
+            rm -rf "i.tar.gz" && rm -rf "ioncube"
+            if [ -f "${PHP_INI_FPM}" ] && [ "`grep \"ioncube\" \"${PHP_INI_FPM}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI_FPM}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI_FPM}"
+            fi
+            if [ -f "${PHP_INI_APACHE}" ] && [ "`grep \"ioncube\" \"${PHP_INI_APACHE}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI_APACHE}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI_APACHE}"
+            fi
+            if [ -f "${PHP_INI_CGI}" ] && [ "`grep \"ioncube\" \"${PHP_INI_CGI}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI_CGI}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI_CGI}"
+            fi
+            if [ -f "${PHP_INI}" ] && [ "`grep \"ioncube\" \"${PHP_INI}\"`" = "" ]
+            then
+                echo "${MODULES} ${PHP_INI}"
+                sed -i "1 izend_extension = ${MODULES}/ioncube_loader_lin_${PHP_VERSION}.so\n" "${PHP_INI}"
+            fi
+            FPM=`dpkg --status php5-fpm 2>/dev/null | grep "ok installed"`
+            if [ "${FPM}" != "" ]
+            then
+                service php5-fpm restart
+            fi
+        fi
     fi
 }
 
@@ -379,6 +541,7 @@ conf_nginx() {
     then
         sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n/g" /etc/nginx/nginx.conf
     fi
+    rm -rf /etc/nginx/nginx_pass_${DOMAIN}
     OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
     echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}
     service nginx restart
@@ -571,6 +734,7 @@ start_cinemapress() {
         sleep 2
     fi
     cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save
+    pm2 install pm2-logrotate
     hash -r
 }
 
@@ -886,13 +1050,17 @@ import_db() {
         printf "${G}Запуск ...\n"
 
         searchd --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
+
+        NOW=$(date +%Y-%m-%d)
+        sed -i "s/\"key\":\s*\".*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
+        sed -i "s/\"date\":\s*\".*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
     else
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}----             ${R}База фильмов не была загружена,${C}              ----\n${NC}"
         printf "${C}----          ${R}возможно у Вас закончились обновления${C}           ----\n${NC}"
-        printf "${C}----              ${R}на тарифе EXPANDED или THEME,${C}               ----\n${NC}"
+        printf "${C}----                   ${R}на тарифе EXPANDED,${C}                    ----\n${NC}"
         printf "${C}----      ${R}либо Вы используете ключ START несколько раз.${C}       ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
@@ -933,13 +1101,13 @@ confirm_import_db() {
 }
 
 import_static() {
-    wget -O /tmp/images.tar https://static.cinemapress.org/images.tar
+    wget -O /home/images.tar https://static.cinemapress.org/images.tar
     mkdir -p /var/local/images
     printf "\n${NC}"
     printf "${G}Распаковка ...\n"
     printf "${NC}Может занять до 20 минут.\n"
     printf "\n${NC}"
-    tar -xf /tmp/images.tar -C /var/local/images
+    tar -xf /home/images.tar -C /var/local/images
     wget https://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
 }
 

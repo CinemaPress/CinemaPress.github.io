@@ -70,13 +70,13 @@
                         <a href="/index.html#process" data-scroll="#process">Процесс</a>
                     </li>
                     <li>
-                        <a href="/index.html#hodor"  data-scroll="#hodor">Шаблоны</a>
+                        <a href="/index.html#hodor" data-scroll="#hodor">Шаблоны</a>
                     </li>
                     <li>
-                        <a href="/index.html#database"  data-scroll="#database">База фильмов</a>
+                        <a href="/index.html#best" data-scroll="#best">О системе</a>
                     </li>
                     <li>
-                        <a href="/index.html#contacts"  data-scroll="#contacts">Контакты</a>
+                        <a href="/index.html#contacts" data-scroll="#contacts">Контакты</a>
                     </li>
                 </ul>
             </div>
@@ -96,7 +96,7 @@
                         <a href="/index.html#hodor" data-scroll="#hodor">Шаблоны</a>
                     </li>
                     <li>
-                        <a href="/index.html#database" data-scroll="#database">База фильмов</a>
+                        <a href="/index.html#best" data-scroll="#best">О системе</a>
                     </li>
                     <li>
                         <a href="/index.html#contacts" data-scroll="#contacts">Контакты</a>
@@ -270,13 +270,22 @@
                         Таймер <span class="hidden-xs">установки</span>
                     </div>
                     <div class="col-sm-12 text-center p-20" style="font-size: 80px">
-                        <span data-info="install">10:00</span>
+                        <span data-info="install">10<span class="hidden-xs">:00</span></span>
                     </div>
                 </div>
                 <div class="row info_block" id="info_connect" style="display: none">
                     <div class="col-sm-12 text-center p-20">
                         <span class="fa fa-bug"></span>
-                        Проверьте правильность IP и root, либо сервер не Debian 7 или 8
+                        Неверно указан IP или root-пароль
+                    </div>
+                    <div class="col-sm-12 text-center text-danger p-20" style="font-size: 80px">
+                        ERROR
+                    </div>
+                </div>
+                <div class="row info_block" id="info_debian" style="display: none">
+                    <div class="col-sm-12 text-center p-20">
+                        <span class="fa fa-bug"></span>
+                        Сервер не Debian 8 x64
                     </div>
                     <div class="col-sm-12 text-center text-danger p-20" style="font-size: 80px">
                         ERROR
@@ -964,194 +973,6 @@
         </div>
     </div>
 </section>
-<section class="pricing-table ptb-100 bg-gray" id="database">
-    <h2 class="hidden">CinemaPress скачать базу данных фильмов</h2>
-    <div class="container">
-        <div class="row clearfix">
-            <div class="col-md-4 hidden-sm hidden-xs">
-                <div class="head no-border bg-gray">
-                    <div class="pricing-title">&nbsp;</div>
-                    <span class="pricing-subtitle">&nbsp;</span>
-                </div>
-                <div class="price-choose text-center">Цена базы фильмов</div>
-                <ul class="price-features">
-                    <li>
-                        <i class="fa fa-database"></i>Число фильмов
-                    </li>
-                    <li>
-                        <i class="fa fa-picture-o"></i>Тема оформления
-                    </li>
-                    <li>
-                        <i class="fa fa-repeat"></i>Обновление БД
-                        (<a href="/article/chto-takoe-obnovlenie-bd.html" target="_blank" title="Что такое обновление базы данных?">
-                            что это?
-                        </a>)
-                    </li>
-                    <li style="text-align: center; padding: 16px 0;">
-                        <div>
-                            <img src="/images/pay/qiwi.png" style="height: 30px; border-radius: 15px 0 0 15px" alt="QIWI">
-                            <img src="/images/pay/card.png" style="height: 30px;" alt="Card">
-                            <img src="/images/pay/bitcoin.png" style="height: 30px;" alt="Bitcoin">
-                            <img src="/images/pay/webmoney.png" style="height: 30px; border-radius: 0 15px 15px 0" alt="WebMoney">
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-2 col-sm-6 text-center pricing-col">
-                <div class="head bg-theme-primary">
-                    <div class="pricing-title">Free</div>
-                    <span class="pricing-subtitle">Включена в установку</span>
-                </div>
-                <div class="price">
-                    <span class="pricing-currency">$</span>
-                    <span class="pricing-price">0</span>
-                </div>
-                <ul>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-database"></i>
-                            Число фильмов:
-                        </span>
-                        100
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-picture-o"></i>
-                            Тема оформления:
-                        </span>
-                        общая
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-repeat"></i>
-                            Обновление БД:
-                        </span>
-                        нет
-                    </li>
-                    <li class="footer">
-                        <a href="#process" data-scroll="#process" class="btn btn-rounded-white-fill">Выбрать</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-2 col-sm-6 text-center pricing-col">
-                <div class="head bg-theme-primary">
-                    <div class="pricing-title">Start</div>
-                    <span class="pricing-subtitle">Готовый киносайт</span>
-                </div>
-                <div class="price">
-                    <span class="pricing-currency">$</span>
-                    <span class="pricing-price">99</span>
-                </div>
-                <ul>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-database"></i>
-                            Число фильмов:
-                        </span>
-                        609 705
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-picture-o"></i>
-                            Тема оформления:
-                        </span>
-                        общая
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-repeat"></i>
-                            Обновление БД:
-                        </span>
-                        $49 (<a href="javascript:void(0)" data-wm="https://goo.gl/rXyVh0" data-btc="https://goo.gl/ni9Eft" data-usd="49" title="Купить обновление БД" class="modal-pay" data-toggle="modal" data-target="#pay">выбрать</a>)
-                    </li>
-                    <li class="footer">
-                        <a href="javascript:void(0)" data-wm="https://goo.gl/gRYiKI" data-btc="https://goo.gl/ZuXixJ" data-usd="99" class="btn btn-rounded-white-fill modal-pay"  data-toggle="modal" data-target="#pay">Выбрать</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-2 col-sm-6 text-center pricing-col">
-                <div class="head bg-theme-primary">
-                    <div class="pricing-title">Expanded</div>
-                    <span class="pricing-subtitle">Киносайт с будущим</span>
-                </div>
-                <div class="price">
-                    <span class="pricing-currency">$</span>
-                    <span class="pricing-price">149</span>
-                </div>
-                <ul>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-database"></i>
-                            Число фильмов:
-                        </span>
-                        609 705
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-picture-o"></i>
-                            Тема оформления:
-                        </span>
-                        общая
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-repeat"></i>
-                            Обновление БД:
-                        </span>
-                        бесплатно (до 3 раз)
-                    </li>
-                    <li class="footer">
-                        <a href="javascript:void(0)" data-wm="https://goo.gl/RVVPjk" data-btc="https://goo.gl/VMU1jK" data-usd="149" class="btn btn-rounded-white-fill modal-pay" data-toggle="modal" data-target="#pay">Выбрать</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-2 col-sm-6 text-center pricing-col">
-                <div class="head bg-theme-primary">
-                    <div class="pricing-title">Theme</div>
-                    <span class="pricing-subtitle">Киносайт с дизайном</span>
-                </div>
-                <div class="price">
-                    <span class="pricing-currency">$</span>
-                    <span class="pricing-price">199</span>
-                </div>
-                <ul>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-database"></i>
-                            Число фильмов:
-                        </span>
-                        609 705
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-picture-o"></i>
-                            Тема оформления:
-                        </span>
-                        индивидуальная
-                        <a href="/article/chto-takoe-individualnaya-tema.html" target="_blank" title="Что такое индивидуальная тема оформления CinemaPress ACMS?">
-                            <span class="fa fa-info-circle"></span>
-                        </a>
-                    </li>
-                    <li>
-                        <span class="hidden-md hidden-lg">
-                            <i class="fa fa-repeat"></i>
-                            Обновление БД:
-                        </span>
-                        бесплатно (до 3 раз)
-                    </li>
-                    <li class="footer">
-                        <a href="javascript:void(0)" data-wm="https://goo.gl/KRGzfy" data-btc="https://goo.gl/CoJfwD" data-usd="199" class="btn btn-rounded-white-fill modal-pay" data-toggle="modal" data-target="#pay">Выбрать</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-12 col-sm-12 text-right">
-                <small>
-                    Покупая базу фильмов, Вы соглашаетесь с <a href="/article/usloviya-ispolzovaniya.html" target="_blank">пользовательским соглашением</a>.
-                </small>
-            </div>
-        </div>
-    </div>
-</section>
 <footer id="footer" class="dark-footer">
     <div class="main-footer ptb-100" id="contacts">
         <div class="container">
@@ -1394,68 +1215,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="modal fade" id="pay" tabindex="-1" role="dialog" style="height: auto;">
-        <div class="modal-dialog" role="document" style="height: auto;">
-            <div class="modal-content" style="height: auto;">
-                <div class="modal-body text-center" style="height: auto;">
-                    <a href="javascript:void(0)" class="pay" id="webmoney_pay" target="_blank">
-                        <img src="/images/pay/webmoney.png">
-                    </a>
-                    <a href="javascript:void(0)" class="pay" id="bitcoin_pay" target="_blank">
-                        <img src="/images/pay/bitcoin.png">
-                    </a>
-                    <a href="javascript:void(0)" class="pay" id="card_pay">
-                        <img src="/images/pay/card.png">
-                    </a>
-                    <a href="javascript:void(0)" class="pay" id="qiwi_pay">
-                        <img src="/images/pay/qiwi.png">
-                    </a>
-                    <div id="pay_qiwi" class="text-justify" style="display: none; font-size: 14px; padding: 20px; margin: 0">
-                        Для оплаты с помощью QIWI-кошелька, авторизируйтесь на <a href="/ref/#https://qiwi.com/transfer/email.action" target="_blank">qiwi.com</a> и зайдите в <a href="/ref/#https://qiwi.com/transfer/email.action" target="_blank">«Перевести» -> «По email»</a>, тип операции выберите «Отправить» и укажите получателя <code>qiwi@cinemapress.org</code>. Введите сумму <span class="usd"></span> (<span class="rub"></span>), затем в поле «Комментарий» укажите только Ваш email, на который будет выслан ключ базы фильмов. Обработка платежа происходит в полуавтоматическом режиме от 1 мин до 2-х дней. Если в течении 2-х дней Ваш платеж не обработается, средства вернутся обратно на Ваш кошелек.
-                    </div>
-                    <div id="pay_card" class="text-justify" style="display: none; font-size: 14px; padding: 20px; margin: 0">
-                        Для оплаты с помощью пластиковой карты VISA или Mastercard Вы должны воспользоваться услугами сервиса <a href="/ref/#https://qiwi.com/cards.action" target="_blank">QIWI</a> и прикрепить свою карту к QIWI-кошельку (занимает не больше 2-х минут). Далее, для оплаты с помощью QIWI-кошелька зайдите в <a href="/ref/#https://qiwi.com/transfer/email.action" target="_blank">«Перевести» -> «По email»</a>, тип операции выберите «Отправить» и укажите получателя <code>qiwi@cinemapress.org</code>. Введите сумму <span class="usd"></span> (<span class="rub"></span>), затем в поле «Комментарий» укажите только Ваш email, на который будет выслан ключ базы фильмов. Обработка платежа происходит в полуавтоматическом режиме от 1 мин до 2-х дней.
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script>
-            var i = 0;
-            var modal = document.querySelectorAll('.modal-pay');
-            if (modal) {
-                for (i = 0; i < modal.length; i++) {
-                    modal[i].addEventListener('click', function () {
-                        document.querySelector('#pay_qiwi').style.display = 'none';
-                        document.querySelector('#pay_card').style.display = 'none';
-                        var usd = document.querySelectorAll('.usd');
-                        if (usd) {
-                            for (i = 0; i < usd.length; i++) {
-                                usd[i].innerHTML = this.dataset.usd + '&nbsp;USD';
-                            }
-                        }
-                        var rub = document.querySelectorAll('.rub');
-                        if (rub) {
-                            for (i = 0; i < rub.length; i++) {
-                                rub[i].innerHTML = (parseInt(this.dataset.usd)*61) + '&nbsp;RUB';
-                            }
-                        }
-                        var webmoney_pay = document.querySelector('#webmoney_pay');
-                        webmoney_pay.setAttribute('href', this.dataset.wm);
-                        var bitcoin_pay = document.querySelector('#bitcoin_pay');
-                        bitcoin_pay.setAttribute('href', this.dataset.btc);
-                    });
-                }
-                document.querySelector('#qiwi_pay').addEventListener('click', function () {
-                    document.querySelector('#pay_card').style.display = 'none';
-                    document.querySelector('#pay_qiwi').style.display = 'block';
-                });
-                document.querySelector('#card_pay').addEventListener('click', function () {
-                    document.querySelector('#pay_qiwi').style.display = 'none';
-                    document.querySelector('#pay_card').style.display = 'block';
-                });
-            }
-        </script>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
     <script>

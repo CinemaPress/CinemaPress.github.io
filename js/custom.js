@@ -98,7 +98,7 @@ function req() {
                     info_block[i].style.display = 'none';
                 }
             }
-            if (http.responseText == 'OK') {
+            if (http.responseText == 'OK' || http.responseText == 'APACHE') {
                 document.querySelector('#info_install').style.display = 'block';
                 document.querySelector('#req').style.display = 'none';
                 document.querySelector('#user').style.display = 'block';
@@ -113,6 +113,16 @@ function req() {
                     document.querySelector('#go').setAttribute('target', '_blank');
                     document.querySelector('#go').innerHTML = 'Перейти в админ-панель';
                 });
+                if (http.responseText == 'APACHE') {
+                    setTimeout(function () {
+                        document.querySelector('#info_mess').innerHTML = '<span class="fa fa-plug"></span> На сервере установлен Apache2, возможны проблемы!';
+                    }, 60000);
+                }
+            }
+            else if (http.responseText == 'DEBIAN') {
+                document.querySelector('#info_debian').style.display = 'block';
+                self.addEventListener('click', req);
+                self.innerHTML = 'Установить';
             }
             else if (http.responseText == 'TIME') {
                 document.querySelector('#info_time').style.display = 'block';
