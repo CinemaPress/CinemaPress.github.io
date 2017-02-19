@@ -390,7 +390,7 @@ install_full() {
 
 install_cinemapress() {
     aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm
-    NOD=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
+    NOD=`node -v 2>/dev/null`
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
