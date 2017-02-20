@@ -640,7 +640,7 @@ conf_cinemapress() {
     then
         git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
         chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
-        sed -i "s/\"theme\":\s*\".*?\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"theme\":\s*\".*?\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
     fi
     if [ "`grep \"${DOMAIN}_publish\" /etc/crontab`" = "" ]
     then
@@ -936,7 +936,7 @@ update_theme() {
     fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
-    sed -i "s/\"theme\":\s*\".*?\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
+    sed -E -i "s/\"theme\":\s*\".*?\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
     echo "Change theme to ${THEME}" >> /home/${DOMAIN}/restart.server
 }
 
@@ -1054,8 +1054,8 @@ import_db() {
         searchd --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
         NOW=$(date +%Y-%m-%d)
-        sed -i "s/\"key\":\s*\".*?\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
-        sed -i "s/\"date\":\s*\".*?\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"key\":\s*\".*?\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"date\":\s*\".*?\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
     else
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
