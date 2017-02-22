@@ -1,0 +1,13 @@
+# This is an auto-generated file based on the build configuration 
+# from the Bitbucket Aerobatic add-on. You may need to make some tweaks. See the 
+# official Pipelines documentation at https://confluence.atlassian.com/x/VYk8Lw.
+image: beevelop/nodejs-python
+clone:
+  depth: 1
+pipelines:
+  branches:
+    master:
+      - step:
+          script:
+            - npm install aerobatic-cli -g
+            - aero deploy --stage pipelines-test
