@@ -17,7 +17,7 @@ fi
 
 if [ ! -f /etc/debian_version ]
 then
-	printf "${R}WARNING:${NC} Система работает на Debian 7 x64 или Debian 8 x64!\n${NC}"
+	printf "${R}WARNING:${NC} Система работает только на Debian 7 x64 или Debian 8 x64!\n${NC}"
 	exit 1
 fi
 
