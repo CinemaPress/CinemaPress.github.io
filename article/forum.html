@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Оформление веток обсуждения на популярных форумах - CinemaPress ACMS</title>
+    <meta property="og:title" content="Оформление веток обсуждения на популярных форумах - CinemaPress ACMS"/>
+    <meta name="description" content="Оформление веток обсуждения на популярных форумах - CinemaPress ACMS"/>
+    <meta property="og:description" content="Оформление веток обсуждения на популярных форумах - CinemaPress ACMS"/>
+    <meta property="og:image" content="https://cinemapress.org/images/admin/admin.png"/>
+    <link rel="image_src" href="https://cinemapress.org/images/admin/admin.png"/>
+    <meta property="og:url" content="https://cinemapress.org/"/>
+    <meta property="og:site_name" content="CinemaPress ACMS"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:site" content="@CinemaPress_org"/>
+    <meta property="fb:app_id" content="235357033568788"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32"/>
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16"/>
+    <link rel="manifest" href="/manifest.json"/>
+    <link rel="mask-icon" href="/safari-pinned-tab.svg"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <link rel="stylesheet" href="/css/all.css"/>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Organization",
+      "name" : "CinemaPress",
+      "url" : "https://CinemaPress.org",
+      "sameAs" : [
+        "https://vk.com/CinemaPress",
+        "https://www.facebook.com/CinemaPress.org",
+        "https://twitter.com/CinemaPress_org",
+        "https://plus.google.com/+CinemaPressOrg"
+      ]
+    }
+    </script>
+</head>
+<body style="background: #fff">
+<section style="background: none" class="ptb-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <img src="/images/admin/admin.png">
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background: none" class="ptb-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="example-box" style="background: none">
+                    <div class="example-box-header">
+                        <div class="example-label"><i class="fa fa-dashboard"></i>&nbsp;&nbsp;&nbsp;CinemaPress ACMS</div>
+                    </div>
+                    <div class="inner-padding">
+                        <div class="row">
+                            <div class="col-md-12 text-center ptb-20">
+                                <strong>CinemaPress ACMS</strong> - автоматическая система управления сайтом (киносайтом).
+                                <br>Система распространяется свободно и бесплатно под лицензией MIT.
+                                <br>Установка системы сводится к вводу данных VPS <a href="http://cinemapress.org" target="_blank">на CinemaPress</a> и нажатия
+                                <br>кнопки «Установить», либо подключение по SSH и ввода одной единственной
+                                <br>команды которая сделает все настройки и установит систему на сервер,
+                                <br>через 4 минуты будете иметь полностью готовый киносайт.
+
+                                <br><br><strong>Демо:</strong> <a href="http://demo.cinemapress.org" target="_blank">http://demo.cinemapress.org</a>
+                                <br><strong>Админ-панель:</strong> <a href="http://demo.cinemapress.org/admin" target="_blank">http://demo.cinemapress.org/admin</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background: none" class="ptb-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="example-box" style="background: none">
+                    <div class="example-box-header">
+                        <div class="example-label"><i class="fa fa-magic"></i>&nbsp;&nbsp;&nbsp;Установка</div>
+                    </div>
+                    <div class="inner-padding">
+                        <div class="row" style="padding: 40px">
+                            <div class="col-xs-6">
+                                <div class="super-title">
+                                    <h2>Быстрая установка</h2>
+                                </div>
+                                <div class="row p-10" style="background:#72808E; border-radius: 3px; box-shadow: 0 0 10px #72808E; padding: 36.5px 0;" id="req">
+                                    <div class="col-sm-12 mb-10">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="border: 0">Домен:</span>
+                                            <input class="form-control" name="req_domain" placeholder="kinogo.club" type="text">
+                                            <span class="input-group-addon" style="border: 0">
+<a href="/article/kak-ustanovit-cinemapress-acms.html#domain" target="_blank" title="Доменное имя Вашего сайта" class="text-muted">
+<span class="fa fa-info-circle"></span>
+</a>
+</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 mb-10">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="border: 0">IP<span class="hidden-xs"> сервера</span>:</span>
+                                            <input class="form-control" name="req_ip" placeholder="123.123.123.123" type="text">
+                                            <span class="input-group-addon" style="border: 0">
+<a href="/article/kak-ustanovit-cinemapress-acms.html#server" target="_blank" title="IP Вашего сервера" class="text-muted">
+<span class="fa fa-info-circle"></span>
+</a>
+</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 mb-10">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="border: 0">Root:</span>
+                                            <input class="form-control" name="req_root" placeholder="Пароль root пользователя" type="text">
+                                            <span class="input-group-addon" style="border: 0">
+<a href="/article/kak-ustanovit-cinemapress-acms.html#server" target="_blank" title="Пароль от root пользователя на сервере" class="text-muted">
+<span class="fa fa-info-circle"></span>
+</a>
+</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <a href="javascript:void(0)" id="ssh" class="btn btn-md btn-white-ghost btn-block">Установить</a>
+                                    </div>
+                                </div>
+                                <div class="row" id="user" style="display: none">
+                                    <div class="col-sm-12 mb-10">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="color: #fff; background: #72808E; border: 0; height: 42px;">Логин и пароль от админ-панели и FTP:</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 mb-10">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="border: 0">Логин:</span>
+                                            <input class="form-control bg-gray" name="login" placeholder="Логин совпадает с доменом" style="border-radius: 0 4px 4px 0;" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 mb-10">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="border: 0">Пароль:</span>
+                                            <input class="form-control" name="password" placeholder="Пароль от админ-панели" style="border-radius: 0 4px 4px 0;" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <a href="javascript:void(0)" id="go" class="btn btn-md btn-white-ghost btn-block"></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="super-title">
+                                    <h2>Установить по SSH</h2>
+                                </div>
+                                <img src="/images/bash/option1.png">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center ptb-20">
+                                «<a href="https://cinemapress.org/article/kak-ustanovit-cinemapress-acms.html" target="_blank">Как установить CinemaPress ACMS?</a>»
+                                <br>«<a href="https://cinemapress.org/article/kak-vybrat-domen.html" target="_blank">Как выбрать домен для киносайта?</a>»
+                                <br>«<a href="https://cinemapress.org/article/gde-kupit-domen.html" target="_blank">Где купить домен для киносайта?</a>»
+                                <br>«<a href="https://cinemapress.org/article/gde-kupit-server.html" target="_blank">Выбор лучшего VPS сервера для сайта?</a>»
+                                <br>«<a href="https://cinemapress.org/article/cinemapress-acms.html" target="_blank">Первые шаги после создания киносайта</a>»
+                                <br>«<a href="https://cinemapress.org/article/kak-dobavit-vse-filmy-v-mire.html" target="_blank">Как добавить на сайт все фильмы с мире?</a>»
+                                <br>«<a href="https://cinemapress.org/article/obzor-reklamy-dlya-kinosaytov.html" target="_blank">Как поставить на сайт рекламу?</a>»
+                                <br>«<a href="https://cinemapress.org/article/sayty-na-cinemapress-acms.html" target="_blank">Сайты на CinemaPress ACMS</a>»
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background: none" class="ptb-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="example-box" style="background: none">
+                    <div class="example-box-header">
+                        <div class="example-label"><i class="fa fa-picture-o"></i>&nbsp;&nbsp;&nbsp;Шаблоны сайта</div>
+                    </div>
+                    <div class="inner-padding">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="/images/themes/ramsay.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/hodor.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/sansa.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/robb.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/tyrion.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/cersei.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/drogo.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/bran.png">
+                            </div>
+                            <div class="col-md-4">
+                                <img src="/images/themes/joffrey.png">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center ptb-20">
+                                <a href="https://cinemapress.org/#hodor" target="_blank">Шаблон киносайта «hodor»</a><br>
+                                <a href="https://cinemapress.org/#sansa" target="_blank">Шаблон киносайта «sansa»</a><br>
+                                <a href="https://cinemapress.org/#robb" target="_blank">Шаблон киносайта «robb»</a><br>
+                                <a href="https://cinemapress.org/#ramsay" target="_blank">Шаблон киносайта «ramsay»</a><br>
+                                <a href="https://cinemapress.org/#tyrion" target="_blank">Шаблон киносайта «tyrion»</a><br>
+                                <a href="https://cinemapress.org/#cersei" target="_blank">Шаблон киносайта «cersei»</a><br>
+                                <a href="https://cinemapress.org/#joffrey" target="_blank">Шаблон киносайта «joffrey»</a><br>
+                                <a href="https://cinemapress.org/#drogo" target="_blank">Шаблон киносайта «drogo»</a><br>
+                                <a href="https://cinemapress.org/#bran" target="_blank">Шаблон киносайта «bran»</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background: none" class="ptb-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="example-box" style="background: none">
+                    <div class="example-box-header">
+                        <div class="example-label"><i class="fa fa-cogs"></i>&nbsp;&nbsp;&nbsp;Параметры</div>
+                    </div>
+                    <div class="inner-padding">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/admin.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-home"></i>
+                                        <p>
+                                            Админ
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/main.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-cog"></i>
+                                        <p>
+                                            Настройки
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/publish.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-clock-o"></i>
+                                        <p>
+                                            Публикация
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/index.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-bars"></i>
+                                        <p>
+                                            Главная
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/urls.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-sitemap"></i>
+                                        <p>
+                                            URL
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/display.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-list"></i>
+                                        <p>
+                                            Отображение
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/movies.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-film"></i>
+                                        <p>
+                                            Фильмы
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/titles.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-pencil-square"></i>
+                                        <p>
+                                            Названия
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/descriptions.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                        <p>
+                                            Описания
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/codes.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-code"></i>
+                                        <p>
+                                            Коды
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/load.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-bar-chart-o"></i>
+                                        <p>
+                                            Нагрузка
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/cache.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-rocket"></i>
+                                        <p>
+                                            Кэш
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 text-center ptb-20">
+                                <strong>Админ</strong> - главная страница админ-панели CinemaPress ACMS;<br>
+                                <strong>Настройки</strong> - настройка основного протокола и шаблона;<br>
+                                <strong>Публикация</strong> - функция автоматической публикации фильмов;<br>
+                                <strong>Главная</strong> - настройка отображения фильмов на главной странице;<br>
+                                <strong>URL</strong> - изменение стандартных URL-путей на сайте;<br>
+                                <strong>Отображение</strong> - настройка сортировки, числа фильмов в категориях;<br>
+                                <strong>Фильмы</strong> - написание уникальных описаний фильмам;<br>
+                                <strong>Названия</strong> - назначение названий для всех страниц сайта;<br>
+                                <strong>Описания</strong> - описания всех страниц киносайта;<br>
+                                <strong>Коды</strong> - возможность вставлять код в страницы сайта;<br>
+                                <strong>Нагрузка</strong> - распределение нагрузки между несколькими серверами;<br>
+                                <strong>Кэш</strong> - установка времени кэширования в CinemaPress ACMS.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background: none" class="ptb-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="example-box" style="background: none">
+                    <div class="example-box-header">
+                        <div class="example-label"><i class="fa fa-wrench"></i>&nbsp;&nbsp;&nbsp;Модули</div>
+                    </div>
+                    <div class="inner-padding">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/soon.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-calendar"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Скоро
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/comments.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-comments"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Комментарии
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/related.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-list-alt"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Связанные
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/collections.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-indent"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Коллекции
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/slider.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-picture-o"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Слайдер
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/abuse.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-copyright"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Скрыть
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/top.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-signal"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Топ
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/social.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-vk"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Соц.&nbsp;сети
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/schema.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-key"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Разметка
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/continue.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-play"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Продолжить
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/viewed.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-eye"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Просмотр.
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/player.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-desktop"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Плеер
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/blocking.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-lock"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Блокировка
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/mobile.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-tablet"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Моб.&nbsp;версия
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/episode.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-list-ul"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Серии
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/adv.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-money"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            Реклама
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 text-center ptb-20">
+                                <strong>Скоро</strong> - блок с фильмами, которые скоро выйдут на экраны;<br>
+                                <strong>Комментарии</strong> - указание сервиса комментирования на сайте;<br>
+                                <strong>Связанные</strong> - блок с фильмами под основной информацией;<br>
+                                <strong>Коллекции</strong> - создание списков фильмов по определенному критерию;<br>
+                                <strong>Слайдер</strong> - указание фильмов, которые находятся в слайдере;<br>
+                                <strong>Скрыть</strong> - фильмы, на которые поступили жалобы и их следует скрыть;<br>
+                                <strong>Топ</strong> - блок с ТОП-фильмами в категориях и коллекциях;<br>
+                                <strong>Соц. сети</strong> - указание страниц сайта в соц. сетях;<br>
+                                <strong>Разметка</strong> - добавление Schema-разметки на все страницы сайта;<br>
+                                <strong>Продолжить</strong> - возможность продолжить просмотр на том же фильме;<br>
+                                <strong>Просмотренные</strong> - фильмы, которые смотрел пользователь;<br>
+                                <strong>Плеер</strong> - указание с какого видео-хостинга брать плееры фильмов онлайн;<br>
+                                <strong>Блокировка</strong> - социальный ключ, подписка, ограничение на просмотр;<br>
+                                <strong>Мобильная версия</strong> - активация мобильной версии киносайта;<br>
+                                <strong>Серии</strong> - каждой серии сериала отдельная страница на сайте;<br>
+                                <strong>Реклама</strong> - вставка рекламных блоков в шаблон сайта.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background: none" class="ptb-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="example-box" style="background: none">
+                    <div class="example-box-header">
+                        <div class="example-label"><i class="fa fa-paper-plane"></i>&nbsp;&nbsp;&nbsp;Контакты</div>
+                    </div>
+                    <div class="inner-padding">
+                        <div class="row">
+                            <div class="col-md-12 text-center ptb-20">
+                                support@<strong>CinemaPress.org</strong><br>
+                                <strong>Skype:</strong> CinemaPress<br>
+                                <strong>vk.com</strong>/CinemaPress<br>
+                                <strong>telegram.me</strong>/CinemaPress_org<br>
+                                <strong>facebook.com</strong>/CinemaPress.org<br>
+                                <strong>twitter.com</strong>/CinemaPress_org<br>
+                                <strong>google.com</strong>/+CinemaPressOrg<br>
+                                <strong>medium.com</strong>/@CinemaPress<br>
+                                CinemaPress@<strong>xmpp.jp</strong><br>
+                                <strong>ICQ:</strong> 507342<br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

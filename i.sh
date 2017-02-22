@@ -640,7 +640,7 @@ conf_cinemapress() {
     then
         git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
         chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
-        sed -E -i "s/\"theme\":\s*\".*?\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
     fi
     if [ "`grep \"${DOMAIN}_publish\" /etc/crontab`" = "" ]
     then
@@ -936,7 +936,7 @@ update_theme() {
     fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
-    sed -E -i "s/\"theme\":\s*\".*?\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
+    sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
     echo "Change theme to ${THEME}" >> /home/${DOMAIN}/restart.server
 }
 
@@ -1010,7 +1010,7 @@ import_db() {
 
     searchd --stop --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
-    rm -rf /tmp/${KEY}.tar.gz
+    rm -rf /tmp/*
 
     printf "${G}Загрузка ...\n"
 
@@ -1054,8 +1054,8 @@ import_db() {
         searchd --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
         NOW=$(date +%Y-%m-%d)
-        sed -E -i "s/\"key\":\s*\".*?\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
-        sed -E -i "s/\"date\":\s*\".*?\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
     else
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
@@ -1173,7 +1173,7 @@ create_mega_backup() {
     fi
     MEGA_NOW=$(date +%Y-%m-%d)
     MEGA_DELETE=$(date +%Y-%m-%d -d "10 day ago")
-    THEME_NAME=`grep "theme" /home/${DOMAIN}/config/config.js | sed 's/.*"theme":\s*"\([A-Za-z0-9]*\)".*/\1/'`
+    THEME_NAME=`grep "theme" /home/${DOMAIN}/config/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
     megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
     megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
     megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest &> /dev/null
