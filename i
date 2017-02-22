@@ -15,6 +15,12 @@ then
 	exit 1
 fi
 
+if [ ! -f /etc/debian_version ]
+then
+	printf "${R}WARNING:${NC} Система работает на Debian 7 x64 или Debian 8 x64!\n${NC}"
+	exit 1
+fi
+
 logo() {
     printf  "  ${B} _______ ${G}_                        ${B} ______  ${G}                     \n"
     printf  "  ${B}(_______${G}|_)                       ${B}(_____ \ ${G}                     \n"
@@ -1575,6 +1581,8 @@ do
             read_password ${4}
 
             separator
+
+            printf "${G}Установка запущена ...\n${NC}"
 
             update_server
             upgrade_server
