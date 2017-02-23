@@ -20,16 +20,18 @@
         a:hover {
             color: #fff;
         }
-        .banner {
+        .content {
             width: 200px;
             height: 300px;
             margin: 0 auto;
-            padding: 5px;
             font-weight: normal;
-            font-size: 20px;
+            font-size: 19px;
             line-height: 1.5;
-            border: 1px #272F38 solid;
+            border: 0;
             background: #334049;
+        }
+        .padding {
+            padding: 5px;
         }
         .button {
             position: relative;
@@ -85,36 +87,38 @@
         }
     </style>
 </head>
-<body>
-<div class="banner">
-    <img src="https://cinemapress.org/images/logo-white2.png" style="width: 100px">
-    <div class="button">
+<body style="overflow: hidden">
+<div class="content">
+    <div class="padding">
+        <img src="https://cinemapress.org/images/logo-white2.png" style="width: 100px">
+        <div class="button">
         <span class="label green">
             <i class="fa fa-power-off"></i>
         </span>
-        <a href="https://cinemapress.org/">
-            <div class="button-settings">
-                <div>
-                    Создать
+            <a href="https://cinemapress.org/">
+                <div class="button-settings">
+                    <div>
+                        Создать
+                    </div>
+                    <div>
+                        онлайн
+                    </div>
+                    <div>
+                        кинотеатр
+                    </div>
                 </div>
-                <div>
-                    онлайн
-                </div>
-                <div>
-                    кинотеатр
-                </div>
+            </a>
+        </div>
+        <div class="text">
+            <div style="color: #9A9AFF;">
+                - бесплатно
             </div>
-        </a>
-    </div>
-    <div class="text">
-        <div style="color: #9A9AFF;">
-            - бесплатно
-        </div>
-        <div style="color: #81B4E7;">
-            - за 10 минут
-        </div>
-        <div style="color: #9ACDFF;">
-            - автоматически
+            <div style="color: #81B4E7;">
+                - за 10 минут
+            </div>
+            <div style="color: #9ACDFF;">
+                - автоматически
+            </div>
         </div>
     </div>
 </div>
