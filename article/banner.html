@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Баннер 200x300</title>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Verdana, sans-serif;
+            text-align: center;
+            margin: 0 auto;
+            padding: 0;
+        }
+        a {
+            color: #fff;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #fff;
+        }
+        .banner {
+            width: 200px;
+            height: 300px;
+            margin: 0 auto;
+            padding: 5px;
+            font-weight: normal;
+            font-size: 20px;
+            line-height: 1.5;
+            border: 1px #272F38 solid;
+            background: #334049;
+        }
+        .button {
+            position: relative;
+        }
+        .button-settings {
+            background: #4B5B6C;
+            border-radius: 3px;
+            border: 1px solid #222;
+            text-align: center;
+            padding: 30px;
+            margin: 0 auto 5px;
+            color: #fff;
+        }
+        .button-settings:hover {
+            background: #77B3D4;
+            cursor: pointer;
+        }
+        .label {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            overflow: hidden;
+            height: 32px;
+            width: 32px;
+            border-radius: 0 5px 0 0;
+        }
+        .label::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-top: 16px solid;
+            border-right: 16px solid;
+            border-bottom: 16px solid transparent;
+            border-left: 16px solid transparent;
+        }
+        .label.green::before {
+            border-top-color: #5CB85C;
+            border-right-color: #5CB85C;
+        }
+        .label .fa {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 12px;
+            width: auto;
+            height: auto;
+            color: #fff;
+        }
+        .text {
+            text-align: left;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="banner">
+    <img src="https://cinemapress.org/images/logo-white2.png" style="width: 100px">
+    <div class="button">
+        <span class="label green">
+            <i class="fa fa-power-off"></i>
+        </span>
+        <a href="https://cinemapress.org/">
+            <div class="button-settings">
+                <div>
+                    Создать
+                </div>
+                <div>
+                    онлайн
+                </div>
+                <div>
+                    кинотеатр
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="text">
+        <div style="color: #9A9AFF;">
+            - бесплатно
+        </div>
+        <div style="color: #81B4E7;">
+            - за 10 минут
+        </div>
+        <div style="color: #9ACDFF;">
+            - автоматически
+        </div>
+    </div>
+</div>
+</body>
+</html>

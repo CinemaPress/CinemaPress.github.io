@@ -4,5 +4,5 @@ plugins:
       options:
         canonicalRedirects: false
   - name: redirect
-    options:
-      /i: /i.sh
+      options:
+        /i: /i.sh
