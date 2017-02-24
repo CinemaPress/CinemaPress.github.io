@@ -1,8 +1,11 @@
-id: 3c9e4fa6-0d1a-4de2-8133-d44e71ade659
+id: 9d87e75b-0db3-41d5-89a7-eaa51b4b56da
+deploy:
+  ignore: []
+  directory: .
 plugins:
   - name: redirect
-      options:
-        /i: /i.sh
+    options:
+      /i: /i.sh
   - name: webpage
-      options:
-        canonicalRedirects: false
+    options:
+      canonicalRedirects: false
