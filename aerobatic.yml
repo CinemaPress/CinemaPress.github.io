@@ -1,8 +1,8 @@
 id: 3c9e4fa6-0d1a-4de2-8133-d44e71ade659
 plugins:
-  - name: webpage
-      options:
-        canonicalRedirects: false
   - name: redirect
       options:
         /i: /i.sh
+  - name: webpage
+      options:
+        canonicalRedirects: false

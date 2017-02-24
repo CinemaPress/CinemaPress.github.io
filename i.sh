@@ -313,7 +313,13 @@ install_full() {
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
     then
-        service apache2 stop && service nginx restart
+        service nginx stop
+        sleep 1
+        service apache2 stop
+        sleep 1
+        service nginx stop
+        sleep 1
+        service nginx start
     fi
     PHP=`php -v 2>/dev/null | grep -i "php"`
     if [ "${PHP}" != "" ]
@@ -407,7 +413,13 @@ install_cinemapress() {
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
     then
-        service nginx stop && service apache2 stop && service nginx stop && service nginx start
+        service nginx stop
+        sleep 1
+        service apache2 stop
+        sleep 1
+        service nginx stop
+        sleep 1
+        service nginx start
     fi
     PHP=`php -v 2>/dev/null | grep -i "php"`
     if [ "${PHP}" != "" ]
