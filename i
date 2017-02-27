@@ -277,7 +277,7 @@ pre_install() {
 
 update_server() {
     apt-get -y -qq update
-    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron
+    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip
     pre_install
     echo -e "deb http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb-src http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb http://nginx.org/packages/debian/ ${VER} nginx \ndeb-src http://nginx.org/packages/debian/ ${VER} nginx \ndeb http://mirror.de.leaseweb.net/dotdeb/ ${VER} all \ndeb-src http://mirror.de.leaseweb.net/dotdeb/ ${VER} all" > /etc/apt/sources.list
     PHP=`php -v 2>/dev/null | grep -i "php"`
@@ -549,7 +549,7 @@ conf_nginx() {
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/nginx.conf
     cp /home/${DOMAIN}/config/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
     sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
-    sed -i "s/#gzip/gzip_disable \"msie6\"; \n gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript; \n gzip/g" /etc/nginx/nginx.conf
+    sed -i "s/#gzip/ gzip_disable \"msie6\"; \n gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript; \n gzip_vary on; \n gzip_proxied any; \n gzip_http_version 1.0; \n gzip/g" /etc/nginx/nginx.conf
     mv /etc/nginx/sites-enabled/default /etc/nginx/default
     SNHBS=`grep "server_names_hash_bucket_size" /etc/nginx/nginx.conf`
     if [ "${SNHBS}" = "" ]
