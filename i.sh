@@ -877,6 +877,9 @@ update_cinemapress() {
     rm -rf /home/${DOMAIN}/config/default/* && \
     cp -R /home/${DOMAIN}/.newCP/config/default/* /home/${DOMAIN}/config/default/
 
+    rm -rf /home/${DOMAIN}/config/i && \
+    cp -R ${0} /home/${DOMAIN}/config/i
+
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
