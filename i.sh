@@ -272,6 +272,7 @@ pre_install() {
     echo "insecure" > ~/.curlrc
     echo "Acquire::https::deb.nodesource.com::Verify-Peer \"false\";" >> /etc/apt/apt.conf
     git config --global http.sslverify false
+    timedatectl set-timezone 'Europe/Moscow'
     hash -r
 }
 
@@ -753,6 +754,7 @@ start_cinemapress() {
         pm2 startup
         sleep 2
     fi
+    export NODE_ENV=production
     cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save
     pm2 install pm2-logrotate
     hash -r
