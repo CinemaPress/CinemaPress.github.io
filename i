@@ -1033,6 +1033,8 @@ import_db() {
 
     searchd --stop --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
+    sleep 5
+
     mkdir -p /var/lib/sphinxsearch/tmp
     rm -rf /var/lib/sphinxsearch/tmp/*
 
@@ -1060,7 +1062,7 @@ import_db() {
 
         printf "${G}Установка ...\n"
 
-        sleep 1
+        sleep 3
 
         rm -rf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz"
 
@@ -1081,6 +1083,8 @@ import_db() {
         NOW=$(date +%Y-%m-%d)
         sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
+
+        sleep 10
     else
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
