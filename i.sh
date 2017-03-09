@@ -1064,7 +1064,9 @@ import_db() {
 
         rm -rf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz"
 
-        if [ -f "/var/lib/sphinxsearch/tmp/*.spa" ]
+        FILENAME=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep spa`
+
+        if [ -f "${FILENAME}" ]
         then
             for file in `find /var/lib/sphinxsearch/tmp/*.* -type f`
             do
