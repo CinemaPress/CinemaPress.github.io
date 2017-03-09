@@ -1033,14 +1033,15 @@ import_db() {
 
     searchd --stop --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
-    rm -rf /tmp/*
+    mkdir -p /var/lib/sphinxsearch/tmp
+    rm -rf /var/lib/sphinxsearch/tmp/*
 
     printf "${G}Загрузка ...\n"
 
-    wget -qO "/tmp/${KEY}.tar.gz" http://database.cinemapress.org/${KEY}/${DOMAIN} || \
-    rm -f "/tmp/${KEY}.tar.gz"
+    wget -qO "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" http://database.cinemapress.org/${KEY}/${DOMAIN} || \
+    rm -f "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz"
 
-    if [ -f "/tmp/${KEY}.tar.gz" ]
+    if [ -f "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" ]
     then
         printf "${G}Распаковка ...\n"
 
@@ -1055,20 +1056,19 @@ import_db() {
 
         rm -rf /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.*
 
-        tar -xzf /tmp/${KEY}.tar.gz -C /var/lib/sphinxsearch/data &> /var/lib/sphinxsearch/data/${NOW}.log
+        tar -xzf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" -C "/var/lib/sphinxsearch/tmp" &> /var/lib/sphinxsearch/data/${NOW}.log
 
         printf "${G}Установка ...\n"
 
         sleep 1
 
-        rm -rf /tmp/${KEY}.tar.gz
+        rm -rf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz"
 
-        if [ -f "/var/lib/sphinxsearch/data/movies.spa" ]
+        if [ -f "/var/lib/sphinxsearch/tmp/*.spa" ]
         then
-            for file in `find /var/lib/sphinxsearch/data/movies.* -type f`
+            for file in `find /var/lib/sphinxsearch/tmp/*.* -type f`
             do
-                NEW_NAME=`echo ${file} | sed -r "s/movies/movies_${INDEX_DOMAIN}/g"`
-                mv ${file} ${NEW_NAME}
+                mv ${file} "/var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.${file##*.}"
             done
         fi
 
