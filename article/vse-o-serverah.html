@@ -48,7 +48,7 @@
             <div class="attr-nav">
                 <ul>
                     <li class="side-menu">
-                        <a href="/index.html"><i class="fa fa-bars"></i></a>
+                        <a href="/"><i class="fa fa-bars"></i></a>
                     </li>
                 </ul>
             </div>
@@ -56,7 +56,7 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="/index.html">
+                <a class="navbar-brand" href="/">
                     <img src="/images/logo-white.png" class="logo logo-display" alt="Светлый логотип CinemaPress">
                     <img src="/images/logo-black.png" class="logo logo-scrolled" alt="Темный логотип CinemaPress">
                 </a>
@@ -64,7 +64,7 @@
             <div class="collapse navbar-collapse" id="navbar-menu">
                 <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
                     <li>
-                        <a href="/index.html">Главная</a>
+                        <a href="/">Главная</a>
                     </li>
                     <li>
                         <a href="/index.html#process">Процесс</a>
@@ -87,7 +87,7 @@
                 <h6 class="title">РАЗДЕЛЫ</h6>
                 <ul class="link">
                     <li>
-                        <a href="/index.html">Главная</a>
+                        <a href="/">Главная</a>
                     </li>
                     <li>
                         <a href="/index.html#process">Процесс</a>
@@ -170,6 +170,48 @@
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
                 <img src="/images/vps/best.png" class="img-responsive" alt="Где лучше брать VPS в России или в Германии/Нидерландах/Франции?" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-white" id="pass">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#pass">Как изменить пароль root-пользователя, админ-панели CinemaPress ACMS и FTP?</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Изначально после установки CinemaPress ACMS пароль от админ-панели и FTP сайта совпадают. Однако <a href="/article/kak-ustanovit-cinemapress-acms.html#windows" target="_blank">подключившись по SSH к серверу</a> и выполнив несколько команд, Вы можете изменить эти пароли на свои.<br>
+                    Изменить пароль от root-пользователя:<br>
+                    <code>
+                        passwd
+                    </code><br>
+                    Изменить пароль от админ-панели:<br>
+                    <code>
+                        PASSWD="password"
+                        DOMAIN="domain.com"
+                        rm -rf /etc/nginx/nginx_pass_${DOMAIN}
+                        OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
+                        echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}
+                        service nginx restart
+                    </code>
+                    <br>
+                    Изменить пароль от FTP:<br>
+                    <code>
+                        PASSWD="password"
+                        DOMAIN="domain.com"
+                        USERID=`id -u ${DOMAIN}`
+                        echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}
+                        service proftpd restart
+                    </code>
+                    <br>
+                    <code>password</code> - замените на Ваш пароль; <code>domain.com</code> - замените на Ваш домен;<br>
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/vps/pass.png" class="img-responsive" alt="Как изменить пароль админ-панели или FTP?" data-action="zoom">
             </div>
         </div>
     </div>
