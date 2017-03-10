@@ -46,7 +46,8 @@ function req() {
     var domain, ip, root = '';
 
     var req_domain = document.querySelector('input[name="req_domain"]');
-    if (req_domain && req_domain.value && /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(req_domain.value)){
+    req_domain = (req_domain) ? req_domain.replace(/\//g, '').replace('http:', '').replace('https:', '') : '';
+    if (req_domain && req_domain.value && /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z0-9-]{2,})+$/.test(req_domain.value)){
         req_domain.style.background = '#fff';
         domain = req_domain.value.toLowerCase();
     }
@@ -78,7 +79,7 @@ function req() {
         return;
     }
 
-    var pass = generate(7);
+    var pass = generate();
     var theme = 'drogo';
 
     var http = new XMLHttpRequest();
@@ -140,19 +141,24 @@ function req() {
     };
     http.send(params);
 }
-function generate(len)
-{
-    var ints = [0,1,2,3,4,5,6,7,8,9];
-    var chars = ['na','bo','co','do','re','fe','ge','hi','ka','ko','mo','no','vo','po','so','si','to','wi','ya'];
+function generate() {
+    var len = randomInteger(6,7);
+    var chars = ['na','bo','co','do','re','fe','ge','hi','ka','ko','mo','no','vo','po','so','si','to','wi','ya','fa','fe','pe','me','se','de','ne','ve','he','ke','ve'];
     var out = '';
     for (var i = 0; i < len; i++){
         var ch = Math.random();
         if (ch < 0.5) {
-            out += ints[Math.floor(Math.random()*ints.length)];
+            out += randomInteger(1,99);
         }
         else{
             out += chars[Math.floor(Math.random()*chars.length)];
         }
     }
     return out;
+}
+
+function randomInteger(min, max) {
+    var rand = min - 0.5 + Math.random() * (max - min + 1);
+    rand = Math.round(rand);
+    return rand;
 }
