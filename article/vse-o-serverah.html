@@ -190,20 +190,20 @@
                     </code><br>
                     Изменить пароль от админ-панели:<br>
                     <code>
-                        PASSWD="password"
-                        DOMAIN="domain.com"
-                        rm -rf /etc/nginx/nginx_pass_${DOMAIN}
-                        OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
-                        echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}
+                        PASSWD="password"<br>
+                        DOMAIN="domain.com"<br>
+                        rm -rf /etc/nginx/nginx_pass_${DOMAIN}<br>
+                        OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`<br>
+                        echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}<br>
                         service nginx restart
                     </code>
                     <br>
                     Изменить пароль от FTP:<br>
                     <code>
-                        PASSWD="password"
-                        DOMAIN="domain.com"
-                        USERID=`id -u ${DOMAIN}`
-                        echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}
+                        PASSWD="password"<br>
+                        DOMAIN="domain.com"<br>
+                        USERID=`id -u ${DOMAIN}`<br>
+                        echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}<br>
                         service proftpd restart
                     </code>
                     <br>
