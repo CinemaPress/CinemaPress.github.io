@@ -46,10 +46,17 @@ function req() {
     var domain, ip, root = '';
 
     var req_domain = document.querySelector('input[name="req_domain"]');
-    req_domain = (req_domain) ? req_domain.replace(/\//g, '').replace('http:', '').replace('https:', '') : '';
-    if (req_domain && req_domain.value && /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z0-9-]{2,})+$/.test(req_domain.value)){
-        req_domain.style.background = '#fff';
-        domain = req_domain.value.toLowerCase();
+    if (req_domain && req_domain.value){
+        req_domain.value = (req_domain.value)
+            ? req_domain.value.replace(/\//g, '').replace('http:', '').replace('https:', '')
+            : '';
+        if (/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z0-9-]{2,})+$/.test(req_domain.value)) {
+            req_domain.style.background = '#fff';
+            domain = req_domain.value.toLowerCase();
+        }
+        else {
+            req_domain.style.background = '#f7d6d6';
+        }
     }
     else {
         req_domain.style.background = '#f7d6d6';
