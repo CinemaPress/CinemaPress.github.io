@@ -1086,6 +1086,7 @@ import_db() {
 
         sleep 10
     else
+        searchd --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
