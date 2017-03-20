@@ -1133,14 +1133,14 @@ confirm_import_db() {
 }
 
 import_static() {
-    wget -O /home/images.tar https://static.cinemapress.org/images.tar
+    wget -O /home/images.tar http://static.cinemapress.org/images.tar
     mkdir -p /var/local/images
     printf "\n${NC}"
     printf "${G}Распаковка ...\n"
     printf "${NC}Может занять до 20 минут.\n"
     printf "\n${NC}"
     tar -xf /home/images.tar -C /var/local/images
-    wget https://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
+    wget http://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
 }
 
 check_domain() {
