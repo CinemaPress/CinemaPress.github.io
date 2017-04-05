@@ -96,7 +96,7 @@ function req() {
         '&root=' + root +
         '&theme=' + theme +
         '&pass=' + pass;
-    http.open('POST', 'https://ssh.cinemapress.org', true);
+    http.open('POST', 'https://fastinstall.cinemapress.org', true);
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     http.onreadystatechange = function() {
         if (http.readyState == 4 && http.status == 200) {
