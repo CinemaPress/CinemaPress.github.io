@@ -753,10 +753,13 @@ start_cinemapress() {
         sleep 2
         pm2 startup
         sleep 2
+        pm2 install pm2-logrotate
+        sleep 2
     fi
     export NODE_ENV=production
+    sleep 2
     cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save
-    pm2 install pm2-logrotate
+    sleep 2
     hash -r
 }
 
@@ -1349,8 +1352,7 @@ fail_1() {
     INST_NODE=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
     INST_NGINX=`dpkg --status nginx 2>/dev/null | grep "ok installed"`
     INST_SPHINX=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
-    INST_PM2=`npm list -g --depth=0 | grep "pm2"`
-    if ! [ -n "${INST_PM2}" ] || [ "${INST_NODE}" = "" ] || [ "${INST_NGINX}" = "" ] || [ "${INST_SPHINX}" = "" ]
+    if ! [ "${INST_NODE}" = "" ] || [ "${INST_NGINX}" = "" ] || [ "${INST_SPHINX}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
@@ -1360,7 +1362,6 @@ fail_1() {
         printf "SPHINX : ${G}${INST_SPHINX}\n${NC}"
         printf "NGINX  : ${G}${INST_NGINX}\n${NC}"
         printf "NODE   : ${G}${INST_NODE}\n${NC}"
-        printf "PM2    : ${G}${INST_PM2}\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
