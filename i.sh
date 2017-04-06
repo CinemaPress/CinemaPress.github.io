@@ -1352,7 +1352,7 @@ fail_1() {
     INST_NODE=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
     INST_NGINX=`dpkg --status nginx 2>/dev/null | grep "ok installed"`
     INST_SPHINX=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
-    if ! [ "${INST_NODE}" = "" ] || [ "${INST_NGINX}" = "" ] || [ "${INST_SPHINX}" = "" ]
+    if [ "${INST_NODE}" = "" ] || [ "${INST_NGINX}" = "" ] || [ "${INST_SPHINX}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
