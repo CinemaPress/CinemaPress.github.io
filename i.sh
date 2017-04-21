@@ -1069,14 +1069,19 @@ import_db() {
 
         rm -rf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz"
 
-        FILENAME=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep spa`
+        FILE_SPA=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep spa`
+        FILE_SPD=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep spd`
+        FILE_SPI=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep spi`
+        FILE_SPS=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep sps`
 
-        if [ -f "${FILENAME}" ]
+        if [ -f "${FILE_SPA}" ] && [ -f "${FILE_SPD}" ] && [ -f "${FILE_SPI}" ] && [ -f "${FILE_SPS}" ]
         then
             for file in `find /var/lib/sphinxsearch/tmp/*.* -type f`
             do
                 mv ${file} "/var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.${file##*.}"
             done
+        else
+            cp -R /var/lib/sphinxsearch/old/movies_${INDEX_DOMAIN}.* /var/lib/sphinxsearch/data/
         fi
 
         printf "${G}Запуск ...\n"
