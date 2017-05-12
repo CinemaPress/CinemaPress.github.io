@@ -1032,12 +1032,6 @@ check_db() {
 }
 
 import_db() {
-    NOW=$(date +%Y-%m-%d)
-
-    searchd --stop --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
-
-    sleep 5
-
     mkdir -p /var/lib/sphinxsearch/tmp
     rm -rf /var/lib/sphinxsearch/tmp/*
 
@@ -1049,6 +1043,14 @@ import_db() {
     if [ -f "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" ]
     then
         printf "${G}Распаковка ...\n"
+
+        pm2 delete ${DOMAIN} &> /dev/null
+
+        NOW=$(date +%Y-%m-%d)
+
+        searchd --stop --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
+
+        sleep 3
 
         INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
 
@@ -1092,9 +1094,13 @@ import_db() {
         sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
 
-        sleep 10
+        cd /home/${DOMAIN}/ && \
+        pm2 delete ${DOMAIN} &> /dev/null && \
+        pm2 start process.json && \
+        pm2 save
+
+        sleep 3
     else
-        searchd --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
