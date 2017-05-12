@@ -1095,7 +1095,6 @@ import_db() {
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
 
         cd /home/${DOMAIN}/ && \
-        pm2 delete ${DOMAIN} &> /dev/null && \
         pm2 start process.json && \
         pm2 save
 
