@@ -1617,7 +1617,7 @@ do
 
             separator
 
-            printf "${G}Установка запущена ...\n${NC}"
+            printf "\n${G}Установка запущена ...\n${NC}"
 
             update_server
             upgrade_server
@@ -1641,8 +1641,10 @@ do
 
             separator
 
-            update_cinemapress
-            confirm_update_cinemapress ${3}
+            printf "\n${G}Обновление временно недоступно!\n${NC}"
+
+            # update_cinemapress
+            # confirm_update_cinemapress ${3}
             whileStop
         ;;
         3 )
