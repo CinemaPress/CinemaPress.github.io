@@ -298,7 +298,7 @@ upgrade_server() {
 }
 
 install_full() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm
+    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm logrotate
     NOD=`node -v 2>/dev/null`
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
@@ -403,7 +403,7 @@ install_full() {
 }
 
 install_cinemapress() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm
+    aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm logrotate
     NOD=`node -v 2>/dev/null`
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
@@ -503,11 +503,11 @@ install_cinemapress() {
 }
 
 install_memcached() {
-    aptitude -y -q install memcached fail2ban iptables-persistent
+    aptitude -y -q install memcached fail2ban iptables-persistent logrotate
 }
 
 install_sphinx() {
-    aptitude -y -q install mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent
+    aptitude -y -q install mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent logrotate
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
     if [ "${SPH}" = "" ]
     then
