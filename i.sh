@@ -1044,7 +1044,7 @@ import_db() {
     then
         printf "${G}Распаковка ...\n"
 
-        pm2 delete ${DOMAIN} &> /dev/null
+        # pm2 delete ${DOMAIN} &> /dev/null
 
         NOW=$(date +%Y-%m-%d)
 
@@ -1094,9 +1094,9 @@ import_db() {
         sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
 
-        cd /home/${DOMAIN}/ && \
-        pm2 start process.json && \
-        pm2 save
+        # cd /home/${DOMAIN}/ && \
+        # pm2 start process.json && \
+        # pm2 save
 
         sleep 3
     else
