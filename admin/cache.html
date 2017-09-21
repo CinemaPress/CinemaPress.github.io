@@ -205,14 +205,14 @@
                                 </a>
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                                <a href="/admin/collections.html">
+                                <a href="/admin/content.html">
                                     <div class="button-settings">
-                                        <i class="fa fa-indent"></i>
+                                        <i class="fa fa-file-text-o"></i>
                                         <span class="corner-label green">
                                             <i class="fa fa-power-off"></i>
                                         </span>
                                         <p>
-                                            Коллекции
+                                            Контент
                                         </p>
                                     </div>
                                 </a>
@@ -373,6 +373,19 @@
                                     </div>
                                 </a>
                             </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/rss.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-rss"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            RSS
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -527,12 +540,12 @@
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="time">
+<section class="ptb-100 functionalities bg-gray" id="memcached">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#time">Время кэширования</a></h3>
+                    <h3><a href="#memcached">Memcached кэширование</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
@@ -540,7 +553,25 @@
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/cache/time.png" class="img-responsive" alt="Время кэширования" data-action="zoom">
+                <img src="/images/admin/cache/memcached.png" class="img-responsive" alt="Memcached кэширование" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-gray" id="p2p">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#p2p">P2P кэширование</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Представьте себе интернет, в котором открывая любую web-страницу Вы её получаете не с сервера, а с компьютера человека, который находится ближе всего к Вам на максимальной скорости. Представили? Это и есть в какой-то степени P2P-кэшированием. Т.е. первый, кто зашел на определенную страницу сайта - получает её с сервера, а далее, когда на сайт заходит второй человек, он уже получает страницу от первого, третий - от первого и второго, четвертый - от первого, второго и третьего и т.д. Если теоретически, у Вас на сайта миллион человек, то сайт будет работать настолько быстро, насколько это вообще возможно. К серверу обращений практически не будет, все пользователи будут раздавать сайт сами себе. Однако технология на данном этапе развития очень «сырая» и имеет множество трудностей, которые постепенно решаются. Эта функция добавлена, но пока <code>не рекомендуется к включению</code>, так как работает не со всеми шаблонами, не со всем контентом на странице и может не то чтобы облегчить работу сервера, а наоборот, хорошо его так нагрузить.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/admin/cache/p2p.png" class="img-responsive" alt="P2P кэширование" data-action="zoom">
             </div>
         </div>
     </div>

@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Модуль: Коллекции - CinemaPress ACMS</title>
-    <meta property="og:title" content="Модуль: Коллекции - CinemaPress ACMS"/>
-    <meta name="description" content="Создание коллекций с фильмами">
-    <meta property="og:description" content="Создание коллекций с фильмами"/>
-    <meta property="og:image" content="https://cinemapress.org/images/admin/collections/collections.png"/>
-    <link rel="image_src" href="https://cinemapress.org/images/admin/collections/collections.png"/>
-    <meta property="og:url" content="https://cinemapress.org/admin/collections.html"/>
+    <title>Модуль: RSS - CinemaPress ACMS</title>
+    <meta property="og:title" content="Модуль: RSS - CinemaPress ACMS"/>
+    <meta name="description" content="Создание RSS потока со списком фильмов, которые были недавно опубликованы">
+    <meta property="og:description" content="Создание RSS потока со списком фильмов, которые были недавно опубликованы"/>
+    <meta property="og:image" content="https://cinemapress.org/images/admin/rss/rss.png"/>
+    <link rel="image_src" href="https://cinemapress.org/images/admin/rss/rss.png"/>
+    <meta property="og:url" content="https://cinemapress.org/admin/rss.html"/>
     <meta property="og:site_name" content="CinemaPress ACMS"/>
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:site" content="@CinemaPress_org"/>
@@ -128,7 +128,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="main-banner-content text-center">
-                    <h1>Создание коллекций/наборов фильмов</h1>
+                    <h1>Микроразметка киносайта Schema и OpenGraph</h1>
                     <ul class="breadcrumbs">
                         <li>
                             <a href="/">Главная</a>
@@ -137,7 +137,7 @@
                             <a href="/admin/admin.html">Админ-панель</a>
                         </li>
                         <li>
-                            Коллекции
+                            Разметка
                         </li>
                     </ul>
                 </div>
@@ -205,14 +205,14 @@
                                 </a>
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                                <a href="/admin/collections.html">
-                                    <div class="button-settings active">
-                                        <i class="fa fa-indent"></i>
+                                <a href="/admin/content.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-file-text-o"></i>
                                         <span class="corner-label green">
                                             <i class="fa fa-power-off"></i>
                                         </span>
                                         <p>
-                                            Коллекции
+                                            Контент
                                         </p>
                                     </div>
                                 </a>
@@ -271,7 +271,7 @@
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/schema.html">
-                                    <div class="button-settings">
+                                    <div class="button-settings active">
                                         <i class="fa fa-key"></i>
                                         <span class="corner-label green">
                                             <i class="fa fa-power-off"></i>
@@ -369,6 +369,19 @@
                                         </span>
                                         <p>
                                             Реклама
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/rss.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-rss"></i>
+                                        <span class="corner-label green">
+                                            <i class="fa fa-power-off"></i>
+                                        </span>
+                                        <p>
+                                            RSS
                                         </p>
                                     </div>
                                 </a>
@@ -527,56 +540,20 @@
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="settings">
+<section class="ptb-100 functionalities bg-gray" id="rss">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#settings">Настройка страницы с коллекциями</a></h3>
+                    <h3><a href="#rss">RSS</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    По умолчанию список со всеми коллекциями доступен по адресу <code>домен.com/collection</code>, его можно изменить на любое понравившееся Вам значение. Также Вы должны будете написать уникальное описание для это страницы, чтобы завоевать доверие поисковых систем. Вы можете использовать <a href="/article/hitrosti-cinemapress-acms.html#synonym">синонимы в описании</a>, а также для того, чтобы блок с описанием был в глазах поисковых систем, как часть страницы, добавьте в него картинку.
+                    Активация модуля «RSS» позволит получить список последних автоматически опубликованных фильмов в .xml формате.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/collections/settings.png" class="img-responsive" alt="Настройка страницы с коллекциями" data-action="zoom">
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-white" id="index">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#index">Блок на главной странице</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Чтобы первые несколько фильмов из коллекции или нескольких коллекций были на главной странице, Вы можете добавить URL-ключи этих коллекций в «Блок на главной странице», задать порядок этого блока и число фильмов.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/collections/index.png" class="img-responsive" alt="Блок на главной странице" data-action="zoom">
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-gray" id="add">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#add">Добавление новой коллекции</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Добавить новую коллекцию к списку уже существующих можно нажав на кнопку «Добавить коллекцию». Первый пункт, который следует заполнить, это уникальный ключ Вашей коллекции. Он служит для того, чтобы иметь доступ к коллекции по URL, а также для отображения по ключу на главной странице сайта. Далее, Вы можете указать ссылку на картинку коллекции. После этого, придумайте название для Вашей коллекции фильмов. Это должно быть что-то уникальное и низкочастотное, чтобы коллекция вышла в топ поисковых систем. Исходя из названия, Вы должны заполнить описание этой коллекции, используя соответствующие «ключевые слова». Наконец, последним пунктом, будет добавление фильмов в коллекцию. Вы можете добавлять фильмы несколькими способами, указанием ID КиноПоиск, указанием URL фильма на КиноПоиск, указанием URL фильма на Вашем сайте. Либо если у Вас есть подготовленный список ID КиноПоиск, можете нажать на «Редактировать список ID» и вставить свой список.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/collections/add.png" class="img-responsive" alt="Добавление новой коллекции" data-action="zoom">
+                <img src="/images/admin/rss/rss.png" class="img-responsive" alt="RSS" data-action="zoom">
             </div>
         </div>
     </div>
@@ -798,8 +775,8 @@
                             w.ChatraID = 'CxWo7o8kzJ6c5KuSs';
                             var s = d.createElement('script');
                             w[c] = w[c] || function() {
-                                        (w[c].q = w[c].q || []).push(arguments);
-                                    };
+                                    (w[c].q = w[c].q || []).push(arguments);
+                                };
                             s.async = true;
                             s.src = 'https://call.chatra.io/chatra.js';
                             if (d.head) d.head.appendChild(s);

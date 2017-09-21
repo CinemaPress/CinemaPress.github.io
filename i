@@ -17,7 +17,7 @@ fi
 
 if [ ! -f /etc/debian_version ]
 then
-	printf "${R}WARNING:${NC} Система работает только на Debian 7 x64 или Debian 8 x64!\n${NC}"
+	printf "${R}WARNING:${NC} Система работает на Debian 9 x64!\n${NC}"
 	exit 1
 fi
 
@@ -278,9 +278,13 @@ pre_install() {
 
 update_server() {
     apt-get -y -qq update
-    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip
+    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools
     pre_install
-    echo -e "deb http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb-src http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb http://nginx.org/packages/debian/ ${VER} nginx \ndeb-src http://nginx.org/packages/debian/ ${VER} nginx \ndeb http://mirror.de.leaseweb.net/dotdeb/ ${VER} all \ndeb-src http://mirror.de.leaseweb.net/dotdeb/ ${VER} all" > /etc/apt/sources.list
+    if [ "${VER}" = "stretch" ]
+    then
+        VER="jessie"
+    fi
+    echo -e "deb http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER} main contrib non-free \ndeb http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb-src http://httpredir.debian.org/debian ${VER}-updates main contrib non-free \ndeb http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb-src http://security.debian.org/ ${VER}/updates main contrib non-free \ndeb http://nginx.org/packages/debian/ `lsb_release -cs` nginx \ndeb-src http://nginx.org/packages/debian/ `lsb_release -cs` nginx" > /etc/apt/sources.list
     PHP=`php -v 2>/dev/null | grep -i "php"`
     if [ "${PHP}" = "" ] && [ "${VER}" = "wheezy" ]
     then
@@ -299,11 +303,18 @@ upgrade_server() {
 
 install_full() {
     aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm logrotate
+    if [ "`lsb_release -cs`" = "stretch" ]
+    then
+        aptitude -y -q install libmysqlclient18
+        sed -i "s/jessie/stable/g" /etc/apt/sources.list
+        aptitude -y -q update
+        aptitude -y -q install mysql-client
+    fi
     NOD=`node -v 2>/dev/null`
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
-        wget -qO- https://deb.nodesource.com/setup_6.x | bash -
+        wget -qO- https://deb.nodesource.com/setup_8.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
@@ -404,11 +415,18 @@ install_full() {
 
 install_cinemapress() {
     aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm logrotate
+    if [ "`lsb_release -cs`" = "stretch" ]
+    then
+        aptitude -y -q install libmysqlclient18
+        sed -i "s/jessie/stable/g" /etc/apt/sources.list
+        aptitude -y -q update
+        aptitude -y -q install mysql-client
+    fi
     NOD=`node -v 2>/dev/null`
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
-        wget -qO- https://deb.nodesource.com/setup_6.x | bash -
+        wget -qO- https://deb.nodesource.com/setup_8.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
@@ -508,6 +526,13 @@ install_memcached() {
 
 install_sphinx() {
     aptitude -y -q install mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent logrotate
+    if [ "`lsb_release -cs`" = "stretch" ]
+    then
+        aptitude -y -q install libmysqlclient18
+        sed -i "s/jessie/stable/g" /etc/apt/sources.list
+        aptitude -y -q update
+        aptitude -y -q install mysql-client
+    fi
     SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
     if [ "${SPH}" = "" ]
     then
@@ -525,10 +550,10 @@ add_user() {
     fi
     rm -rf /home/${DOMAIN}/*; rm -rf /home/${DOMAIN}/.??*
     git clone https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}
-    cp -r /home/${DOMAIN}/config/default/* /home/${DOMAIN}/config/
+    cp -r /home/${DOMAIN}/config/default/* /home/${DOMAIN}/config/production/
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico /home/${DOMAIN}/
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/
-    cp -r ${0} /home/${DOMAIN}/config/i && chmod +x /home/${DOMAIN}/config/i
+    cp -r ${0} /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
 }
 
 conf_nginx() {
@@ -544,23 +569,35 @@ conf_nginx() {
             NGINX_PORT=$((NGINX_PORT+1))
         fi
     done
-    rm -rf /etc/nginx/conf.d/rewrite.conf; rm -rf /etc/nginx/conf.d/${DOMAIN}.conf
-    cp /home/${DOMAIN}/config/rewrite.conf /etc/nginx/conf.d/rewrite.conf
-    sed -i "s/:3000/:${NGINX_PORT}/g" /home/${DOMAIN}/config/nginx.conf
-    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/nginx.conf
-    cp /home/${DOMAIN}/config/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
+    mkdir /etc/nginx/bots.d
+    rm -rf /etc/nginx/conf.d/rewrite.conf; \
+    rm -rf /etc/nginx/conf.d/blacklist.conf; \
+    rm -rf /etc/nginx/conf.d/${DOMAIN}.conf; \
+    rm -rf /etc/nginx/bots.d/blockbots.conf; \
+    rm -rf /etc/nginx/bots.d/ddos.conf; \
+    rm -rf /etc/nginx/bots.d/whitelist-domains.conf; \
+    rm -rf /etc/nginx/bots.d/whitelist-ips.conf
+    ln -s /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf /etc/nginx/conf.d/blacklist.conf
+    ln -s /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf /etc/nginx/conf.d/rewrite.conf
+    ln -s /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
+    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf /etc/nginx/bots.d/blockbots.conf
+    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf /etc/nginx/bots.d/ddos.conf
+    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf /etc/nginx/bots.d/whitelist-domains.conf
+    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf /etc/nginx/bots.d/whitelist-ips.conf
+    sed -i "s/:3000/:${NGINX_PORT}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
     sed -i "s/#gzip/ gzip_disable \"msie6\"; \n gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript; \n gzip_vary on; \n gzip_proxied any; \n gzip_http_version 1.0; \n gzip/g" /etc/nginx/nginx.conf
-    mv /etc/nginx/sites-enabled/default /etc/nginx/default
-    SNHBS=`grep "server_names_hash_bucket_size" /etc/nginx/nginx.conf`
+    mv /etc/nginx/sites-enabled/default /etc/nginx/default 2>/dev/null
+    SNHBS=`grep "server_names_hash_max_size" /etc/nginx/nginx.conf`
     if [ "${SNHBS}" = "" ]
     then
-        sed -i "s/http {/http {\n\n    server_names_hash_bucket_size 64;\n/g" /etc/nginx/nginx.conf
+        sed -i "s/http {/http {\n\n    server_names_hash_bucket_size 64;\n    server_names_hash_max_size 4096;\n/g" /etc/nginx/nginx.conf
     fi
     LRZ=`grep "zone=cinemapress" /etc/nginx/nginx.conf`
     if [ "${LRZ}" = "" ]
     then
-        sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n/g" /etc/nginx/nginx.conf
+        sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n/g" /etc/nginx/nginx.conf
     fi
     rm -rf /etc/nginx/nginx_pass_${DOMAIN}
     OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
@@ -585,25 +622,47 @@ conf_sphinx() {
         fi
     done
     INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
-    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/sphinx.conf
-    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/config/sphinx.conf
-    sed -i "s/:9306/:${MYSQL_PORT}/g" /home/${DOMAIN}/config/sphinx.conf
-    sed -i "s/:9312/:${SPHINX_PORT}/g" /home/${DOMAIN}/config/sphinx.conf
+    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
+    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
+    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/config/xmlpipe2/source.xml
+    sed -i "s/:9306/:${MYSQL_PORT}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
+    sed -i "s/:9312/:${SPHINX_PORT}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
     if [ "`grep \"${DOMAIN}_searchd\" /etc/crontab`" = "" ]
     then
         echo -e "\n" >> /etc/crontab
         echo "# ----- ${DOMAIN}_searchd --------------------------------------" >> /etc/crontab
-        echo "@reboot root /home/${DOMAIN}/config/i cron searchd >> /home/${DOMAIN}/config/autostart.log 2>&1" >> /etc/crontab
+        echo "@reboot root /home/${DOMAIN}/config/production/i cron searchd >> /home/${DOMAIN}/log/autostart.log 2>&1" >> /etc/crontab
         echo "# ----- ${DOMAIN}_searchd --------------------------------------" >> /etc/crontab
     fi
     if [ "${IP}" != "" ]
     then
-        sed -i "s/127\.0\.0\.1:/0\.0\.0\.0:/g" /home/${DOMAIN}/config/sphinx.conf
-        sed -i "s/= pool/= 0/g" /home/${DOMAIN}/config/sphinx.conf
-        sed -i "s/= 128M/= 512M/g" /home/${DOMAIN}/config/sphinx.conf
+        sed -i "s/127\.0\.0\.1:/0\.0\.0\.0:/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
+        sed -i "s/= pool/= 0/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
+        sed -i "s/= 128M/= 512M/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
     fi
-    indexer --all --config "/home/${DOMAIN}/config/sphinx.conf" || indexer --all --rotate --config "/home/${DOMAIN}/config/sphinx.conf"
-    searchd --config "/home/${DOMAIN}/config/sphinx.conf"
+    if [ "`lsb_release -cs`" = "jessie" ]
+    then
+        sed -i "s/\[mysqld\]/\[mysqld\]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake/g" /etc/mysql/my.cnf
+        sed -i "s/\key_buffer/key_buffer_size/g" /etc/mysql/my.cnf
+        sed -i "s/\myisam-recover/myisam-recover-options/g" /etc/mysql/my.cnf
+        sed -i "s/#max_connections        = 100/max_connections        = 600/g" /etc/mysql/my.cnf
+    else
+        mkdir -p /etc/mysql/conf.d/
+        if [ -f "/etc/mysql/conf.d/mysqld.cnf" ]
+        then
+            sed -i "s/\[mysqld\]/\[mysqld\]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake/g" /etc/mysql/conf.d/mysqld.cnf
+            sed -i "s/\key_buffer/key_buffer_size/g" /etc/mysql/conf.d/mysqld.cnf
+            sed -i "s/\myisam-recover/myisam-recover-options/g" /etc/mysql/conf.d/mysqld.cnf
+            sed -i "s/#max_connections        = 100/max_connections        = 600/g" /etc/mysql/conf.d/mysqld.cnf
+        else
+            touch /etc/mysql/conf.d/mysqld.cnf
+            echo -e "[mysqld]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake\n\nkey_buffer_size         = 16M\nmyisam-recover-options  = BACKUP\nmax_connections         = 600" >> /etc/mysql/conf.d/mysqld.cnf
+        fi
+    fi
+    indexer --all --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf" || indexer --all --rotate --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+    searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+    searchd --config "/etc/sphinxsearch/sphinx.conf" --stop
+    mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.simple
 }
 
 conf_proftpd() {
@@ -634,6 +693,7 @@ conf_memcached() {
     cp /etc/memcached.conf /etc/memcached_${DOMAIN}.conf
     sed -i "s/-p 11211/-p ${MEMCACHED_PORT}/g" /etc/memcached_${DOMAIN}.conf
     sed -i "s/-M/# -M/g" /etc/memcached_${DOMAIN}.conf
+    sed -i "s/-m 64/-m 128/g" /etc/memcached_${DOMAIN}.conf
     if [ "${IP}" != "" ]
     then
         sed -i "s/-l 127\.0\.0\.1/-l 0\.0\.0\.0/g" /etc/memcached_${DOMAIN}.conf
@@ -659,51 +719,66 @@ conf_cinemapress() {
     then
         git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
         chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
-        sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/production/config.js
     fi
-    if [ "`grep \"${DOMAIN}_publish\" /etc/crontab`" = "" ]
+    if [ "`grep \"${DOMAIN}_cron\" /etc/crontab`" = "" ]
     then
         echo -e "\n" >> /etc/crontab
-        echo "# ----- ${DOMAIN}_publish --------------------------------------" >> /etc/crontab
-        echo "@hourly root /home/${DOMAIN}/config/i cron publish >> /home/${DOMAIN}/config/autostart.log 2>&1" >> /etc/crontab
-        echo "# ----- ${DOMAIN}_publish --------------------------------------" >> /etc/crontab
+        echo "# ----- ${DOMAIN}_cron --------------------------------------" >> /etc/crontab
+        echo "@hourly root /home/${DOMAIN}/config/production/i cron >> /home/${DOMAIN}/log/autostart.log 2>&1" >> /etc/crontab
+        echo "# ----- ${DOMAIN}_cron --------------------------------------" >> /etc/crontab
     fi
-    if [ "`grep \"${DOMAIN}_abuse\" /etc/crontab`" = "" ]
+    if [ "`grep \"OOM\" /etc/crontab`" = "" ]
     then
         echo -e "\n" >> /etc/crontab
-        echo "# ----- ${DOMAIN}_abuse ----------------------------------------" >> /etc/crontab
-        echo "@daily root /home/${DOMAIN}/config/i cron abuse >> /home/${DOMAIN}/config/autostart.log 2>&1" >> /etc/crontab
-        echo "# ----- ${DOMAIN}_publish --------------------------------------" >> /etc/crontab
+        echo "# ----- OOM --------------------------------------" >> /etc/crontab
+        echo "*/1 * * * * root /home/${DOMAIN}/config/production/i cron oom >> /home/${DOMAIN}/log/autostart.log 2>&1" >> /etc/crontab
+        echo "# ----- OOM --------------------------------------" >> /etc/crontab
     fi
+    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+    sed -i "s/example_com\"/${INDEX_DOMAIN}\"/g" /home/${DOMAIN}/config/production/i
+    sed -i "s/_example_com_\"/_${INDEX_DOMAIN}_\"/g" /home/${DOMAIN}/config/production/i
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
-    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/config.js
-    sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/config.js
+    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
+    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/config.js
+    sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/production/config.js
 
     if [ "${MYSQL}" != "" ]
     then
-        sed -i "s/127\.0\.0\.1:9306/${MYSQL}/" /home/${DOMAIN}/config/config.js
+        sed -i "s/127\.0\.0\.1:9306/${MYSQL}/" /home/${DOMAIN}/config/production/config.js
     else
-        sed -i "s/:9306/:${MYSQL_PORT}/" /home/${DOMAIN}/config/config.js
+        sed -i "s/:9306/:${MYSQL_PORT}/" /home/${DOMAIN}/config/production/config.js
     fi
 
     if [ "${MEMCACHED}" != "" ]
     then
-        sed -i "s/127\.0\.0\.1:11211/${MEMCACHED}/" /home/${DOMAIN}/config/config.js
+        sed -i "s/127\.0\.0\.1:11211/${MEMCACHED}/" /home/${DOMAIN}/config/production/config.js
     else
-        sed -i "s/:11211/:${MEMCACHED_PORT}/" /home/${DOMAIN}/config/config.js
+        sed -i "s/:11211/:${MEMCACHED_PORT}/" /home/${DOMAIN}/config/production/config.js
     fi
 
-    cp /home/${DOMAIN}/config/config.js /home/${DOMAIN}/config/config.prev.js
+    cp /home/${DOMAIN}/config/production/config.js /home/${DOMAIN}/config/production/config.prev.js
 }
 
 conf_sysctl() {
     mv /etc/sysctl.conf /etc/sysctl.old.conf
-    cp /home/${DOMAIN}/config/sysctl.conf /etc/sysctl.conf
+    ln -s /home/${DOMAIN}/config/production/sysctl/sysctl.conf /etc/sysctl.conf
 }
 
 conf_fail2ban() {
     mv /etc/fail2ban/jail.local /etc/fail2ban/jail.old.local
-    cp /home/${DOMAIN}/config/jail.conf /etc/fail2ban/jail.local
+    rm -rf /etc/fail2ban/action.d/nginxrepeatoffender.conf
+    rm -rf /etc/fail2ban/filter.d/nginxrepeatoffender.conf
+    rm -rf /etc/fail2ban/filter.d/nginx-x00.conf
+    ln -s /home/${DOMAIN}/config/production/fail2ban/jail.local \
+        /etc/fail2ban/jail.local
+    ln -s /home/${DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
+        /etc/fail2ban/action.d/nginxrepeatoffender.conf
+    ln -s /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
+        /etc/fail2ban/filter.d/nginxrepeatoffender.conf
+    ln -s /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
+        /etc/fail2ban/filter.d/nginx-x00.conf
+    service fail2ban restart
 }
 
 conf_iptables() {
@@ -745,22 +820,79 @@ conf_iptables() {
 
 start_cinemapress() {
     cd /home/${DOMAIN}/ && npm install --loglevel=silent --parseable
+    sleep 2
     I=`npm list -g --depth=0 | grep "pm2"`
     if ! [ -n "${I}" ]
     then
         sleep 2
-        npm install --loglevel=silent --parseable pm2 -g
+        npm install --loglevel=silent --parseable pm2 npm-check-updates -g
         sleep 2
         pm2 startup
         sleep 2
         pm2 install pm2-logrotate
         sleep 2
     fi
-    export NODE_ENV=production
+    sleep 2
+    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+    cd /home/${DOMAIN}/ && \
+    CP_ALL="_${INDEX_DOMAIN}_" \
+    CP_XMLPIPE2="xmlpipe2_${INDEX_DOMAIN}" \
+    CP_RT="rt_${INDEX_DOMAIN}" \
+    CP_CONTENT="content_${INDEX_DOMAIN}" \
+    CP_COMMENT="comment_${INDEX_DOMAIN}" \
+    CP_USER="user_${INDEX_DOMAIN}" \
+    node ./config/update/insert_default.js
     sleep 2
     cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save
-    sleep 2
     hash -r
+}
+
+stop_cinemapress() {
+    pm2 delete ${DOMAIN} &> /dev/null
+    searchd --stop --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+}
+
+restart_cinemapress() {
+    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
+        /etc/nginx/conf.d/blacklist.conf
+    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf \
+        /etc/nginx/conf.d/rewrite.conf
+    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf \
+        /etc/nginx/conf.d/${DOMAIN}.conf
+    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf \
+        /etc/nginx/bots.d/blockbots.conf
+    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf \
+        /etc/nginx/bots.d/ddos.conf
+    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf \
+        /etc/nginx/bots.d/whitelist-domains.conf
+    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf \
+        /etc/nginx/bots.d/whitelist-ips.conf
+    ln -sf /home/${DOMAIN}/config/production/sysctl/sysctl.conf \
+        /etc/sysctl.conf
+    ln -sf /home/${DOMAIN}/config/production/fail2ban/jail.local \
+        /etc/fail2ban/jail.local
+    ln -sf /home/${DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
+        /etc/fail2ban/action.d/nginxrepeatoffender.conf
+    ln -sf /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
+        /etc/fail2ban/filter.d/nginxrepeatoffender.conf
+    ln -s /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
+        /etc/fail2ban/filter.d/nginx-x00.conf
+    sleep 2
+    service nginx restart
+    sleep 2
+    service fail2ban restart
+    sleep 2
+    service memcached_${DOMAIN} restart
+    sleep 2
+    searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+    sleep 2
+    cd /home/${DOMAIN}/ && npm i
+    sleep 2
+    cd /home/${DOMAIN}/ && \
+    pm2 start process.json && \
+    pm2 save
+    sleep 2
+    node /home/${DOMAIN}/config/update/update_cinemapress.js
 }
 
 conf_mass() {
@@ -820,22 +952,20 @@ fail_2() {
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
 
-    rm -rf /home/${DOMAIN}/package.json && cp -R /home/${DOMAIN}/.oldCP/package.json /home/${DOMAIN}/package.json
-    rm -rf /home/${DOMAIN}/process.json && cp -R /home/${DOMAIN}/.oldCP/process.json /home/${DOMAIN}/process.json
-    rm -rf /home/${DOMAIN}/app.js && cp -R /home/${DOMAIN}/.oldCP/app.js /home/${DOMAIN}/app.js
-    rm -rf /home/${DOMAIN}/modules/* && cp -R /home/${DOMAIN}/.oldCP/modules/* /home/${DOMAIN}/modules/
-    rm -rf /home/${DOMAIN}/routes/* && cp -R /home/${DOMAIN}/.oldCP/routes/* /home/${DOMAIN}/routes/
-    rm -rf /home/${DOMAIN}/lib/* && cp -R /home/${DOMAIN}/.oldCP/lib/* /home/${DOMAIN}/lib/
-    rm -rf /home/${DOMAIN}/themes/default/* && cp -R /home/${DOMAIN}/.oldCP/themes/default/* /home/${DOMAIN}/themes/default/
+    stop_cinemapress
+
+    cd /home/${DOMAIN}/ && \
+    rm -rf `find . | grep -v "backup"`
+
+    rsync -av --progress \
+        /home/${DOMAIN}/backup/${B_DIR}/oldCP/* \
+        /home/${DOMAIN}
 
     sleep 5
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    cd /home/${DOMAIN}/
-    pm2 delete ${DOMAIN} &> /dev/null
-    pm2 start process.json
-    pm2 save
+    restart_cinemapress
 
     printf "\n${NC}"
     printf "${C}----------------[ ${Y}ОТКАТИЛИСЬ К РАБОЧЕМУ СОСТОЯНИЮ${C} ]---------------\n${NC}"
@@ -849,52 +979,53 @@ fail_2() {
 }
 
 update_cinemapress() {
-    rm -rf /home/${DOMAIN}/.newCP
-    rm -rf /home/${DOMAIN}/.oldCP
+    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
 
-    mkdir -p /home/${DOMAIN}/.newCP
-    mkdir -p /home/${DOMAIN}/.oldCP
+    mkdir -p /home/${DOMAIN}/backup/${B_DIR}/oldCP
+    mkdir -p /home/${DOMAIN}/backup/${B_DIR}/newCP
 
-    git clone https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}/.newCP
-    cp -R /home/${DOMAIN}/* /home/${DOMAIN}/.oldCP
+    stop_cinemapress
 
-    rm -rf /home/${DOMAIN}/package.json && \
-    cp -R /home/${DOMAIN}/.newCP/package.json /home/${DOMAIN}/package.json
+    rm -rf /home/${DOMAIN}/node_modules
 
-    rm -rf /home/${DOMAIN}/process.json && \
-    cp -R /home/${DOMAIN}/.newCP/process.json /home/${DOMAIN}/process.json
+    rsync -av --progress --exclude backup --remove-source-files \
+        /home/${DOMAIN}/* \
+        /home/${DOMAIN}/backup/${B_DIR}/oldCP && \
+    cd /home/${DOMAIN}/ && \
+    find . -depth -type d -empty -delete && \
+    git clone \
+        https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git \
+        /home/${DOMAIN}/backup/${B_DIR}/newCP
+    rsync -av --progress \
+        /home/${DOMAIN}/backup/${B_DIR}/newCP/* \
+        /home/${DOMAIN}
+    rsync -av --progress --exclude default/public/admin --exclude default/views/admin \
+        /home/${DOMAIN}/backup/${B_DIR}/oldCP/themes/* \
+        /home/${DOMAIN}/themes
+    rsync -av --progress \
+        /home/${DOMAIN}/config/default/* \
+        /home/${DOMAIN}/config/production
+    cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico \
+        /home/${DOMAIN}/
+    rsync -av --progress --exclude default \
+        /home/${DOMAIN}/backup/${B_DIR}/oldCP/config/* \
+        /home/${DOMAIN}/config
 
-    rm -rf /home/${DOMAIN}/app.js && \
-    cp -R /home/${DOMAIN}/.newCP/app.js /home/${DOMAIN}/app.js
+    cp -r ${0} /home/${DOMAIN}/config/production/i && \
+    chmod +x /home/${DOMAIN}/config/production/i
 
-    rm -rf /home/${DOMAIN}/modules/* && \
-    cp -R /home/${DOMAIN}/.newCP/modules/* /home/${DOMAIN}/modules/
-
-    rm -rf /home/${DOMAIN}/routes/* && \
-    cp -R /home/${DOMAIN}/.newCP/routes/* /home/${DOMAIN}/routes/
-
-    rm -rf /home/${DOMAIN}/lib/* && \
-    cp -R /home/${DOMAIN}/.newCP/lib/* /home/${DOMAIN}/lib/
-
-    rm -rf /home/${DOMAIN}/themes/default/* && \
-    cp -R /home/${DOMAIN}/.newCP/themes/default/* /home/${DOMAIN}/themes/default/
-
-    rm -rf /home/${DOMAIN}/config/default/* && \
-    cp -R /home/${DOMAIN}/.newCP/config/default/* /home/${DOMAIN}/config/default/
-
-    rm -rf /home/${DOMAIN}/config/i && \
-    cp -R ${0} /home/${DOMAIN}/config/i
-
+    sed -i "s/example_com\"/${INDEX_DOMAIN}\"/g" /home/${DOMAIN}/config/production/i
+    sed -i "s/_example_com_\"/_${INDEX_DOMAIN}_\"/g" /home/${DOMAIN}/config/production/i
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
+    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
+
+    EXP=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_|\s-]*\)".*/\1/'`
+    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_|\s-]*\"/\"CP_ALL\":\"${EXP}\"/" /home/${DOMAIN}/process.json
+    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|\s-]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    cd /home/${DOMAIN}/ && \
-    npm i && \
-    node ./config/update.js && \
-    pm2 delete ${DOMAIN} &> /dev/null && \
-    pm2 start process.json && \
-    pm2 save
+    restart_cinemapress
 }
 
 confirm_update_cinemapress() {
@@ -962,12 +1093,12 @@ update_theme() {
     fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
-    sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/config.js
-    echo "Change theme to ${THEME}" >> /home/${DOMAIN}/restart.server
+    sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/production/config.js
+    echo "Change theme to «${THEME}»" >> /home/${DOMAIN}/restart.server
 }
 
 success_4() {
-    curl -s -o /dev/null -I http://database.cinemapress.org/${KEY}/${DOMAIN}?status=SUCCESS
+    wget -q -O /dev/null -o /dev/null "http://database.cinemapress.org/${KEY}/${DOMAIN}?status=SUCCESS"
 
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
@@ -991,7 +1122,7 @@ fail_4() {
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
 
-    searchd --stop --config "/home/${DOMAIN}/config/sphinx.conf"
+    searchd --stop --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
 
     rm -rf /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.*
 
@@ -999,9 +1130,9 @@ fail_4() {
 
     sleep 5
 
-    searchd --config "/home/${DOMAIN}/config/sphinx.conf"
+    searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
 
-    curl -s -o /dev/null -I http://database.cinemapress.org/${KEY}/${DOMAIN}?status=FAIL
+    wget -q -O /dev/null -o /dev/null "http://database.cinemapress.org/${KEY}/${DOMAIN}?status=FAIL"
 
     printf "\n${NC}"
     printf "${C}----------------[ ${Y}ОТКАТИЛИСЬ К РАБОЧЕМУ СОСТОЯНИЮ${C} ]---------------\n${NC}"
@@ -1015,9 +1146,9 @@ fail_4() {
 }
 
 check_db() {
-    STATUS=`curl -s -o /dev/null -I -w "%{http_code}" http://database.cinemapress.org/${KEY}/${DOMAIN}?status=CHECK`
-
-    if [ "${STATUS}" != "200" ]
+    INDEX_TYPE=`wget -qO- "http://database.cinemapress.org/${KEY}/${DOMAIN}?status=CHECK"`
+    sleep 1
+    if [ "${INDEX_TYPE}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
@@ -1044,26 +1175,19 @@ import_db() {
     then
         printf "${G}Распаковка ...\n"
 
-        # pm2 delete ${DOMAIN} &> /dev/null
-
         NOW=$(date +%Y-%m-%d)
-
-        searchd --stop --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
-
-        sleep 3
-
         INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+
+        searchd --stop --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
         mkdir -p /var/lib/sphinxsearch/data
         mkdir -p /var/lib/sphinxsearch/old
 
         rm -rf /var/lib/sphinxsearch/old/movies_${INDEX_DOMAIN}.*
-
         cp -R /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.* /var/lib/sphinxsearch/old/
-
         rm -rf /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.*
-
-        tar -xzf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" -C "/var/lib/sphinxsearch/tmp" &> /var/lib/sphinxsearch/data/${NOW}.log
+        tar -xzf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" -C "/var/lib/sphinxsearch/tmp" \
+            &> /var/lib/sphinxsearch/data/${NOW}.log
 
         printf "${G}Установка ...\n"
 
@@ -1088,15 +1212,21 @@ import_db() {
 
         printf "${G}Запуск ...\n"
 
-        searchd --config "/home/${DOMAIN}/config/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
+        searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
-        NOW=$(date +%Y-%m-%d)
-        sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/config.js
-        sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/config.js
+        sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/production/config.js
+        sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/production/config.js
+        if [ "${INDEX_TYPE}" != "update" ]
+        then
+            sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_|\s-]*\"/\"CP_ALL\":\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
+            sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|\s-]*\"/CP_ALL=\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
+        fi
 
-        # cd /home/${DOMAIN}/ && \
-        # pm2 start process.json && \
-        # pm2 save
+        sleep 2
+
+        cd /home/${DOMAIN}/ && \
+        pm2 restart process.json && \
+        pm2 save
 
         sleep 3
     else
@@ -1150,7 +1280,7 @@ import_static() {
     mkdir -p /var/local/images
     printf "\n${NC}"
     printf "${G}Распаковка ...\n"
-    printf "${NC}Может занять до 20 минут.\n"
+    printf "${NC}Может занять несколько часов.\n"
     printf "\n${NC}"
     tar -xf /home/images.tar -C /var/local/images
     wget http://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
@@ -1193,9 +1323,8 @@ get_ssl() {
     chmod a+x /etc/certbot-auto
     /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --email support@${DOMAIN} -w /home/${DOMAIN}/ -d ${DOMAIN} -d m.${DOMAIN}
     openssl dhparam -out /etc/letsencrypt/live/${DOMAIN}/dhparam.pem 2048
-    sed -i "s/#ssl/ssl/g" /home/${DOMAIN}/config/nginx.conf
-    sed -i "s/#listen/listen/g" /home/${DOMAIN}/config/nginx.conf
-    cp /home/${DOMAIN}/config/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
+    sed -i "s/#ssl/ssl/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    sed -i "s/#listen/listen/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     if [ "`grep \"renew_ssl\" /etc/crontab`" = "" ]
     then
         echo -e "\n" >> /etc/crontab
@@ -1211,28 +1340,37 @@ create_mega_backup() {
     then
         echo -e "\n" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
-        echo "@daily root /home/${DOMAIN}/config/i cron backup \"${DOMAIN}\" \"${MEGA_EMAIL}\" \"${MEGA_PASSWD}\" >> /home/${DOMAIN}/config/autostart.log" >> /etc/crontab
+        echo "@daily root /home/${DOMAIN}/config/production/i cron backup \"${DOMAIN}\" \"${MEGA_EMAIL}\" \"${MEGA_PASSWD}\" >> /home/${DOMAIN}/log/autostart.log" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
     fi
+    MEGA_DAY=$(date +%d)
     MEGA_NOW=$(date +%Y-%m-%d)
-    MEGA_DELETE=$(date +%Y-%m-%d -d "10 day ago")
-    THEME_NAME=`grep "theme" /home/${DOMAIN}/config/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
+    MEGA_DELETE=$(date +%Y-%m-%d -d "30 day ago")
+    THEME_NAME=`grep "theme" /home/${DOMAIN}/config/production/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
     megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
-    megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
+    if [ "${MEGA_DAY}" != "10" ]
+    then
+        megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
+    fi
     megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest &> /dev/null
-    sleep 3
+    sleep 2
     megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/ &> /dev/null
     megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/
     megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest/
-    sleep 3
-    rm -rf /tmp/${DOMAIN} && mkdir -p /tmp/${DOMAIN} && cd /home/${DOMAIN} && \
+    sleep 2
+    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+    PORT_DOMAIN=`grep "mysql41" /home/${DOMAIN}/config/production/sphinx/sphinx.conf | sed 's/.*:\([0-9]*\):mysql41.*/\1/'`
+    echo "FLUSH RTINDEX rt_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
+    sleep 2
+    rm -rf /tmp/${DOMAIN} && mkdir -p /tmp/${DOMAIN}
+    cd /home/${DOMAIN} && \
     tar -uf /tmp/${DOMAIN}/config.tar \
-        config/config.js \
-        config/modules.js \
-        config/texts.js && \
+        config --exclude=config/default
+    cd /home/${DOMAIN} && \
     tar -uf /tmp/${DOMAIN}/themes.tar \
         themes/default/public/desktop \
         themes/default/public/mobile \
+        themes/default/views/mobile \
         themes/${THEME_NAME}
     sleep 3
     megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
@@ -1264,20 +1402,24 @@ create_mega_backup() {
 
 recover_mega_backup() {
     rm -rf /tmp/${DOMAIN} && mkdir -p /tmp/${DOMAIN}
+
+    stop_cinemapress
+
     megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
         --path /tmp/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/config.tar
     megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
         --path /tmp/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/themes.tar
-    cd /home/${DOMAIN} && tar -xf /tmp/${DOMAIN}/config.tar && tar -xf /tmp/${DOMAIN}/themes.tar
-    printf "\n${NC}"
+
+    cd /home/${DOMAIN} && \
+    tar -xf /tmp/${DOMAIN}/config.tar && \
+    tar -xf /tmp/${DOMAIN}/themes.tar
+
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
-    cd /home/${DOMAIN}/ && \
-    node ./config/update.js && \
-    pm2 delete ${DOMAIN} &> /dev/null && \
-    pm2 start process.json && \
-    pm2 save
+
+    restart_cinemapress
+
     printf "\n${NC}"
     printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
@@ -1291,7 +1433,7 @@ remove_mega_backup() {
     if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" != "" ]
     then
         sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
-        sed -i "s/@daily root \/home\/${DOMAIN}.*//g" /etc/crontab
+        sed -i "s/@daily root \/home\/${DOMAIN}\/config\/production\/i cron backup.*//g" /etc/crontab
     fi
     printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
@@ -1577,6 +1719,8 @@ whileStop() {
     WHILE=no
 }
 
+B_DIR=$(date '+%d_%m_%Y_%H-%M-%S')
+
 INSTALL_FILE=`basename "$0"`
 case ${INSTALL_FILE} in
     h )
@@ -1758,16 +1902,30 @@ do
             then
                 case ${2} in
                     searchd )
-                        sleep $((RANDOM%30+30)) && searchd --config $(dirname ${0})/sphinx.conf
-                    ;;
-                    publish )
-                        sleep $((RANDOM%120)) && node $(dirname $(dirname ${0}))/lib/CP_cron.js publish
-                    ;;
-                    abuse )
-                        sleep $((RANDOM%60)) && node $(dirname $(dirname ${0}))/lib/CP_cron.js abuse
+                        sleep $((RANDOM%30+30)) && \
+                        searchd --config $(dirname ${0})/sphinx/sphinx.conf
                     ;;
                     backup )
-                        sleep $((RANDOM%60)) && $(dirname ${0})/i 11 "${3}" "${4}" "${5}" 1
+                        sleep $((RANDOM%60)) && \
+                        $(dirname ${0})/i 11 "${3}" "${4}" "${5}" 1
+                    ;;
+                    oom )
+                        OOM=`dmesg | grep "Out of memory"`
+                        if [ "${OOM}" != "" ]
+                        then
+                            echo ${OOM}
+                            reboot
+                        fi
+                    ;;
+                    * )
+                        sleep $((RANDOM%120)) && \
+                        CP_ALL="_example_com_" \
+                        CP_XMLPIPE2="xmlpipe2_example_com" \
+                        CP_RT="rt_example_com" \
+                        CP_CONTENT="content_example_com" \
+                        CP_COMMENT="comment_example_com" \
+                        CP_USER="user_example_com" \
+                        node $(dirname $(dirname $(dirname ${0})))/lib/CP_cron.js
                     ;;
                 esac
                 exit 0

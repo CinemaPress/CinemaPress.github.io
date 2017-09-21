@@ -123,7 +123,7 @@
         </div>
     </nav>
 </header>
-<section class="main-banner paraxify banner-image-1 ptb-100" style="background-position: center 10.46px;">
+<section class="main-banner paraxify banner-image-1 ptb-100" style="background-position: center 10px;">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -186,23 +186,23 @@
                     Изначально после установки CinemaPress ACMS пароль от админ-панели и FTP сайта совпадают. Однако <a href="/article/kak-ustanovit-cinemapress-acms.html#windows" target="_blank">подключившись по SSH к серверу</a> и выполнив последовательно несколько команд, Вы можете изменить эти пароли на свои.<br><br>
                     <strong>Изменить пароль от root-пользователя:</strong><br>
                     <code>
-                        passwd
+                        ~# passwd
                     </code>
                     <br><br>
                     <strong>Изменить пароль от админ-панели:</strong><br>
-                    <code>PASSWD="<strong>password</strong>"</code><br>
-                    <code>DOMAIN="<strong>domain.com</strong>"</code><br>
-                    <code>rm -rf /etc/nginx/nginx_pass_${DOMAIN}</code><br>
-                    <code>OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`</code><br>
-                    <code>echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}</code><br>
-                    <code>service nginx restart</code>
+                    <code>~# PASSWD="<strong>password</strong>"</code><br>
+                    <code>~# DOMAIN="<strong>domain.com</strong>"</code><br>
+                    <code>~# rm -rf /etc/nginx/nginx_pass_${DOMAIN}</code><br>
+                    <code>~# OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`</code><br>
+                    <code>~# echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}</code><br>
+                    <code>~# service nginx restart</code>
                     <br><br>
                     <strong>Изменить пароль от FTP:</strong><br>
-                    <code>PASSWD="<strong>password</strong>"</code><br>
-                    <code>DOMAIN="<strong>domain.com</strong>"</code><br>
-                    <code>USERID=`id -u ${DOMAIN}`</code><br>
-                    <code>echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}</code><br>
-                    <code>service proftpd restart</code>
+                    <code>~# PASSWD="<strong>password</strong>"</code><br>
+                    <code>~# DOMAIN="<strong>domain.com</strong>"</code><br>
+                    <code>~# USERID=`id -u ${DOMAIN}`</code><br>
+                    <code>~# echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}</code><br>
+                    <code>~# service proftpd restart</code>
                     <br><br>
                     <code><strong>password</strong></code> - замените на Ваш пароль;<br>
                     <code><strong>domain.com</strong></code> - замените на Ваш домен;<br>

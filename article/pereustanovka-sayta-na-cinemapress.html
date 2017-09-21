@@ -4,13 +4,13 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Готовые сайты на CinemaPress ACMS</title>
-    <meta property="og:title" content="Готовые сайты на CinemaPress ACMS"/>
-    <meta name="description" content="Список готовых сайтов, которые работают на движке CinemaPress ACMS"/>
-    <meta property="og:description" content="Список готовых сайтов, которые работают на движке CinemaPress ACMS"/>
-    <meta property="og:image" content="https://cinemapress.org/images/opengraph/sayty-na-cinemapress-acms.png"/>
-    <link rel="image_src" href="https://cinemapress.org/images/opengraph/sayty-na-cinemapress-acms.png"/>
-    <meta property="og:url" content="https://cinemapress.org/article/sayty-na-cinemapress-acms.html"/>
+    <title>Переустановка системы CinemaPress ACMS</title>
+    <meta property="og:title" content="Переустановка системы CinemaPress ACMS"/>
+    <meta name="description" content="Перенос сайта на новый сервер или переустановка системы CinemaPress ACMS"/>
+    <meta property="og:description" content="Перенос сайта на новый сервер или переустановка системы CinemaPress ACMS"/>
+    <meta property="og:image" content="https://cinemapress.org/images/change/pereustanovka.png"/>
+    <link rel="image_src" href="https://cinemapress.org/images/change/pereustanovka.png"/>
+    <meta property="og:url" content="https://cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html"/>
     <meta property="og:site_name" content="CinemaPress ACMS"/>
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:site" content="@cinemapress_org"/>
@@ -128,7 +128,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="main-banner-content text-center">
-                    <h1>Работающие сайты на системе CinemaPress ACMS</h1>
+                    <h1>Как перенести сайт на другой сервер или переустановить систему CinemaPress ACMS?</h1>
                     <ul class="breadcrumbs">
                         <li>
                             <a href="/">Главная</a>
@@ -137,7 +137,7 @@
                             <a href="/article">Статьи</a>
                         </li>
                         <li>
-                            Сайты
+                            Переустановка
                         </li>
                     </ul>
                 </div>
@@ -150,202 +150,69 @@
         <div class="row">
             <div class="super-title">
                 <p style="text-align: justify">
-                    Небольшой список сайтов, которые работают на CinemaPress ACMS. Весь список приводить не имеет смысла, а только те сайты, которыми занимаются и развивают.
+                    Может случиться так, что спустя пару месяцев после создания сайта, Вы понимаете что выбрали не самый выгодный хостинг и хотите сменить его, например <a href="/article/gde-kupit-server.html" target="_blank">на представленные Нами</a>. В этом случае, если Вы делали <a href="/article/opcii-ustanovki-cinemapress-acms.html#option11" target="_blank">бэкап сайта</a>, система сделает все изменения сама, от Вас потребуется только <a href="/article/kak-dobavit-vse-filmy-v-mire.html" target="_blank">импортировать информацию о фильмах</a> и всё. В противном случае, Вам стоит только сохранить содержимое папки <code>/config</code> и заменить её в новом сайте. Но обо всем по порядку.
                 </p>
             </div>
         </div>
     </div>
 </div>
-<section class="ptb-100 functionalities bg-gray" id="kinolook">
+<section class="ptb-100 functionalities bg-gray" id="reinstall">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#kinolook">kinolook.su</a></h3>
+                    <h3><a href="#reinstall">Переустановка CinemaPress ACMS</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Сайт за максимально короткий срок сумел достичь определенных успехов. На февраль 2017 года, сайт имеет отличную ссылочную базу, за счет чего ТИц сайта составляет 350.
+                    Перед тем, как начать переустановку сайта, убедитесь что у Вас есть <a href="/article/opcii-ustanovki-cinemapress-acms.html#option11" target="_blank">бэкап</a>. Если Вы его настроили правильно, он будет создаваться каждый день в полночь. Если же Вы не делали бэкапа сайта, просто сохраните у Себя на компьютере папку <code>/config</code>, именно в ней находятся все данные, которые Вы вносили в админ-панели, включая описания фильмов, контент, настройки модулей и т.п. Если Вы делали изменения в шаблоне или меняли картинки, то его тоже можно сохранить, но заменять его полностью на новой системе не следует, просто вручную внесите в новый шаблон все те же изменения, что были в старом. Запустив установку, дождитесь её окончания. Если Вы делали бэкап сайта на mega.nz, далее просто <a href="/article/opcii-ustanovki-cinemapress-acms.html#option11" target="_blank">восстановите его</a> и сайт сразу примет все настройки старого сайта. Если же Вы делали бэкап на компьютер, подключитесь к Вашему сайту <a href="/article/kak-izmenit-kartinki-i-shablon.html#connect" target="_blank">по FTP</a>. Найдите папку <code>/config</code> и замените её содержимое из папки <code>/config</code>, которую Вы сохранили у Себя на компьютере. Чтобы все данные были приняты, Вам следует перезагрузить сервер. Это можно сделать как через панель хостинга, так и по SSH командой <code>reboot</code>. После перезагрузки сайт запустится со всеми Вашими старыми настройками, но на нём не будет всех фильмов, для этого следует сделать новый импорт. <a href="#import" target="_blank">Как сделать импорт информации о фильмах после переустановки?</a>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/kinolook.png" class="img-responsive" alt="kinolook.su" data-action="zoom">
-                <a href="http://kinolook.su" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> kinolook.su
-                </a>
+                <img src="/images/change/reinstall.png" class="img-responsive" alt="Переустановка CinemaPress ACMS" data-action="zoom">
             </div>
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-white" id="kin4ik">
+<section class="ptb-100 functionalities bg-gray" id="import">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#kin4ik">kin4ik.online</a></h3>
+                    <h3><a href="#import">Как сделать импорт после переустановки?</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    На сайте сделано ровно то, что написано в <a href="https://cinemapress.coding.me/article/cinemapress-acms.html" target="_blank">рекомендациях к системе</a>, ни больше, ни меньше. Казалось бы, всё очевидно, но даже таких элементарных вещей, как описать текстом главные категории сайта, многие игнорируют.
+                    Когда Вы убедились, что сайт работает и чтобы не терять посетителей, Вам нужно сделать импорт информации о фильмах. Для импорта подойдет ключ <strong>Update</strong>, который служит для обновления. Почему Мне нужно покупать ключ, если у Меня уже есть Мой старый ключ? Дело в том, что такая операция, как переустановка системы делается довольно редко или вообще никогда. А информация о фильмах обновляется и дополняется каждый месяц. Поэтому, если Вы переустанавливаете систему позже, чем через месяц после импорта, Вам нужно уже покупать ключ Update. В противном случае, если после импорта не прошел месяц и по стечению обстоятельств Вы вынуждены сменить сервер - просто напишите Нам в поддержку об этом, с указанием причины переезда, Мы рассмотрим её и обнулим Ваш ключ, по которому Вы сделаете импорт информации о фильмах бесплатно.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/kin4ik.png" class="img-responsive" alt="kin4ik.online" data-action="zoom">
-                <a href="http://kin4ik.online" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> kin4ik.online
-                </a>
+                <img src="/images/change/import.png" class="img-responsive" alt="Переустановка CinemaPress ACMS" data-action="zoom">
             </div>
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="kino">
+<section class="ptb-100 functionalities bg-gray" id="update">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#kino">kino.promo</a></h3>
+                    <h3><a href="#update">Как обновиться с системы, которая была до 17.09.17?</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Создатель данного сайта по максимуму попытался «уникализировать» свой сайт, чтобы не быть похожим сайтам на CinemaPress ACMS. Чем больше уникальным проектом выглядит Ваш сайт в глазах поисковых систем - тем лучше.
+                    Версия системы, которая была до 17.09.17, потерпела некоторые изменения, которые обычное обновление не сможет внести. Для этого Вам потребуется полностью переустановить ОС на Debian 8 x64 или Debian 9 x64 и запустить установку Вашего нового сайта через SSH, перед этим обязательно не забудьте сохранить на компьютер папку <code>/config</code> и если Вы делали какие-то изменения в теме, то и папку <code>/themes</code>. Когда Вы запустили установку и создали новый сайт, нужно перенести файлы конфигурации в новую систему и так же перенести все Ваши уникальные описания и коллекции. Для этого подключитесь к сайту по FTP и зайдите в папку <code>/config/production</code>. Перенесите в неё с сохраненной у Вас на компьютере папки <code>/config</code>, следующие файлы <code>config.js</code>, <code>modules.js</code>, <code>texts.js</code>. В <code>/config/production</code> уже будут лежать <code>config.js</code> и <code>modules.js</code>, потому Вам нужно будет их заменить Вашими файлами. Теперь открываете терминал (Putty), где Вы устанавливали сайт и запускаете следующие команды по очереди (<strong>domain.com</strong> - замените на URL Вашего домена, в нижнем регистре без www):<br>
+                    <code>~# DOMAIN="<strong>domain.com</strong>"</code><br>
+                    <code>~# DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`</code><br>
+                    <code>~# cd /home/${DOMAIN}/config/update/</code><br>
+                    <code>~# node update_cinemapress.js</code><br>
+                    <code>~# CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" node update_collections.js</code><br>
+                    <code>~# CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" node update_texts.js</code><br>
+                    Этими командами Вы перенесете настройки конфигурации в новую систему, перенесете все коллекции в модуль «Контент» и все уникальные описания фильмов в раздел «Описания фильмам».
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/kino.png" class="img-responsive" alt="kino.promo" data-action="zoom">
-                <a href="http://kino.promo" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> kino.promo
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-white" id="xyz">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#xyz">Сеть Кинопоиск Х</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Одна из первых сетей сайтов на CinemaPress ACMS, вот некоторые сайты, которые в неё входят:<br>
-                    <i class="fa fa-arrow-right"></i> <a href="http://bigcinema.xyz" target="_blank">bigcinema.xyz</a><br>
-                    <i class="fa fa-arrow-right"></i> <a href="http://kino-max.xyz" target="_blank">kino-max.xyz</a><br>
-                    <i class="fa fa-arrow-right"></i> <a href="http://kinofilm.space" target="_blank">kinofilm.space</a><br>
-                    <i class="fa fa-arrow-right"></i> <a href="http://kino-z.xyz" target="_blank">kino-z.xyz</a><br>
-                    <i class="fa fa-arrow-right"></i> <a href="http://film-home.xyz" target="_blank">film-home.xyz</a><br>
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/xyz.png" class="img-responsive" alt="Кинопоиск Х" data-action="zoom">
-                <a href="http://bigcinema.xyz" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> bigcinema.xyz
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-gray" id="smotretonlinehd">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#smotretonlinehd">smotretonlinehd.com</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Примечательной особенностью можно назвать тот факт, что администрация ресурса ведет канал на YouTube, выкладывая различные ТОПы и подборки со ссылками на сайт.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/smotretonlinehd.png" class="img-responsive" alt="smotretonlinehd.com" data-action="zoom">
-                <a href="http://smotretonlinehd.com" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> smotretonlinehd.com
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-white" id="alphacinema">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#alphacinema">alphacinema.ru</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Яркий пример «индивидуального» дизайна сайта, которого больше нет ни на одном сайте в системе CinemaPress. Интересное решение, в виде меняющегося фона при переходе на различные категории.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/alphacinema.png" class="img-responsive" alt="alphacinema.ru" data-action="zoom">
-                <a href="http://alphacinema.ru" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> alphacinema.ru
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-gray" id="4films">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#4films">4films.net</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Сайт, который предположительно положит начало очередной сети сайтов на CinemaPress ACMS. Посещаемость большинства сайтов в "праздничные месяцы" идет на подъем и 4films.net не исключение. В январе 2017 года, сайту удавалось генерировать траффик до 5 000 в хостов в сутки.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/4films.png" class="img-responsive" alt="4films.net" data-action="zoom">
-                <a href="http://4films.net" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> 4films.net
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-white" id="kinomag">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#kinomag">kinomag.tv</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Сайт kinomag.tv имеет в своём арсенале довольно раскрученную группу ВКонтакте, которая активно пополняется новыми пользователями ежедневно. Дизайн сайта не является индивидуальный, а относительно немного переделанный вариант шаблона «cersei».
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/kinomag.png" class="img-responsive" alt="kinomag.tv" data-action="zoom">
-                <a href="http://kinomag.tv" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> kinomag.tv
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-gray" id="kinocom">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#kinocom">kinocom.xyz</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Сайт был создан в числе первых в системе CinemaPress ACMS. Администрация активно уникализирует контент на сайте, за счет чего сайт медленно, но уверенно набирает позиции.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/sites/kinocom.png" class="img-responsive" alt="kinocom.xyz" data-action="zoom">
-                <a href="http://kinocom.xyz" target="_blank" class="btn btn-block btn-theme-color">
-                    <span class="fa fa-external-link"></span> kinocom.xyz
-                </a>
+                <img src="/images/change/update.png" class="img-responsive" alt="Как обновиться с системы, которая была до 17.09.17?" data-action="zoom">
             </div>
         </div>
     </div>
@@ -567,8 +434,8 @@
                             w.ChatraID = 'CxWo7o8kzJ6c5KuSs';
                             var s = d.createElement('script');
                             w[c] = w[c] || function() {
-                                        (w[c].q = w[c].q || []).push(arguments);
-                                    };
+                                    (w[c].q = w[c].q || []).push(arguments);
+                                };
                             s.async = true;
                             s.src = 'https://call.chatra.io/chatra.js';
                             if (d.head) d.head.appendChild(s);

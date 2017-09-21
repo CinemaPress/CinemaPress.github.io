@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Модуль: Реклама - CinemaPress ACMS</title>
-    <meta property="og:title" content="Модуль: Реклама - CinemaPress ACMS"/>
-    <meta name="description" content="Добавление рекламных блоков с таргетингом на страницы сайта">
-    <meta property="og:description" content="Добавление рекламных блоков с таргетингом на страницы сайта"/>
-    <meta property="og:image" content="https://cinemapress.org/images/admin/rklma/rklma.png"/>
-    <link rel="image_src" href="https://cinemapress.org/images/admin/rklma/rklma.png"/>
-    <meta property="og:url" content="https://cinemapress.org/admin/adv.html"/>
+    <title>Модуль: Контент - CinemaPress ACMS</title>
+    <meta property="og:title" content="Модуль: Контент - CinemaPress ACMS"/>
+    <meta name="description" content="Добавление на сайт новостей, страниц, подборок с фильмами и т.д.">
+    <meta property="og:description" content="Добавление на сайт новостей, страниц, подборок с фильмами и т.д."/>
+    <meta property="og:image" content="https://cinemapress.org/images/admin/content/content.png"/>
+    <link rel="image_src" href="https://cinemapress.org/images/admin/content/content.png"/>
+    <meta property="og:url" content="https://cinemapress.org/admin/content.html"/>
     <meta property="og:site_name" content="CinemaPress ACMS"/>
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:site" content="@CinemaPress_org"/>
@@ -128,7 +128,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="main-banner-content text-center">
-                    <h1>Как добавить свою рекламу на сайт?</h1>
+                    <h1>Плеер для просмотра онлайн фильмов</h1>
                     <ul class="breadcrumbs">
                         <li>
                             <a href="/">Главная</a>
@@ -137,7 +137,7 @@
                             <a href="/admin/admin.html">Админ-панель</a>
                         </li>
                         <li>
-                            Реклама
+                            Плеер
                         </li>
                     </ul>
                 </div>
@@ -310,7 +310,7 @@
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/player.html">
-                                    <div class="button-settings">
+                                    <div class="button-settings active">
                                         <i class="fa fa-desktop"></i>
                                         <span class="corner-label green">
                                             <i class="fa fa-power-off"></i>
@@ -362,7 +362,7 @@
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/adv.html">
-                                    <div class="button-settings active">
+                                    <div class="button-settings">
                                         <i class="fa fa-money"></i>
                                         <span class="corner-label green">
                                             <i class="fa fa-power-off"></i>
@@ -540,188 +540,92 @@
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="target">
+<section class="ptb-100 functionalities bg-gray" id="settings">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#target">Таргетинг рекламы в CinemaPress ACMS</a></h3>
+                    <h3><a href="#settings">Настройка страницы с контентом</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Таргетинг рекламы (от англ. target - цель), означает показывать рекламу только целевым пользователям сайта. Если реклама в баннере относится только для пользователей из Москвы, то не имеет смысла её показывать для пользователей из Саратова, ведь если даже пользователь кликнет на неё, Вы ничего не заработаете. Таким образом, за счет стандартных методов таргетирования в CinemaPress ACMS, Вы можете манипулировать баннерами на страницах сайта и показывать их нужным людям. Формат записи для таргетирования должен быть следующим, в скобках указываете цели, а сразу после скобок указываете между тремя гра́висами <code>```</code> (кавычка, где буква «ё»), Ваш рекламный код. Например, чтобы показывать рекламу только для россиян, укажите так: <code>(Россия) ```Рекламный код для пользователей из России```</code>. Если Вы не собираетесь использовать таргетинг, лучше его не включать, так как он занимает значительную часть оперативной памяти. Таргетинг нужен только для того, чтобы <a href="/article/obzor-reklamy-dlya-kinosaytov.html#cpa" target="_blank">напрямую работать с рекламодателями</a> по их партнерским программам. Если же Вы будете пользоваться услугами <a href="/article/obzor-reklamy-dlya-kinosaytov.html" target="_blank">рекламных компаний</a>, то таргетинг Вам не понадобится, они сами будут таргетировать пользователей. Определение страны/города по IP пользователя разработано на основе данных GeoLite2 от <a href="http://www.maxmind.com" target="_blank">maxmind.com</a>. Данное решения является бесплатным и точность определения города находится на удовлетворительном уровне.
+                    По умолчанию список со всеми коллекциями доступен по адресу домен.com/content, его можно изменить на любое понравившееся Вам значение. Также Вы должны будете написать уникальное описание для это страницы, чтобы завоевать доверие поисковых систем. Для того, чтобы блок с описанием был в глазах поисковых систем, как часть страницы, добавьте в него картинку.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/target.png" class="img-responsive" alt="Включение таргетинга рекламы в CinemaPress ACMS" data-action="zoom">
+                <img src="/images/admin/content/settings.png" class="img-responsive" alt="Настройка страницы с контентом" data-action="zoom">
             </div>
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-white" id="target2">
+<section class="ptb-100 functionalities bg-white" id="news">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#target2">Какие можно указывать цели?</a></h3>
+                    <h3><a href="#news">Блок новостей в боковой панели</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    По стране, например <code>Россия, Украина, Беларусь, Казахстан, и т.д.</code><br>
-                    По городу, например <code>Москва, Киев, Минск, и т.д.</code><br>
-                    По браузеру, например <code>Amaya, Android Browser, Arora, Avant, Baidu, Blazer, Bolt, Camino, Chimera, Chrome, Chromium, Comodo Dragon, Conkeror, Dillo, Dolphin, Doris, Edge, Epiphany, Fennec, Firebird, Firefox, Flock, GoBrowser, iCab, ICE Browser, IceApe, IceCat, IceDragon, Iceweasel, IE, IE Mobile, Iron, Jasmine, K-Meleon, Konqueror, Kindle, Links, Lunascape, Lynx, Maemo, Maxthon, Midori, Minimo, MIUI Browser, Safari, Mobile Safari, Mosaic, Mozilla, Netfront, Netscape, NetSurf, Nokia, OmniWeb, Opera, Opera Mini, Opera Mobi, Opera Tablet, PhantomJS, Phoenix, Polaris, QQBrowser, RockMelt, Silk, Skyfire, SeaMonkey, SlimBrowser, Swiftfox, Tizen, UCBrowser, Vivaldi, w3m, WeChat, Yandex</code><br>
-                    По типу устройства, например <code>console, mobile, tablet, smarttv, wearable, embedded</code><br>
-                    По названию производителя, например <code>Acer, Alcatel, Amazon, Apple, Archos, Asus, BenQ, BlackBerry, Dell, GeeksPhone, Google, HP, HTC, Huawei, Jolla, Lenovo, LG, Meizu, Microsoft, Motorola, Nexian, Nintendo, Nokia, Nvidia, Ouya, Palm, Panasonic, Polytron, RIM, Samsung, Sharp, Siemens, Sony-Ericsson, Sprint, Xbox, ZTE</code><br>
-                    По операционной система, например <code>AIX, Amiga OS, Android, Arch, Bada, BeOS, BlackBerry, CentOS, Chromium OS, Contiki, Fedora, Firefox OS, FreeBSD, Debian, DragonFly, Gentoo, GNU, Haiku, Hurd, iOS, Joli, Linpus, Linux, Mac OS, Mageia, Mandriva, MeeGo, Minix, Mint, Morph OS, NetBSD, Nintendo, OpenBSD, OpenVMS, OS/2, Palm, PCLinuxOS, Plan9, Playstation, QNX, RedHat, RIM Tablet OS, RISC OS, Sailfish, Series40, Slackware, Solaris, SUSE, Symbian, Tizen, Ubuntu, UNIX, VectorLinux, WebOS, Windows, Windows Phone, Windows Mobile, Zenwalk</code><br>
-                    По IP пользователя, например <code>123.123.123.123, 234.234.234.234, и т.п.</code>
+                    В боковой панели сайта (в некоторых шаблонах может её не быть) будут отображаться последние добавленные Вами страницы с тем тегом, который Вы укажите в поле. По умолчанию будут отображаться страницы с тегом <code>новость</code>. Вы можете поставить что угодно, например отображать там коллекции фильмов, т.е. с тегом <code>коллекция</code>.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/target2.png" class="img-responsive mt-10" alt="Таргетинг рекламы в CinemaPress ACMS по стране" data-action="zoom">
+                <img src="/images/admin/content/news.png" class="img-responsive" alt="Блок новостей в боковой панели" data-action="zoom">
             </div>
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="desktop">
+<section class="ptb-100 functionalities bg-gray" id="content">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#desktop">Реклама в десктопной версии сайта</a></h3>
+                    <h3><a href="#content">Блок новостей на странице фильма</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Вы можете поставить рекламу на все страницы основной версии Вашего сайта. Устанавливайте рекламные коды только в блоки, которые есть на Вашем сайте. К примеру не во всех шаблонах есть левый или правый блок, куда можно поставить рекламу, потому Вы можете просто оставить эти блоки пустыми.
+                    На странице каждого фильма, внизу, будут отображаться новости в которых «засветился» данный фильм. Такая перелинковка хорошо поможет проиндексировать сайт.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/desktop.png" class="img-responsive" alt="Реклама в десктопной версии сайта" data-action="zoom">
+                <img src="/images/admin/content/content.png" class="img-responsive" alt="Блок новостей на странице фильма" data-action="zoom">
             </div>
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-white" id="mobile">
+<section class="ptb-100 functionalities bg-white" id="index">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#mobile">Реклама в мобильной версии сайта</a></h3>
+                    <h3><a href="#index">Блок с фильмами из новости на главной</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Реклама в мобильной версии сайта рассчитана на пользователей, которые посещают сайт с мобильного устройства. Поэтому, желательно использовать другой вид рекламы, отличный от основной версии сайта. О способах монетизации мобильного траффика, Вы можете прочитать в <a href="/article/obzor-reklamy-dlya-kinosaytov.html#mbl" target="_blank">этой статье</a>.
+                    Чтобы первые несколько фильмов из какой-то новости или коллекции были на главной странице, Вы можете добавить URL-ключ этой страницы в «Блок с фильмами из новости на главной», задать порядок этого блока и число фильмов.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/mobile.png" class="img-responsive" alt="Реклама в мобильной версии сайта" data-action="zoom">
+                <img src="/images/admin/content/index.png" class="img-responsive" alt="Блок с фильмами из новости на главной" data-action="zoom">
             </div>
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="over">
+<section class="ptb-100 functionalities bg-gray" id="add">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#over">Реклама над плеером/торрентами/трейлером/кадрами</a></h3>
+                    <h3><a href="#add">Добавление новой страницы</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Рекламный код встраивается над плеером, и является практически частью информации о фильме. Блок будет встраиваться на странице фильма/онлайн/трейлера/серии над плеером, на странице торрентов - над торрентами, а на странице кадров - над кадрами.
+                    Добавить новую новость/коллекцию/страницу к списку уже существующих можно нажав на кнопку «Добавить страницу». Первый пункт, который следует заполнить, это уникальный URL-ключ Вашей страницы. Он служит для того, чтобы иметь доступ к странице по URL, а также для отображения по ключу на главной странице сайта. Далее, Вы можете указать ссылку на картинку страницы. После этого, придумайте название для Вашей странице. Это должно быть что-то уникальное и низкочастотное, чтобы страница вышла в топ поисковых систем. Исходя из названия, Вы должны заполнить описание этой страницы, используя соответствующие «ключевые слова». Наконец, последним пунктом, будет добавление фильмов, если это новость/коллекция или оставьте поле пустым, если это просто информативная страница. Вы можете добавлять фильмы несколькими способами, указанием ID КиноПоиск, указанием URL фильма на КиноПоиск, указанием URL фильма на Вашем сайте. Либо если у Вас есть подготовленный список ID КиноПоиск, можете нажать на «Редактировать список ID» и вставить свой список.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/over.png" class="img-responsive" alt="Реклама над плеером/торрентами/трейлером/кадрами" data-action="zoom">
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-white" id="under">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#under">Реклама под плеером/торрентами/трейлером/кадрами</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Рекламный блок под плеером на ровне с блоком над плеером, является достаточно прибыльным местом размещения баннера.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/under.png" class="img-responsive" alt="Реклама под плеером/торрентами/трейлером/кадрами" data-action="zoom">
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-gray" id="top">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#top">Реклама вверху страницы</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Рекламный код будет встроен в верхней части страницы сайта. Исходя из того, какой Вы шаблон выбрали, Вы должны будете посмотреть, какой размер баннера лучше использовать. Реклама вверху страницы является самой просматриваемой, потому Вы должны правильно подойти к выбору рекламодателя.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/top.png" class="img-responsive" alt="Реклама вверху страницы" data-action="zoom">
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-white" id="bottom">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#bottom">Реклама внизу страницы</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Рекламный код будет размещен в нижней части всех страниц сайта. Его размер так же будет разным, в зависимости от того, какой Вы выберите шаблон сайта.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/bottom.png" class="img-responsive" alt="Реклама внизу страницы" data-action="zoom">
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-gray" id="left">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#left">Реклама слева страницы</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Если в шаблоне имеется левое меню, то блок с рекламным кодом будет встроен в него. Однако, если блока в шаблоне нет, то желательно оставить этот пункт пустым, чтобы не нагружать систему лишними вычислениями.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/left.png" class="img-responsive" alt="Реклама слева страницы" data-action="zoom">
-            </div>
-        </div>
-    </div>
-</section>
-<section class="ptb-100 functionalities bg-white" id="right">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 col-sm-6 col-xs-12">
-                <div class="main-title">
-                    <h3><a href="#right">Реклама справа страницы</a></h3>
-                    <div class="seperator"></div>
-                </div>
-                <p class="text-justify">
-                    Некоторые шаблоны имеют правый блок, в который так же можно встроить рекламный код. Блоки в боковых частях сайта зачастую довольно узкие, потому желательно определить оптимальную ширину, чтобы не испортить красивый вид дизайна.
-                </p>
-            </div>
-            <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/rklma/right.png" class="img-responsive" alt="Реклама справа страницы" data-action="zoom">
+                <img src="/images/admin/content/add.png" class="img-responsive" alt="Добавление новой страницы" data-action="zoom">
             </div>
         </div>
     </div>
