@@ -1287,7 +1287,7 @@ import_static() {
 }
 
 check_domain() {
-    STATUS=`curl -s -o /dev/null -I -w "%{http_code}" http://${DOMAIN}`
+    STATUS=`wget --server-response "http://${DOMAIN}" 2>&1 | awk '/^  HTTP/{print $2}'`
 
     if [ "${STATUS}" != "200" ]
     then
@@ -1302,7 +1302,7 @@ check_domain() {
         exit 0
     fi
 
-    STATUS_MOBILE=`curl -s -o /dev/null -I -w "%{http_code}" http://m.${DOMAIN}`
+    STATUS_MOBILE=`wget --server-response "http://m.${DOMAIN}" 2>&1 | awk '/^  HTTP/{print $2}'`
 
     if [ "${STATUS_MOBILE}" != "200" ]
     then
