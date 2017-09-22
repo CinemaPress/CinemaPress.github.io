@@ -914,18 +914,21 @@ conf_mass() {
 }
 
 start_mass() {
+    LNE=1
     while read COMMAND
     do
         if [ "${COMMAND}" = "" ]
         then
+            LNE=$((LNE+1))
             continue
         fi
-        COM=`echo "${COMMAND}" | grep "#"`
+        COM=`echo "${COMMAND}" | grep "# [SUCCESS]"`
         if [ "${COM}" = "" ]
         then
-            sed -i "s|${COMMAND}|# [SUCCESS] ${COMMAND}|g" ${FILE_MASS}
-            eval ${COMMAND}
+            sed -i "${LNE}s/\(.*\)/# [SUCCESS] \1/" ${FILE_MASS}
+            eval "${COMMAND}"
         fi
+        LNE=$((LNE+1))
     done < ${FILE_MASS}
 }
 
@@ -1092,9 +1095,12 @@ update_theme() {
         fi
     fi
 
-    chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
-    sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/production/config.js
-    echo "Change theme to «${THEME}»" >> /home/${DOMAIN}/restart.server
+    if [ -d /home/${DOMAIN}/themes/${THEME} ]
+    then
+        chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
+        sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/production/config.js
+        echo "Change theme to «${THEME}»" >> /home/${DOMAIN}/restart.server
+    fi
 }
 
 success_4() {
