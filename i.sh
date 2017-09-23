@@ -922,7 +922,7 @@ start_mass() {
             LNE=$((LNE+1))
             continue
         fi
-        COM=`echo "${COMMAND}" | grep "# [SUCCESS]"`
+        COM=`echo "${COMMAND}" | grep "# \[SUCCESS]"`
         if [ "${COM}" = "" ]
         then
             sed -i "${LNE}s/\(.*\)/# [SUCCESS] \1/" ${FILE_MASS}
