@@ -1022,9 +1022,9 @@ update_cinemapress() {
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
     sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
 
-    EXP=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_|\s-]*\)".*/\1/'`
-    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_|\s-]*\"/\"CP_ALL\":\"${EXP}\"/" /home/${DOMAIN}/process.json
-    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|\s-]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
+    EXP=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_|- ]*\)".*/\1/'`
+    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_|- ]*\"/\"CP_ALL\":\"${EXP}\"/" /home/${DOMAIN}/process.json
+    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|- ]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
@@ -1788,10 +1788,8 @@ do
 
             separator
 
-            printf "\n${G}Обновление временно недоступно!\n${NC}"
-
-            # update_cinemapress
-            # confirm_update_cinemapress ${3}
+            update_cinemapress
+            confirm_update_cinemapress ${3}
             whileStop
         ;;
         3 )
