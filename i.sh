@@ -1223,7 +1223,7 @@ import_db() {
         sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/production/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/production/config.js
         sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_|\s-]*\"/\"CP_ALL\":\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
-            sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|\s-]*\"/CP_ALL=\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
+        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|\s-]*\"/CP_ALL=\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
 
         sleep 2
 
@@ -1912,10 +1912,19 @@ do
                     ;;
                     oom )
                         OOM=`dmesg | grep "Out of memory"`
+                        ENOMEM=`tail -n100 /root/.pm2/pm2.log | grep "process out of memory\|spawn ENOMEM"`
                         if [ "${OOM}" != "" ]
                         then
                             echo ${OOM}
                             reboot
+                        elif [ "${ENOMEM}" != "" ]
+                        then
+                            echo ${ENOMEM}
+                            sed -i '/process out of memory/d' /root/.pm2/pm2.log
+                            sed -i '/spawn ENOMEM/d' /root/.pm2/pm2.log
+                            pm2 kill
+                            for d in /home/*/; { if [ -f "$d/process.json" ]; then cd "$d" && pm2 start process.json; fi }
+                            pm2 save
                         fi
                     ;;
                     * )

@@ -8,8 +8,8 @@
     <meta property="og:title" content="Переустановка системы CinemaPress ACMS"/>
     <meta name="description" content="Перенос сайта на новый сервер или переустановка системы CinemaPress ACMS"/>
     <meta property="og:description" content="Перенос сайта на новый сервер или переустановка системы CinemaPress ACMS"/>
-    <meta property="og:image" content="https://cinemapress.org/images/change/pereustanovka.png"/>
-    <link rel="image_src" href="https://cinemapress.org/images/change/pereustanovka.png"/>
+    <meta property="og:image" content="https://cinemapress.org/images/opengraph/pereustanovka-sayta-na-cinemapress.png"/>
+    <link rel="image_src" href="https://cinemapress.org/images/opengraph/pereustanovka-sayta-na-cinemapress.png"/>
     <meta property="og:url" content="https://cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html"/>
     <meta property="og:site_name" content="CinemaPress ACMS"/>
     <meta name="twitter:card" content="summary_large_image"/>
@@ -169,7 +169,7 @@
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/change/reinstall.png" class="img-responsive" alt="Переустановка CinemaPress ACMS" data-action="zoom">
+                <img src="/images/update/reinstall.png" class="img-responsive" alt="Переустановка CinemaPress ACMS" data-action="zoom">
             </div>
         </div>
     </div>
@@ -187,7 +187,7 @@
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/change/import.png" class="img-responsive" alt="Переустановка CinemaPress ACMS" data-action="zoom">
+                <img src="/images/update/import.png" class="img-responsive" alt="Переустановка CinemaPress ACMS" data-action="zoom">
             </div>
         </div>
     </div>
@@ -201,7 +201,7 @@
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Версия системы, которая была до 17.09.17, потерпела некоторые изменения, которые обычное обновление не сможет внести. Для этого Вам потребуется полностью переустановить ОС на Debian 8 x64 или Debian 9 x64 и запустить установку Вашего нового сайта через SSH, перед этим обязательно не забудьте сохранить на компьютер папку <code>/config</code> и если Вы делали какие-то изменения в теме, то и папку <code>/themes</code>. Когда Вы запустили установку и создали новый сайт, нужно перенести файлы конфигурации в новую систему и так же перенести все Ваши уникальные описания и коллекции. Для этого подключитесь к сайту по FTP и зайдите в папку <code>/config/production</code>. Перенесите в неё с сохраненной у Вас на компьютере папки <code>/config</code>, следующие файлы <code>config.js</code>, <code>modules.js</code>, <code>texts.js</code>. В <code>/config/production</code> уже будут лежать <code>config.js</code> и <code>modules.js</code>, потому Вам нужно будет их заменить Вашими файлами. Теперь открываете терминал (Putty), где Вы устанавливали сайт и запускаете следующие команды по очереди (<strong>domain.com</strong> - замените на URL Вашего домена, в нижнем регистре без www):<br>
+                    Версия системы, которая была до 17.09.17, потерпела некоторые изменения, которые обычное обновление не сможет внести. Для этого Вам потребуется полностью переустановить ОС на Debian 8 x64 или Debian 9 x64 и запустить установку Вашего нового сайта через SSH, перед этим обязательно не забудьте сохранить на компьютер папку <code>/config</code> и если Вы делали какие-то изменения в теме, то и папку <code>/themes</code>. Когда Вы запустили установку и создали новый сайт, нужно перенести файлы конфигурации в новую систему и так же перенести все Ваши уникальные описания и коллекции. Для этого подключитесь к сайту по FTP и зайдите в папку <code>/config/production</code>. Перенесите в неё с сохраненной у Вас на компьютере папки <code>/config</code>, следующие файлы <code>config.js</code>, <code>modules.js</code>, <code>texts.js</code>. В <code>/config/production</code> уже будут лежать <code>config.js</code> и <code>modules.js</code>, потому Вам нужно будет их заменить Вашими файлами. Если у Вас была полная база, то сейчас нужно <a href="#import">импортировать информацию о фильмах</a>, если же нет, то продолжайте. Теперь открываете терминал (Putty), где Вы устанавливали сайт и запускаете следующие команды по очереди (<strong>domain.com</strong> - замените на URL Вашего домена, в нижнем регистре без www):<br>
                     <code>~# DOMAIN="<strong>domain.com</strong>"</code><br>
                     <code>~# DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`</code><br>
                     <code>~# cd /home/${DOMAIN}/config/update/</code><br>
@@ -212,7 +212,7 @@
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/change/update.png" class="img-responsive" alt="Как обновиться с системы, которая была до 17.09.17?" data-action="zoom">
+                <img src="/images/update/update.png" class="img-responsive" alt="Как обновиться с системы, которая была до 17.09.17?" data-action="zoom">
             </div>
         </div>
     </div>
