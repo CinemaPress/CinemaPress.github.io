@@ -1923,7 +1923,7 @@ do
                             sed -i '/process out of memory/d' /root/.pm2/pm2.log
                             sed -i '/spawn ENOMEM/d' /root/.pm2/pm2.log
                             pm2 kill
-                            for d in /home/*/; { if [ -f "$d/process.json" ]; then cd "$d" && pm2 start process.json; fi }
+                            for d in /home/*/; do if [ -f "$d/process.json" ]; then cd "$d" && pm2 start process.json; fi; done;
                             pm2 save
                         fi
                     ;;
