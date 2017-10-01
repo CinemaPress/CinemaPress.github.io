@@ -1912,7 +1912,7 @@ do
                     ;;
                     oom )
                         OOM=`dmesg | grep "Out of memory"`
-                        ENOMEM=`tail -n100 /root/.pm2/pm2.log | grep "process out of memory\|spawn ENOMEM"`
+                        ENOMEM=`tail -n100 /root/.pm2/pm2.log | grep "process out of memory\|spawn ENOMEM\|Error caught by domain"`
                         if [ "${OOM}" != "" ]
                         then
                             echo ${OOM}
@@ -1922,6 +1922,7 @@ do
                             echo ${ENOMEM}
                             sed -i '/process out of memory/d' /root/.pm2/pm2.log
                             sed -i '/spawn ENOMEM/d' /root/.pm2/pm2.log
+                            sed -i '/Error caught by domain/d' /root/.pm2/pm2.log
                             pm2 kill
                             for d in /home/*/; do if [ -f "$d/process.json" ]; then cd "$d" && pm2 start process.json; fi; done;
                             pm2 save
