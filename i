@@ -1358,7 +1358,7 @@ create_mega_backup() {
     MEGA_DAY=$(date +%d)
     MEGA_NOW=$(date +%Y-%m-%d)
     MEGA_DELETE=$(date +%Y-%m-%d -d "30 day ago")
-    THEME_NAME=`grep "theme" /home/${DOMAIN}/config/production/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
+    THEME_NAME=`grep "\"theme\"" /home/${DOMAIN}/config/production/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
     megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
     if [ "${MEGA_DAY}" != "10" ]
     then
