@@ -557,7 +557,8 @@ add_user() {
 }
 
 conf_nginx() {
-    NGINX_PORT=33333
+    RND=`randomNum 1 9999`
+    NGINX_PORT=$((30000 + RND))
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -606,8 +607,10 @@ conf_nginx() {
 }
 
 conf_sphinx() {
-    SPHINX_PORT=39312
-    MYSQL_PORT=29306
+    RND=`randomNum 1 9999`
+    SPHINX_PORT=$((40000 + RND))
+    RND=`randomNum 1 9999`
+    MYSQL_PORT=$((20000 + RND))
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -677,7 +680,8 @@ conf_proftpd() {
 }
 
 conf_memcached() {
-    MEMCACHED_PORT=51211
+    RND=`randomNum 1 9999`
+    MEMCACHED_PORT=$((50000 + RND))
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -742,19 +746,24 @@ conf_cinemapress() {
     sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/config.js
     sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/production/config.js
+    sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/default/config.js
 
     if [ "${MYSQL}" != "" ]
     then
         sed -i "s/127\.0\.0\.1:9306/${MYSQL}/" /home/${DOMAIN}/config/production/config.js
+        sed -i "s/127\.0\.0\.1:9306/${MYSQL}/" /home/${DOMAIN}/config/default/config.js
     else
         sed -i "s/:9306/:${MYSQL_PORT}/" /home/${DOMAIN}/config/production/config.js
+        sed -i "s/:9306/:${MYSQL_PORT}/" /home/${DOMAIN}/config/default/config.js
     fi
 
     if [ "${MEMCACHED}" != "" ]
     then
         sed -i "s/127\.0\.0\.1:11211/${MEMCACHED}/" /home/${DOMAIN}/config/production/config.js
+        sed -i "s/127\.0\.0\.1:11211/${MEMCACHED}/" /home/${DOMAIN}/config/default/config.js
     else
         sed -i "s/:11211/:${MEMCACHED_PORT}/" /home/${DOMAIN}/config/production/config.js
+        sed -i "s/:11211/:${MEMCACHED_PORT}/" /home/${DOMAIN}/config/default/config.js
     fi
 
     cp /home/${DOMAIN}/config/production/config.js /home/${DOMAIN}/config/production/config.prev.js
@@ -1716,6 +1725,18 @@ option() {
         fi
     done
     printf "\n${NC}"
+}
+
+randomNum() {
+    FLOOR=${1}
+    RANGE=${2}
+    number=0
+    while [ "${number}" -le ${FLOOR} ]
+    do
+      number=$RANDOM
+      let "number %= $RANGE"
+    done
+    echo ${number}
 }
 
 whileStop() {
