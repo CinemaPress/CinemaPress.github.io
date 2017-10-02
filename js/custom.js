@@ -20,7 +20,7 @@ function timer(min, type, callback) {
                 ((min < 10) ? '0' + min : min) +
                 ':' +
                 ((sec < 10) ? '0' + sec : sec);
-            if (sec == 0 && min == 0) {
+            if (sec === 0 && min === 0) {
                 callback(time);
                 clearInterval(timer);
             }
@@ -99,14 +99,14 @@ function req() {
     http.open('POST', 'https://fastinstall.cinemapress.org', true);
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     http.onreadystatechange = function() {
-        if (http.readyState == 4 && http.status == 200) {
+        if (http.readyState === 4 && http.status === 200) {
             var info_block = document.querySelectorAll('.info_block');
             if (info_block) {
                 for (var i = 0; i < info_block.length; i++) {
                     info_block[i].style.display = 'none';
                 }
             }
-            if (http.responseText == 'OK' || http.responseText == 'APACHE') {
+            if (http.responseText === 'OK' || http.responseText === 'APACHE') {
                 document.querySelector('#info_install').style.display = 'block';
                 document.querySelector('#req').style.display = 'none';
                 document.querySelector('#user').style.display = 'block';
@@ -121,18 +121,18 @@ function req() {
                     document.querySelector('#go').setAttribute('target', '_blank');
                     document.querySelector('#go').innerHTML = 'Перейти в админ-панель';
                 });
-                if (http.responseText == 'APACHE') {
+                if (http.responseText === 'APACHE') {
                     setTimeout(function () {
                         document.querySelector('#info_mess').innerHTML = '<span class="fa fa-plug"></span> На сервере установлен Apache2, возможны проблемы!';
                     }, 60000);
                 }
             }
-            else if (http.responseText == 'DEBIAN') {
+            else if (http.responseText === 'DEBIAN') {
                 document.querySelector('#info_debian').style.display = 'block';
                 self.addEventListener('click', req);
                 self.innerHTML = 'Установить';
             }
-            else if (http.responseText == 'TIME') {
+            else if (http.responseText === 'TIME') {
                 document.querySelector('#info_time').style.display = 'block';
                 timer(1, 'time', function () {
                     self.addEventListener('click', req);
@@ -169,3 +169,15 @@ function randomInteger(min, max) {
     rand = Math.round(rand);
     return rand;
 }
+
+function createDomain() {
+    var req_domain = document.querySelector('input[name="req_domain"]');
+    if (!req_domain) return;
+    var last = ['na','bo','co','do','re','fe','ge','hi','ka','ko','mo','no','vo','po','so','si','to','wi','ya','fa','fe','pe','me','se','de','ne','ve','he','ke','ve'];
+    var d = last[Math.floor(Math.random()*last.length)];
+    var tld = ['net','club','me','to','org'];
+    var t = tld[Math.floor(Math.random()*tld.length)];
+    req_domain.setAttribute('placeholder', 'kino' + d + '.' + t);
+}
+
+document.addEventListener('DOMContentLoaded',createDomain);
