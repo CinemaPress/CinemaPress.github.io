@@ -170,7 +170,11 @@ function randomInteger(min, max) {
     return rand;
 }
 
-function createDomain() {
+function domLoaded() {
+    var rotating_hide = document.querySelector('#text-rotating-hide');
+    rotating_hide.style.display = 'none';
+    var rotating = document.querySelector('#text-rotating');
+    rotating.style.display = 'inline';
     var req_domain = document.querySelector('input[name="req_domain"]');
     if (!req_domain) return;
     var last = ['na','bo','co','do','re','fe','ge','hi','ka','ko','mo','no','vo','po','so','si','to','wi','ya','fa','fe','pe','me','se','de','ne','ve','he','ke','ve'];
@@ -180,4 +184,4 @@ function createDomain() {
     req_domain.setAttribute('placeholder', 'kino' + d + '.' + t);
 }
 
-document.addEventListener('DOMContentLoaded',createDomain);
+document.addEventListener('DOMContentLoaded',domLoaded);
