@@ -1000,7 +1000,7 @@ update_cinemapress() {
         printf "${C}----        ${NC}Сайт был создан до 1 октября 2017 года,${C}           ----\n${NC}"
         printf "${C}----    ${NC}потому следует полностью переустановить систему.${C}      ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "    ${NC}https://cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html"
+        printf "${NC}https://cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
