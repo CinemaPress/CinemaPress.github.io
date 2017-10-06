@@ -991,6 +991,21 @@ fail_2() {
 }
 
 update_cinemapress() {
+    DOMAIN_CREATE=`stat -c %y /home/${DOMAIN}`
+    if [ "`date -d "${DOMAIN_CREATE}" +%s`" -lt "`date -d "2017-10-01" +%s`" ];
+    then
+        printf "\n${NC}"
+        printf "${C}------------------------[ ${Y}ПРЕДУПРЕЖДЕНИЕ${C} ]------------------------\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}----        ${NC}Сайт был создан до 1 октября 2017 года,${C}           ----\n${NC}"
+        printf "${C}----    ${NC}потому следует полностью переустановить систему.${C}      ----\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "    ${NC}https://cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}------------------------------------------------------------------\n${NC}"
+        printf "\n${NC}"
+        exit 0
+    fi
     INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
 
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/oldCP
