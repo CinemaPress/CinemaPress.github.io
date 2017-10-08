@@ -1343,13 +1343,13 @@ confirm_import_db() {
 
 import_static() {
     wget -O /home/images.tar http://static.cinemapress.org/images.tar
-    mkdir -p /var/local/images
+    mkdir -p /var/local/images/poster
+    wget http://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
     printf "\n${NC}"
-    printf "${G}Распаковка ...\n"
+    printf "${G}Распаковка в фоновом режиме ...\n"
     printf "${NC}Может занять несколько часов.\n"
     printf "\n${NC}"
-    tar -xf /home/images.tar -C /var/local/images
-    wget http://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
+    nohup tar -xf /home/images.tar -C /var/local/images >> "/home/images.log" 2>&1 &
 }
 
 check_domain() {
