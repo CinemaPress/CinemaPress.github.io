@@ -884,7 +884,7 @@ restart_cinemapress() {
         /etc/fail2ban/action.d/nginxrepeatoffender.conf
     ln -sf /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
         /etc/fail2ban/filter.d/nginxrepeatoffender.conf
-    ln -s /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
+    ln -sf /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
         /etc/fail2ban/filter.d/nginx-x00.conf
     sleep 2
     service nginx restart
@@ -1038,7 +1038,8 @@ update_cinemapress() {
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/config/* \
         /home/${DOMAIN}/config
 
-    cp -r ${0} /home/${DOMAIN}/config/production/i && \
+    cd ~/ && \
+    cp -r "${0}" /home/${DOMAIN}/config/production/i && \
     chmod +x /home/${DOMAIN}/config/production/i
 
     sed -i "s/example_com\"/${INDEX_DOMAIN}\"/g" /home/${DOMAIN}/config/production/i
@@ -1046,9 +1047,9 @@ update_cinemapress() {
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
     sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
 
-    EXP=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_|- ]*\)".*/\1/'`
-    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_|- ]*\"/\"CP_ALL\":\"${EXP}\"/" /home/${DOMAIN}/process.json
-    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|- ]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
+    EXP=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"${EXP}\"/" /home/${DOMAIN}/process.json
+    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
