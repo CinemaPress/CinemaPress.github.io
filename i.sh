@@ -901,7 +901,7 @@ restart_cinemapress() {
     pm2 start process.json && \
     pm2 save
     sleep 2
-    node /home/${DOMAIN}/config/update/update_cinemapress.js
+    node /home/${DOMAIN}/config/update/update_cinemapress.js ${1}
 }
 
 conf_mass() {
@@ -1053,7 +1053,7 @@ update_cinemapress() {
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    restart_cinemapress
+    restart_cinemapress update
 }
 
 confirm_update_cinemapress() {
