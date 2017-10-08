@@ -1285,8 +1285,8 @@ import_db() {
 
         sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/production/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/production/config.js
-        sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_|\s-]*\"/\"CP_ALL\":\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
-        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_|\s-]*\"/CP_ALL=\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
+        sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
+        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
 
         sleep 2
 
