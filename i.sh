@@ -2015,6 +2015,31 @@ do
                     ;;
                 esac
                 exit 0
+            elif [ "${1}" = "update" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+                cd /home/${DOMAIN}/config/update/ && \
+                node update_cinemapress.js && \
+                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" CP_ALL="_${DOMAIN_}_" node update_collections.js && \
+                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" CP_ALL="_${DOMAIN_}_" node update_texts.js
+            elif [ "${1}" = "passwd" ]
+            then
+                read_domain ${2}
+                read_password ${3}
+
+                separator
+
+                rm -rf /etc/nginx/nginx_pass_${DOMAIN}
+                OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
+                echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}
+                service nginx restart
+                USERID=`id -u ${DOMAIN}`
+                echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}
+                service proftpd restart
             fi
             option ${1}
         ;;

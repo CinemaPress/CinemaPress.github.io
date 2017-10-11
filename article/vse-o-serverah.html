@@ -189,27 +189,13 @@
                         ~# passwd
                     </code>
                     <br><br>
-                    <strong>Изменить пароль от админ-панели:</strong><br>
-                    <code>~# PASSWD="<strong>password</strong>"</code><br>
-                    <code>~# DOMAIN="<strong>domain.com</strong>"</code><br>
-                    <code>~# rm -rf /etc/nginx/nginx_pass_${DOMAIN}</code><br>
-                    <code>~# OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`</code><br>
-                    <code>~# echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}</code><br>
-                    <code>~# service nginx restart</code>
-                    <br><br>
-                    <strong>Изменить пароль от FTP:</strong><br>
-                    <code>~# PASSWD="<strong>password</strong>"</code><br>
-                    <code>~# DOMAIN="<strong>domain.com</strong>"</code><br>
-                    <code>~# USERID=`id -u ${DOMAIN}`</code><br>
-                    <code>~# echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}</code><br>
-                    <code>~# service proftpd restart</code>
-                    <br><br>
-                    <code><strong>password</strong></code> - замените на Ваш пароль;<br>
-                    <code><strong>domain.com</strong></code> - замените на Ваш домен;<br>
+                    <strong>Изменить пароль от админ-панели и FTP:</strong><br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i passwd</code><br>
+                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/vps/pass.png" class="img-responsive" alt="Как изменить пароль админ-панели или FTP?" data-action="zoom">
+                <img src="/images/vps/pass.png" class="img-responsive" alt="Как изменить пароль админ-панели и FTP?" data-action="zoom">
             </div>
         </div>
     </div>
