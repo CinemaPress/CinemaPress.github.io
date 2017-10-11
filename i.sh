@@ -2024,8 +2024,20 @@ do
                 DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
                 cd /home/${DOMAIN}/config/update/ && \
                 node update_cinemapress.js && \
-                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" CP_ALL="_${DOMAIN_}_" node update_collections.js && \
-                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" CP_ALL="_${DOMAIN_}_" node update_texts.js
+                CP_ALL="_${DOMAIN_}_" \
+                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" \
+                CP_RT="rt_${DOMAIN_}" \
+                CP_CONTENT="content_${DOMAIN_}" \
+                CP_COMMENT="comment_${DOMAIN_}" \
+                CP_USER="user_${DOMAIN_}" \
+                node update_collections.js && \
+                CP_ALL="_${DOMAIN_}_" \
+                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" \
+                CP_RT="rt_${DOMAIN_}" \
+                CP_CONTENT="content_${DOMAIN_}" \
+                CP_COMMENT="comment_${DOMAIN_}" \
+                CP_USER="user_${DOMAIN_}" \
+                node update_texts.js
             elif [ "${1}" = "passwd" ]
             then
                 read_domain ${2}
