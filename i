@@ -2038,6 +2038,7 @@ do
                 CP_COMMENT="comment_${DOMAIN_}" \
                 CP_USER="user_${DOMAIN_}" \
                 node update_texts.js
+                exit 0
             elif [ "${1}" = "passwd" ]
             then
                 read_domain ${2}
@@ -2052,6 +2053,7 @@ do
                 USERID=`id -u ${DOMAIN}`
                 echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}
                 service proftpd restart
+                exit 0
             fi
             option ${1}
         ;;
