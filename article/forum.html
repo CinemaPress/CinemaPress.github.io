@@ -718,5 +718,13 @@
         </div>
     </div>
 </section>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var bg = window.location.hash.substr(1);
+        if (bg) {
+            document.querySelector('body').style.background = '#' + bg;
+        }
+    });
+</script>
 </body>
 </html>
