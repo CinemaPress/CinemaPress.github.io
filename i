@@ -2054,6 +2054,18 @@ do
                 echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}
                 service proftpd restart
                 exit 0
+            elif [ "${1}" = "reload" ]
+            then
+                NAME_CURRENT="${2}"
+                ID_CURRENT="${3}"
+                while read -r line; do
+                    ID_RELOAD=`echo ${line} | sed 's~[^0-9]*\([0-9]*\).*~\1~'`
+                    if [ "${ID_RELOAD}" != "${ID_CURRENT}" ]
+                    then
+                        pm2 reload "${ID_RELOAD}" --force
+                    fi
+                done <<< "`pm2 show ${NAME_CURRENT} | grep 'with id'`";
+                exit 0
             fi
             option ${1}
         ;;
