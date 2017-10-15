@@ -1431,7 +1431,13 @@ create_mega_backup() {
     rm -rf /tmp/${DOMAIN} && mkdir -p /tmp/${DOMAIN}
     cd /home/${DOMAIN} && \
     tar -uf /tmp/${DOMAIN}/config.tar \
-        config --exclude=config/default
+        config \
+        --exclude=config/default \
+        --exclude=config/production/i \
+        --exclude=config/production/sphinx \
+        --exclude=config/production/fail2ban \
+        --exclude=config/production/nginx \
+        --exclude=config/production/sysctl
     cd /home/${DOMAIN} && \
     tar -uf /tmp/${DOMAIN}/themes.tar \
         themes/default/public/desktop \
