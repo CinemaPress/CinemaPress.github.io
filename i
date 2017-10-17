@@ -2075,6 +2075,16 @@ do
                     fi
                 done <<< "`pm2 show ${NAME_CURRENT} | grep 'with id'`";
                 exit 0
+            elif [ "${1}" = "zero" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+                sed -i "s/xmlpipe_command =.*/xmlpipe_command =/" "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+                indexer xmlpipe2_${DOMAIN_} --rotate --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+                exit 0
             fi
             option ${1}
         ;;
