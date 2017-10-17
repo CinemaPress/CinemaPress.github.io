@@ -185,9 +185,7 @@
                 <p class="text-justify">
                     Изначально после установки CinemaPress ACMS пароль от админ-панели и FTP сайта совпадают. Однако <a href="/article/kak-ustanovit-cinemapress-acms.html#windows" target="_blank">подключившись по SSH к серверу</a> и выполнив последовательно несколько команд, Вы можете изменить эти пароли на свои.<br><br>
                     <strong>Изменить пароль от root-пользователя:</strong><br>
-                    <code>
-                        ~# passwd
-                    </code>
+                    <code>~# passwd</code>
                     <br><br>
                     <strong>Изменить пароль от админ-панели и FTP:</strong><br>
                     <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i passwd</code><br>
@@ -214,6 +212,26 @@
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
                 <img src="/images/vps/cluster.png" class="img-responsive" alt="Тормозит или долго открывается сайт на CinemaPress ACMS?" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-white" id="zero">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#zero">Как удалить стандартные фильмы на CinemaPress ACMS?</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Если Вам нужно полностью очистить систему от стандартных фильмов, Вы можете воспользоваться одной командой, которая сделает все необходимые действия.<br><br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i zero</code><br>
+                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small>
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/vps/zero.png" class="img-responsive" alt="Как удалить стандартные фильмы на CinemaPress ACMS?" data-action="zoom">
             </div>
         </div>
     </div>
