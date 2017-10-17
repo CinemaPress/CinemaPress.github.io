@@ -1427,6 +1427,9 @@ create_mega_backup() {
     INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
     PORT_DOMAIN=`grep "mysql41" /home/${DOMAIN}/config/production/sphinx/sphinx.conf | sed 's/.*:\([0-9]*\):mysql41.*/\1/'`
     echo "FLUSH RTINDEX rt_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
+    echo "FLUSH RTINDEX content_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
+    echo "FLUSH RTINDEX comment_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
+    echo "FLUSH RTINDEX user_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
     sleep 2
     rm -rf /tmp/${DOMAIN} && mkdir -p /tmp/${DOMAIN}
     cd /home/${DOMAIN} && \
