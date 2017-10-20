@@ -906,7 +906,7 @@ restart_cinemapress() {
     pm2 start process.json && \
     pm2 save
     sleep 2
-    node /home/${DOMAIN}/config/update/update_cinemapress.js ${1}
+    node /home/${DOMAIN}/config/update/update_cinemapress.js
 }
 
 conf_mass() {
@@ -1064,9 +1064,17 @@ update_cinemapress() {
     sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"${EXP}\"/" /home/${DOMAIN}/process.json
     sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
 
+    ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/default/config.js"`
+    NGINX_ADDR=`echo "${ADDRS}" | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
+    sed -i "s/127\.0\.0\.1:3000/${NGINX_ADDR}/" /home/${DOMAIN}/config/default/config.js
+    SPHINX_ADDR=`echo "${ADDRS}" | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:2[0-9]*\)\".*/\1/'`
+    sed -i "s/127\.0\.0\.1:9306/${SPHINX_ADDR}/" /home/${DOMAIN}/config/default/config.js
+    MEMCACHED_ADDR=`echo "${ADDRS}" | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:5[0-9]*\)\".*/\1/'`
+    sed -i "s/127\.0\.0\.1:11211/${MEMCACHED_ADDR}/" /home/${DOMAIN}/config/default/config.js
+
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    restart_cinemapress "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/production/config.js"
+    restart_cinemapress
 }
 
 confirm_update_cinemapress() {
