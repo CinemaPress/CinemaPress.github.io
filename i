@@ -767,6 +767,11 @@ conf_cinemapress() {
     fi
 
     cp /home/${DOMAIN}/config/production/config.js /home/${DOMAIN}/config/production/config.prev.js
+
+    wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
+    tar xvfz "geo.tar.gz"
+    mv GeoLite2*/GeoLite2-City.mmdb /home/${DOMAIN}/files/GeoLite2-City.mmdb
+    rm -rf geo.tar.gz GeoLite2-City_*
 }
 
 conf_sysctl() {
