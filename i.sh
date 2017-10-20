@@ -1065,11 +1065,11 @@ update_cinemapress() {
     sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
 
     ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/default/config.js"`
-    NGINX_ADDR=`echo "${ADDRS}" | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
+    NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
     sed -i "s/127\.0\.0\.1:3000/${NGINX_ADDR}/" /home/${DOMAIN}/config/default/config.js
-    SPHINX_ADDR=`echo "${ADDRS}" | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:2[0-9]*\)\".*/\1/'`
+    SPHINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:2[0-9]*\)\".*/\1/'`
     sed -i "s/127\.0\.0\.1:9306/${SPHINX_ADDR}/" /home/${DOMAIN}/config/default/config.js
-    MEMCACHED_ADDR=`echo "${ADDRS}" | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:5[0-9]*\)\".*/\1/'`
+    MEMCACHED_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:5[0-9]*\)\".*/\1/'`
     sed -i "s/127\.0\.0\.1:11211/${MEMCACHED_ADDR}/" /home/${DOMAIN}/config/default/config.js
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
