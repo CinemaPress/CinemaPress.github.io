@@ -1053,7 +1053,7 @@ update_cinemapress() {
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    restart_cinemapress update
+    restart_cinemapress "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/production/config.js"
 }
 
 confirm_update_cinemapress() {
@@ -1391,6 +1391,8 @@ get_ssl() {
     openssl dhparam -out /etc/letsencrypt/live/${DOMAIN}/dhparam.pem 2048
     sed -i "s/#ssl/ssl/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/#listen/listen/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    sed -i "s/#onlyHTTPS //g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    sed -E -i "s/\"protocol\":\s*\"http:\/\/\"/\"protocol\":\"https:\/\/\"/" /home/${DOMAIN}/config/production/config.js
     if [ "`grep \"renew_ssl\" /etc/crontab`" = "" ]
     then
         echo -e "\n" >> /etc/crontab
@@ -1398,6 +1400,7 @@ get_ssl() {
         echo "40 5 * * 1 root /etc/certbot-auto renew --quiet --post-hook \"service nginx reload\" >> /var/log/le-renew.log" >> /etc/crontab
         echo "# ----- renew_ssl --------------------------------------" >> /etc/crontab
     fi
+    pm2 restart ${DOMAIN}
     service nginx restart
 }
 
