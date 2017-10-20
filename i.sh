@@ -15,7 +15,7 @@ then
 	exit 1
 fi
 
-if [ ! -f /etc/debian_version ]
+if ! [ -f /etc/debian_version ]
 then
 	printf "${R}WARNING:${NC} Система работает на Debian 9 x64!\n${NC}"
 	exit 1
@@ -1016,6 +1016,12 @@ update_cinemapress() {
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/oldCP
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/newCP
 
+    git clone \
+        https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git \
+        /home/${DOMAIN}/backup/${B_DIR}/newCP
+
+    if ! [ -f "/home/${DOMAIN}/backup/${B_DIR}/newCP/app.js" ]; then exit 0; fi;
+
     stop_cinemapress
 
     rm -rf /home/${DOMAIN}/node_modules
@@ -1025,9 +1031,6 @@ update_cinemapress() {
         /home/${DOMAIN}/backup/${B_DIR}/oldCP && \
     cd /home/${DOMAIN}/ && \
     find . -depth -type d -empty -delete && \
-    git clone \
-        https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git \
-        /home/${DOMAIN}/backup/${B_DIR}/newCP
     rsync -av --progress \
         /home/${DOMAIN}/backup/${B_DIR}/newCP/* \
         /home/${DOMAIN}
@@ -1042,6 +1045,11 @@ update_cinemapress() {
     rsync -av --progress --exclude default \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/config/* \
         /home/${DOMAIN}/config
+
+    wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
+    tar xvfz "geo.tar.gz"
+    mv GeoLite2*/GeoLite2-City.mmdb /home/${DOMAIN}/files/GeoLite2-City.mmdb
+    rm -rf geo.tar.gz GeoLite2-City_*
 
     cd ~/ && \
     cp -r "${0}" /home/${DOMAIN}/config/production/i && \
