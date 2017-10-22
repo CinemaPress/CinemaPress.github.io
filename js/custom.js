@@ -139,6 +139,11 @@ function req() {
                     self.innerHTML = 'Установить';
                 });
             }
+            else if (http.responseText === 'OFFLINE') {
+                document.querySelector('#info_offline').style.display = 'block';
+                self.addEventListener('click', req);
+                self.innerHTML = 'Установить';
+            }
             else {
                 document.querySelector('#info_connect').style.display = 'block';
                 self.addEventListener('click', req);
