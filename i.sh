@@ -1434,6 +1434,7 @@ create_mega_backup() {
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
         echo "@daily root /home/${DOMAIN}/config/production/i cron backup \"${DOMAIN}\" \"${MEGA_EMAIL}\" \"${MEGA_PASSWD}\" >> /home/${DOMAIN}/log/autostart.log" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
+        cp -r "${0}" /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
     fi
     MEGA_DAY=$(date +%d)
     MEGA_NOW=$(date +%Y-%m-%d)
