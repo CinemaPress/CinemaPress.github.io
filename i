@@ -1462,6 +1462,7 @@ create_mega_backup() {
     cd /home/${DOMAIN} && \
     tar -uf /tmp/${DOMAIN}/config.tar \
         config \
+        --exclude=config/update \
         --exclude=config/default \
         --exclude=config/production/i \
         --exclude=config/production/sphinx \
