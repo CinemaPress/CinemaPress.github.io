@@ -61,6 +61,42 @@ read_domain() {
     done
 }
 
+read_mirror() {
+    printf "${C}-------------------------[ ${Y}URL ЗЕРКАЛА${C} ]--------------------------\n${NC}"
+    AGAIN=yes
+    while [ "${AGAIN}" = "yes" ]
+    do
+        if [ ${1} ]
+        then
+            MIRROR=${1}
+            MIRROR=`echo ${MIRROR} | iconv -c -t UTF-8`
+            echo ": ${MIRROR}"
+        else
+            read -e -p ': ' MIRROR
+            MIRROR=`echo ${MIRROR} | iconv -c -t UTF-8`
+        fi
+        if [ "${MIRROR}" != "" ]
+        then
+            if echo "${MIRROR}" | grep -qE ^\-?[.a-z0-9-]+$
+            then
+                if [ "${DOMAIN}" = "${MIRROR}" ]
+                then
+                    printf "${R}WARNING:${NC} Зеркало сайта не может быть таким же, \n"
+                    printf "${NC}         как и домен основного сайта! \n"
+                else
+                    AGAIN=no
+                fi
+            else
+                printf "${NC}         Вы ввели - ${MIRROR} \n"
+                printf "${R}WARNING:${NC} Допускаются только латинские символы \n"
+                printf "${NC}         в нижнем регистре, цифры, точки и дефисы! \n"
+            fi
+        else
+            printf "${R}WARNING:${NC} URL зеркала не может быть пустым. \n"
+        fi
+    done
+}
+
 read_login() {
     printf "${C}---------------[ ${Y}ВАШ ЛОГИН ОТ АДМИН-ПАНЕЛИ И FTP${C} ]----------------\n${NC}"
     echo ": ${DOMAIN}"
@@ -571,20 +607,14 @@ conf_nginx() {
         fi
     done
     mkdir /etc/nginx/bots.d
-    rm -rf /etc/nginx/conf.d/rewrite.conf; \
-    rm -rf /etc/nginx/conf.d/blacklist.conf; \
-    rm -rf /etc/nginx/conf.d/${DOMAIN}.conf; \
-    rm -rf /etc/nginx/bots.d/blockbots.conf; \
-    rm -rf /etc/nginx/bots.d/ddos.conf; \
-    rm -rf /etc/nginx/bots.d/whitelist-domains.conf; \
-    rm -rf /etc/nginx/bots.d/whitelist-ips.conf
-    ln -s /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf /etc/nginx/conf.d/blacklist.conf
-    ln -s /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf /etc/nginx/conf.d/rewrite.conf
+    rm -rf /etc/nginx/conf.d/${DOMAIN}.conf
     ln -s /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
-    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf /etc/nginx/bots.d/blockbots.conf
-    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf /etc/nginx/bots.d/ddos.conf
-    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf /etc/nginx/bots.d/whitelist-domains.conf
-    ln -s /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf /etc/nginx/bots.d/whitelist-ips.conf
+    cp /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf /etc/nginx/conf.d/blacklist.conf
+    cp /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf /etc/nginx/conf.d/rewrite.conf
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf /etc/nginx/bots.d/blockbots.conf
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf /etc/nginx/bots.d/ddos.conf
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf /etc/nginx/bots.d/whitelist-domains.conf
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf /etc/nginx/bots.d/whitelist-ips.conf
     sed -i "s/:3000/:${NGINX_PORT}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
@@ -645,18 +675,24 @@ conf_sphinx() {
     fi
     if [ "`lsb_release -cs`" = "jessie" ]
     then
-        sed -i "s/\[mysqld\]/\[mysqld\]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake/g" /etc/mysql/my.cnf
-        sed -i "s/\key_buffer/key_buffer_size/g" /etc/mysql/my.cnf
-        sed -i "s/\myisam-recover/myisam-recover-options/g" /etc/mysql/my.cnf
-        sed -i "s/#max_connections        = 100/max_connections        = 600/g" /etc/mysql/my.cnf
+        if [ "`grep \"skip-character-set-client-handshake\" /etc/mysql/my.cnf`" = "" ]
+        then
+            sed -i "s/\[mysqld\]/\[mysqld\]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake/g" /etc/mysql/my.cnf
+            sed -i "s/\key_buffer/key_buffer_size/g" /etc/mysql/my.cnf
+            sed -i "s/\myisam-recover/myisam-recover-options/g" /etc/mysql/my.cnf
+            sed -i "s/#max_connections        = 100/max_connections        = 600/g" /etc/mysql/my.cnf
+        fi
     else
         mkdir -p /etc/mysql/conf.d/
         if [ -f "/etc/mysql/conf.d/mysqld.cnf" ]
         then
-            sed -i "s/\[mysqld\]/\[mysqld\]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake/g" /etc/mysql/conf.d/mysqld.cnf
-            sed -i "s/\key_buffer/key_buffer_size/g" /etc/mysql/conf.d/mysqld.cnf
-            sed -i "s/\myisam-recover/myisam-recover-options/g" /etc/mysql/conf.d/mysqld.cnf
-            sed -i "s/#max_connections        = 100/max_connections        = 600/g" /etc/mysql/conf.d/mysqld.cnf
+            if [ "`grep \"skip-character-set-client-handshake\" /etc/mysql/conf.d/mysqld.cnf`" = "" ]
+            then
+                sed -i "s/\[mysqld\]/\[mysqld\]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake/g" /etc/mysql/conf.d/mysqld.cnf
+                sed -i "s/\key_buffer/key_buffer_size/g" /etc/mysql/conf.d/mysqld.cnf
+                sed -i "s/\myisam-recover/myisam-recover-options/g" /etc/mysql/conf.d/mysqld.cnf
+                sed -i "s/#max_connections        = 100/max_connections        = 600/g" /etc/mysql/conf.d/mysqld.cnf
+            fi
         else
             touch /etc/mysql/conf.d/mysqld.cnf
             echo -e "[mysqld]\ninit_connect='SET collation_connection = utf8_general_ci'\ninit_connect='SET NAMES utf8'\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci\nskip-character-set-client-handshake\n\nkey_buffer_size         = 16M\nmyisam-recover-options  = BACKUP\nmax_connections         = 600" >> /etc/mysql/conf.d/mysqld.cnf
@@ -775,22 +811,28 @@ conf_cinemapress() {
 }
 
 conf_sysctl() {
-    mv /etc/sysctl.conf /etc/sysctl.old.conf
-    ln -s /home/${DOMAIN}/config/production/sysctl/sysctl.conf /etc/sysctl.conf
+    if ! [ -f "/etc/sysctl.old.conf" ]
+    then
+        mv /etc/sysctl.conf /etc/sysctl.old.conf
+    fi
+    cp /home/${DOMAIN}/config/production/sysctl/sysctl.conf /etc/sysctl.conf
 }
 
 conf_fail2ban() {
-    mv /etc/fail2ban/jail.local /etc/fail2ban/jail.old.local
+    if ! [ -f "/etc/fail2ban/jail.old.local" ]
+    then
+        mv /etc/fail2ban/jail.local /etc/fail2ban/jail.old.local
+    fi
     rm -rf /etc/fail2ban/action.d/nginxrepeatoffender.conf
     rm -rf /etc/fail2ban/filter.d/nginxrepeatoffender.conf
     rm -rf /etc/fail2ban/filter.d/nginx-x00.conf
-    ln -s /home/${DOMAIN}/config/production/fail2ban/jail.local \
+    cp /home/${DOMAIN}/config/production/fail2ban/jail.local \
         /etc/fail2ban/jail.local
-    ln -s /home/${DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
+    cp /home/${DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
         /etc/fail2ban/action.d/nginxrepeatoffender.conf
-    ln -s /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
+    cp /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
         /etc/fail2ban/filter.d/nginxrepeatoffender.conf
-    ln -s /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
+    cp /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
         /etc/fail2ban/filter.d/nginx-x00.conf
     service fail2ban restart
 }
@@ -867,29 +909,29 @@ stop_cinemapress() {
 }
 
 restart_cinemapress() {
-    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
-        /etc/nginx/conf.d/blacklist.conf
-    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf \
-        /etc/nginx/conf.d/rewrite.conf
     ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf \
         /etc/nginx/conf.d/${DOMAIN}.conf
-    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf \
+    cp /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
+        /etc/nginx/conf.d/blacklist.conf
+    cp /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf \
+        /etc/nginx/conf.d/rewrite.conf
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf \
         /etc/nginx/bots.d/blockbots.conf
-    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf \
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf \
         /etc/nginx/bots.d/ddos.conf
-    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf \
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf \
         /etc/nginx/bots.d/whitelist-domains.conf
-    ln -sf /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf \
+    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf \
         /etc/nginx/bots.d/whitelist-ips.conf
-    ln -sf /home/${DOMAIN}/config/production/sysctl/sysctl.conf \
+    cp /home/${DOMAIN}/config/production/sysctl/sysctl.conf \
         /etc/sysctl.conf
-    ln -sf /home/${DOMAIN}/config/production/fail2ban/jail.local \
+    cp /home/${DOMAIN}/config/production/fail2ban/jail.local \
         /etc/fail2ban/jail.local
-    ln -sf /home/${DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
+    cp /home/${DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
         /etc/fail2ban/action.d/nginxrepeatoffender.conf
-    ln -sf /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
+    cp /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
         /etc/fail2ban/filter.d/nginxrepeatoffender.conf
-    ln -sf /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
+    cp /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
         /etc/fail2ban/filter.d/nginx-x00.conf
     sleep 2
     service nginx restart
@@ -1408,9 +1450,22 @@ check_domain() {
 }
 
 get_ssl() {
-    wget https://dl.eff.org/certbot-auto -O /etc/certbot-auto
-    chmod a+x /etc/certbot-auto
-    /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --email support@${DOMAIN} -w /home/${DOMAIN}/ -d ${DOMAIN} -d m.${DOMAIN}
+    wget https://dl.eff.org/certbot-auto -qO /etc/certbot-auto && chmod a+x /etc/certbot-auto
+    DS=""
+    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name\s*\([a-zA-Z0-9. -]*\).*/\1/'`
+    while IFS=' ' read -ra ADDR; do for i in "${ADDR[@]}"; do DS="${DS} -d ${i}"; done; done <<< "${D}"
+    if ! [ -f "/etc/certbot-auto" ] || [ "${DS}" = "" ]
+    then
+        printf "\n${NC}"
+        printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}---- ${R}Домены, для которых создается сертификат не были найдены.${C}----\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}------------------------------------------------------------------\n${NC}"
+        printf "\n${NC}"
+        exit 0
+    fi
+    /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --email support@${DOMAIN} -w /home/${DOMAIN}/ ${DS}
     openssl dhparam -out /etc/letsencrypt/live/${DOMAIN}/dhparam.pem 2048
     sed -i "s/#ssl/ssl/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/#listen/listen/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
@@ -1603,6 +1658,99 @@ confirm_mega_backup() {
     fi
 }
 
+delete_cinemapress() {
+    stop_cinemapress
+    service memcached_${DOMAIN} stop
+    rm -rf /etc/memcached_${DOMAIN}.conf
+    rm -rf /etc/nginx/conf.d/${DOMAIN}.conf;
+    rm -rf /etc/nginx/nginx_pass_${DOMAIN}
+    userdel -r -f ${DOMAIN}
+    USERID=`id -u ${DOMAIN}`
+    echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
+    if [ "`grep \"${DOMAIN}_searchd\" /etc/crontab`" != "" ]
+    then
+        sed -i "s/# ----- ${DOMAIN}_searchd --------------------------------------//g" /etc/crontab
+        sed -i "s/@reboot root /home/${DOMAIN}.*//g" /etc/crontab
+    fi
+    if [ "`grep \"${DOMAIN}_cron\" /etc/crontab`" != "" ]
+    then
+        sed -i "s/# ----- ${DOMAIN}_cron --------------------------------------//g" /etc/crontab
+        sed -i "s/@hourly root /home/${DOMAIN}.*//g" /etc/crontab
+    fi
+    if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" != "" ]
+    then
+        sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
+        sed -i "s/@daily root /home/${DOMAIN}.*//g" /etc/crontab
+    fi
+    service nginx restart
+    sleep 2
+    service proftpd restart
+    sleep 2
+    service fail2ban restart
+    printf "\n${NC}"
+    printf "${C}---------------------------[ ${Y}УДАЛЕНИЕ${C} ]---------------------------\n${NC}"
+    printf "${C}----                                                          ${C}----\n${NC}"
+    printf "${C}----           ${G}Ваш сайт успешно удален с сервера.${C}             ----\n${NC}"
+    printf "${C}----                                                          ${C}----\n${NC}"
+    printf "     ${NC}Домен : ${G}${DOMAIN}\n${NC}"
+    printf "${C}----                                                          ${C}----\n${NC}"
+    printf "${C}------------------------------------------------------------------\n${NC}"
+    printf "\n${NC}"
+}
+
+add_mirror() {
+    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name\s*\([a-zA-Z0-9. -]*\).*/\1/'`
+    sed -i "s/server_name\s*\([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR} m\.${MIRROR};/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    if [ "`grep \"#ssl on\" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
+    then
+        if [ "`grep \"onlyHTTPS\" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
+        then
+            sed -i "s/server {listen 80;/#onlyHTTPS server {listen 80;/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+        fi
+        service nginx restart
+        DO=""
+        while IFS=' ' read -ra ADDR; do
+            for i in "${ADDR[@]}"; do
+                STATUS_HOST=`wget --server-response "http://${i}" 2>&1 | awk '/^  HTTP/{print $2}'`
+                if [ "${STATUS_HOST}" != "200" ]
+                then
+                    DO="${i}"
+                fi
+            done;
+        done <<< "${D} ${MIRROR} m.${MIRROR}"
+
+        if [ "${DO}" = "" ]
+        then
+            get_ssl
+        else
+            printf "\n${NC}"
+            printf "${C}-------------------------[ ${Y}ПРЕДУПРЕЖДЕНИЕ${C} ]-----------------------\n${NC}"
+            printf "${C}----                                                          ${C}----\n${NC}"
+            printf "${C}---- ${NC}Один из доменов недоступен, потому создание сертификата${C}  ----\n${NC}"
+            printf "${C}----     ${NC}невозможно. Исправьте ситуацию и заново создайте${C}     ----\n${NC}"
+            printf "${C}----             ${NC}сертификат для основного домена.${C}             ----\n${NC}"
+            printf "${C}----                                                          ${C}----\n${NC}"
+            printf "     ${NC}Основной домен    : ${DOMAIN}\n${NC}"
+            printf "     ${NC}Недоступный домен : ${R}${DO}\n${NC}"
+            printf "${C}----                                                          ${C}----\n${NC}"
+            printf "${C}------------------------------------------------------------------\n${NC}"
+            printf "\n${NC}"
+            sed -i "s/#onlyHTTPS //g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+            service nginx restart
+        fi
+    fi
+
+    printf "${C}------------------------[ ${Y}ЗЕРКАЛО САЙТА${C} ]-------------------------\n${NC}"
+    printf "${C}----                                                          ${C}----\n${NC}"
+    printf "${C}----                 ${NC}Зеркало было добавлено!${C}                  ----\n${NC}"
+    printf "${C}----                                                          ${C}----\n${NC}"
+    printf "     ${NC}Домен   : ${DOMAIN}\n${NC}"
+    printf "     ${NC}Зеркало : ${MIRROR}\n${NC}"
+    printf "${C}----                                                          ${C}----\n${NC}"
+    printf "${C}------------------------------------------------------------------\n${NC}"
+    printf "\n${NC}"
+}
+
 fail_1() {
     INST_NODE=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
     INST_NGINX=`dpkg --status nginx 2>/dev/null | grep "ok installed"`
@@ -1614,6 +1762,7 @@ fail_1() {
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}----           ${NC}Один или несколько пакетов не были${C}             ----\n${NC}"
         printf "${C}----                ${NC}установлены в системе${C}                     ----\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
         printf "SPHINX : ${G}${INST_SPHINX}\n${NC}"
         printf "NGINX  : ${G}${INST_NGINX}\n${NC}"
         printf "NODE   : ${G}${INST_NODE}\n${NC}"
@@ -1790,6 +1939,8 @@ option() {
     printf "${C}---- ${G}9)${NC} Импорт статических файлов на сервер                   ${C}----\n${NC}"
     printf "${C}---- ${G}10)${NC} Получение SSL-сертификата                            ${C}----\n${NC}"
     printf "${C}---- ${G}11)${NC} Создание/восстановление бэкапа                       ${C}----\n${NC}"
+    printf "${C}---- ${G}12)${NC} Удаление сайта с сервера                             ${C}----\n${NC}"
+    printf "${C}---- ${G}13)${NC} Добавление URL-зеркало для сайта                     ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
     AGAIN=yes
@@ -1798,9 +1949,9 @@ option() {
         if [ ${1} ]
         then
             OPTION=${1}
-            echo "ВАРИАНТ [1-11]: ${OPTION}"
+            echo "ВАРИАНТ [1-13]: ${OPTION}"
         else
-            read -e -p 'ВАРИАНТ [1-11]: ' OPTION
+            read -e -p 'ВАРИАНТ [1-13]: ' OPTION
             OPTION=`echo ${OPTION} | iconv -c -t UTF-8`
         fi
         if [ "${OPTION}" != "" ]
@@ -2008,6 +2159,23 @@ do
             separator
 
             confirm_mega_backup ${5}
+            whileStop
+        ;;
+        12 )
+            read_domain ${2}
+
+            separator
+
+            delete_cinemapress
+            whileStop
+        ;;
+        13 )
+            read_domain ${2}
+            read_mirror ${3}
+
+            separator
+
+            add_mirror
             whileStop
         ;;
         * )
