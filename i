@@ -1658,28 +1658,28 @@ confirm_mega_backup() {
 }
 
 delete_cinemapress() {
+    USERID=`id -u ${DOMAIN}`
     stop_cinemapress
     service memcached_${DOMAIN} stop
     rm -rf /etc/memcached_${DOMAIN}.conf
     rm -rf /etc/nginx/conf.d/${DOMAIN}.conf;
     rm -rf /etc/nginx/nginx_pass_${DOMAIN}
     userdel -r -f ${DOMAIN}
-    USERID=`id -u ${DOMAIN}`
     echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
     if [ "`grep \"${DOMAIN}_searchd\" /etc/crontab`" != "" ]
     then
         sed -i "s/# ----- ${DOMAIN}_searchd --------------------------------------//g" /etc/crontab
-        sed -i "s/@reboot root /home/${DOMAIN}.*//g" /etc/crontab
+        sed -i "s/@reboot root \/home\/${DOMAIN}.*//g" /etc/crontab
     fi
     if [ "`grep \"${DOMAIN}_cron\" /etc/crontab`" != "" ]
     then
         sed -i "s/# ----- ${DOMAIN}_cron --------------------------------------//g" /etc/crontab
-        sed -i "s/@hourly root /home/${DOMAIN}.*//g" /etc/crontab
+        sed -i "s/@hourly root \/home\/${DOMAIN}.*//g" /etc/crontab
     fi
     if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" != "" ]
     then
         sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
-        sed -i "s/@daily root /home/${DOMAIN}.*//g" /etc/crontab
+        sed -i "s/@daily root \/home\/${DOMAIN}.*//g" /etc/crontab
     fi
     service nginx restart
     sleep 2
