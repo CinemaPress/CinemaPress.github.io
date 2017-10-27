@@ -1418,30 +1418,29 @@ import_static() {
 }
 
 check_domain() {
-    STATUS=`wget --server-response "http://${DOMAIN}" 2>&1 | awk '/^  HTTP/{print $2}'`
+    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    DO=""
+    while IFS=' ' read -ra ADDR; do
+        for i in "${ADDR[@]}"; do
+            STATUS_HOST=`wget --server-response "http://${i}" 2>&1 | awk '/^  HTTP/{print $2}'`
+            if [ "${STATUS_HOST}" != "200" ]
+            then
+                DO="${i}"
+            fi
+        done;
+    done <<< "${D}"
 
-    if [ "${STATUS}" != "200" ]
+    if [ "${DO}" != "" ]
     then
         printf "\n${NC}"
-        printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
+        printf "${C}-------------------------[ ${Y}ПРЕДУПРЕЖДЕНИЕ${C} ]-----------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----       ${R}Данный сайт недоступен, устраните проблему${C}         ----\n${NC}"
-        printf "${C}----                  ${R}и попробуйте позже ...${C}                  ----\n${NC}"
+        printf "${C}---- ${NC}Один из доменов недоступен, потому создание сертификата${C}  ----\n${NC}"
+        printf "${C}----     ${NC}невозможно. Исправьте ситуацию и заново создайте${C}     ----\n${NC}"
+        printf "${C}----             ${NC}сертификат для основного домена.${C}             ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}------------------------------------------------------------------\n${NC}"
-        printf "\n${NC}"
-        exit 0
-    fi
-
-    STATUS_MOBILE=`wget --server-response "http://m.${DOMAIN}" 2>&1 | awk '/^  HTTP/{print $2}'`
-
-    if [ "${STATUS_MOBILE}" != "200" ]
-    then
-        printf "\n${NC}"
-        printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----  ${R}Мобильная версия сайта недоступна, устраните проблему${C}   ----\n${NC}"
-        printf "${C}----                  ${R}и попробуйте позже ...${C}                  ----\n${NC}"
+        printf "     ${NC}Основной домен    : ${DOMAIN}\n${NC}"
+        printf "     ${NC}Недоступный домен : ${R}${DO}\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -1452,7 +1451,7 @@ check_domain() {
 get_ssl() {
     wget https://dl.eff.org/certbot-auto -qO /etc/certbot-auto && chmod a+x /etc/certbot-auto
     DS=""
-    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name\s*\([a-zA-Z0-9. -]*\).*/\1/'`
+    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
     while IFS=' ' read -ra ADDR; do for i in "${ADDR[@]}"; do DS="${DS} -d ${i}"; done; done <<< "${D}"
     if ! [ -f "/etc/certbot-auto" ] || [ "${DS}" = "" ]
     then
@@ -1699,15 +1698,18 @@ delete_cinemapress() {
 }
 
 add_mirror() {
-    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name\s*\([a-zA-Z0-9. -]*\).*/\1/'`
-    sed -i "s/server_name\s*\([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR} m\.${MIRROR};/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR} m\.${MIRROR};/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+
     if [ "`grep \"#ssl on\" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
     then
         if [ "`grep \"onlyHTTPS\" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
         then
             sed -i "s/server {listen 80;/#onlyHTTPS server {listen 80;/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
         fi
+
         service nginx restart
+
         DO=""
         while IFS=' ' read -ra ADDR; do
             for i in "${ADDR[@]}"; do
