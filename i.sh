@@ -781,6 +781,7 @@ conf_cinemapress() {
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
     sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/config.js
+    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/default/config.js
     sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/production/config.js
     sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/default/config.js
 
