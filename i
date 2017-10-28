@@ -1775,7 +1775,7 @@ add_mirror() {
             service nginx restart
         fi
     fi
-
+    printf "\n${NC}"
     printf "${C}------------------------[ ${Y}ЗЕРКАЛО САЙТА${C} ]-------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----                 ${NC}Зеркало было добавлено!${C}                  ----\n${NC}"
