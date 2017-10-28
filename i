@@ -1672,6 +1672,7 @@ delete_cinemapress() {
     rm -rf /etc/memcached_${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf;
     rm -rf /etc/nginx/nginx_pass_${DELETE_DOMAIN}
+    rm -rf /etc/letsencrypt/live/${DELETE_DOMAIN}
     userdel -r -f ${DELETE_DOMAIN}
     echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DELETE_DOMAIN} --shell=/bin/false --home=/home/${DELETE_DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
     if [ "`grep \"${DELETE_DOMAIN}_searchd\" /etc/crontab`" != "" ]
@@ -1791,16 +1792,33 @@ add_mirror() {
 mirror_to_main() {
     stop_cinemapress ${DOMAIN}
     stop_cinemapress ${MIRROR}
+    DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+    MIRROR_=`echo ${MIRROR} | sed -r "s/[^A-Za-z0-9]/_/g"`
     mkdir -p /home/${MIRROR}/backup/${B_DIR}/oldCP && \
     rm -rf /home/${DOMAIN}/backup && \
     rm -rf /home/${DOMAIN}/node_modules && \
     cp -r /home/${DOMAIN}/*                            /home/${MIRROR}/backup/${B_DIR}/oldCP/
     cp -r /home/${DOMAIN}/config/comment/*             /home/${MIRROR}/config/comment/
+    for f in /home/${MIRROR}/config/comment/content_${DOMAIN_}.*; do
+        mv "${f}" "`echo ${f} | sed s/comment_${DOMAIN_}/comment_${MIRROR_}/`"
+    done
     cp -r /home/${DOMAIN}/config/content/*             /home/${MIRROR}/config/content/
+    for f in /home/${MIRROR}/config/content/content_${DOMAIN_}.*; do
+        mv "${f}" "`echo ${f} | sed s/content_${DOMAIN_}/content_${MIRROR_}/`"
+    done
     cp -r /home/${DOMAIN}/config/rt/*                  /home/${MIRROR}/config/rt/
+    for f in /home/${MIRROR}/config/rt/rt_${DOMAIN_}.*; do
+        mv "${f}" "`echo ${f} | sed s/rt_${DOMAIN_}/rt_${MIRROR_}/`"
+    done
     cp -r /home/${DOMAIN}/config/user/*                /home/${MIRROR}/config/user/
-    cp -r /home/${DOMAIN}/config/production/config.js  /home/${MIRROR}/config/production/config.js
+    for f in /home/${MIRROR}/config/user/user_${DOMAIN_}.*; do
+        mv "${f}" "`echo ${f} | sed s/user_${DOMAIN_}/user_${MIRROR_}/`"
+    done
+    cp -r /home/${DOMAIN}/config/production/config.js /home/${MIRROR}/config/production/config.js
     cp -r /home/${DOMAIN}/config/production/modules.js /home/${MIRROR}/config/production/modules.js
+    cp -r /home/${DOMAIN}/themes/default/public/desktop/* /home/${MIRROR}/themes/default/public/desktop/
+    cp -r /home/${DOMAIN}/themes/default/public/mobile/* /home/${MIRROR}/themes/default/public/mobile/
+    cp -r /home/${DOMAIN}/themes/default/views/mobile/* /home/${MIRROR}/themes/default/views/mobile/
     DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
     CURRENT=`grep "CP_ALL" /home/${MIRROR}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
     sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/process.json
