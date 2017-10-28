@@ -904,51 +904,55 @@ start_cinemapress() {
 }
 
 stop_cinemapress() {
-    pm2 delete ${DOMAIN} &> /dev/null
-    searchd --stop --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+    STOP_DOMAIN="${DOMAIN}"
+    if [ "${1}" != "" ]; then STOP_DOMAIN="${1}"; fi
+    pm2 delete ${STOP_DOMAIN} &> /dev/null
+    searchd --stop --config "/home/${STOP_DOMAIN}/config/production/sphinx/sphinx.conf"
 }
 
 restart_cinemapress() {
-    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf \
-        /etc/nginx/conf.d/${DOMAIN}.conf
-    cp /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
+    RESTART_DOMAIN="${DOMAIN}"
+    if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
+    ln -sf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/nginx.conf \
+        /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
+    cp /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
         /etc/nginx/conf.d/blacklist.conf
-    cp /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/rewrite.conf \
         /etc/nginx/conf.d/rewrite.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/blockbots.conf \
         /etc/nginx/bots.d/blockbots.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/ddos.conf \
         /etc/nginx/bots.d/ddos.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf \
         /etc/nginx/bots.d/whitelist-domains.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf \
         /etc/nginx/bots.d/whitelist-ips.conf
-    cp /home/${DOMAIN}/config/production/sysctl/sysctl.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/sysctl/sysctl.conf \
         /etc/sysctl.conf
-    cp /home/${DOMAIN}/config/production/fail2ban/jail.local \
+    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/jail.local \
         /etc/fail2ban/jail.local
-    cp /home/${DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
         /etc/fail2ban/action.d/nginxrepeatoffender.conf
-    cp /home/${DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
         /etc/fail2ban/filter.d/nginxrepeatoffender.conf
-    cp /home/${DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
+    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
         /etc/fail2ban/filter.d/nginx-x00.conf
     sleep 2
     service nginx restart
     sleep 2
     service fail2ban restart
     sleep 2
-    service memcached_${DOMAIN} restart
+    service memcached_${RESTART_DOMAIN} restart
     sleep 2
-    searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
     sleep 2
-    cd /home/${DOMAIN}/ && npm i
+    cd /home/${RESTART_DOMAIN}/ && npm i
     sleep 2
-    cd /home/${DOMAIN}/ && \
+    cd /home/${RESTART_DOMAIN}/ && \
     pm2 start process.json && \
     pm2 save
     sleep 2
-    node /home/${DOMAIN}/config/update/update_cinemapress.js
+    node /home/${RESTART_DOMAIN}/config/update/update_cinemapress.js
 }
 
 conf_mass() {
@@ -1102,9 +1106,9 @@ update_cinemapress() {
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
     sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
 
-    EXP=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
-    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"${EXP}\"/" /home/${DOMAIN}/process.json
-    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${EXP}\"/" /home/${DOMAIN}/config/production/i
+    CURRENT=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"${CURRENT}\"/" /home/${DOMAIN}/process.json
+    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
 
     ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/default/config.js"`
     NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
@@ -1346,12 +1350,13 @@ import_db() {
 
         searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
+        CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
         sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/production/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/production/config.js
         sed -E -i "s/\"key\":\s*\"[a-zA-Z0-9-]*\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/default/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/default/config.js
-        sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
-        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"_${INDEX_DOMAIN}_ | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
+        sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"${CURRENT} | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
+        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT} | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
 
         sleep 2
 
@@ -1512,9 +1517,9 @@ create_mega_backup() {
     echo "FLUSH RTINDEX comment_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
     echo "FLUSH RTINDEX user_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
     sleep 2
-    rm -rf /tmp/${DOMAIN} && mkdir -p /tmp/${DOMAIN}
+    rm -rf /var/${DOMAIN} && mkdir -p /var/${DOMAIN}
     cd /home/${DOMAIN} && \
-    tar -uf /tmp/${DOMAIN}/config.tar \
+    tar -uf /var/${DOMAIN}/config.tar \
         config \
         --exclude=config/update \
         --exclude=config/default \
@@ -1524,7 +1529,7 @@ create_mega_backup() {
         --exclude=config/production/nginx \
         --exclude=config/production/sysctl
     cd /home/${DOMAIN} && \
-    tar -uf /tmp/${DOMAIN}/themes.tar \
+    tar -uf /var/${DOMAIN}/themes.tar \
         themes/default/public/desktop \
         themes/default/public/mobile \
         themes/default/views/mobile \
@@ -1532,21 +1537,21 @@ create_mega_backup() {
     sleep 3
     megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/${MEGA_NOW}/config.tar \
-        /tmp/${DOMAIN}/config.tar
+        /var/${DOMAIN}/config.tar
     sleep 1
     megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/${MEGA_NOW}/themes.tar \
-        /tmp/${DOMAIN}/themes.tar
+        /var/${DOMAIN}/themes.tar
     sleep 1
     megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/latest/config.tar \
-        /tmp/${DOMAIN}/config.tar
+        /var/${DOMAIN}/config.tar
     sleep 1
     megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/latest/themes.tar \
-        /tmp/${DOMAIN}/themes.tar
+        /var/${DOMAIN}/themes.tar
     sleep 3
-    rm -rf /tmp/${DOMAIN}
+    rm -rf /var/${DOMAIN}
     printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----      ${NC}Бэкап успешно создан и установлен автозапуск.${C}       ----\n${NC}"
@@ -1558,20 +1563,20 @@ create_mega_backup() {
 }
 
 recover_mega_backup() {
-    rm -rf /tmp/${DOMAIN} && mkdir -p /tmp/${DOMAIN}
+    rm -rf /var/${DOMAIN} && mkdir -p /var/${DOMAIN}
 
     stop_cinemapress
 
     megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
-        --path /tmp/${DOMAIN}/ \
+        --path /var/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/config.tar
     megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
-        --path /tmp/${DOMAIN}/ \
+        --path /var/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/themes.tar
 
     cd /home/${DOMAIN} && \
-    tar -xf /tmp/${DOMAIN}/config.tar && \
-    tar -xf /tmp/${DOMAIN}/themes.tar
+    tar -xf /var/${DOMAIN}/config.tar && \
+    tar -xf /var/${DOMAIN}/themes.tar
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
@@ -1658,28 +1663,30 @@ confirm_mega_backup() {
 }
 
 delete_cinemapress() {
-    USERID=`id -u ${DOMAIN}`
+    DELETE_DOMAIN="${DOMAIN}"
+    if [ "${1}" != "" ]; then DELETE_DOMAIN="${1}"; fi
+    USERID=`id -u ${DELETE_DOMAIN}`
     stop_cinemapress
-    service memcached_${DOMAIN} stop
-    rm -rf /etc/memcached_${DOMAIN}.conf
-    rm -rf /etc/nginx/conf.d/${DOMAIN}.conf;
-    rm -rf /etc/nginx/nginx_pass_${DOMAIN}
-    userdel -r -f ${DOMAIN}
-    echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
-    if [ "`grep \"${DOMAIN}_searchd\" /etc/crontab`" != "" ]
+    service memcached_${DELETE_DOMAIN} stop
+    rm -rf /etc/memcached_${DELETE_DOMAIN}.conf
+    rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf;
+    rm -rf /etc/nginx/nginx_pass_${DELETE_DOMAIN}
+    userdel -r -f ${DELETE_DOMAIN}
+    echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DELETE_DOMAIN} --shell=/bin/false --home=/home/${DELETE_DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
+    if [ "`grep \"${DELETE_DOMAIN}_searchd\" /etc/crontab`" != "" ]
     then
-        sed -i "s/# ----- ${DOMAIN}_searchd --------------------------------------//g" /etc/crontab
-        sed -i "s/@reboot root \/home\/${DOMAIN}.*//g" /etc/crontab
+        sed -i "s/# ----- ${DELETE_DOMAIN}_searchd --------------------------------------//g" /etc/crontab
+        sed -i "s/@reboot root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab
     fi
-    if [ "`grep \"${DOMAIN}_cron\" /etc/crontab`" != "" ]
+    if [ "`grep \"${DELETE_DOMAIN}_cron\" /etc/crontab`" != "" ]
     then
-        sed -i "s/# ----- ${DOMAIN}_cron --------------------------------------//g" /etc/crontab
-        sed -i "s/@hourly root \/home\/${DOMAIN}.*//g" /etc/crontab
+        sed -i "s/# ----- ${DELETE_DOMAIN}_cron --------------------------------------//g" /etc/crontab
+        sed -i "s/@hourly root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab
     fi
-    if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" != "" ]
+    if [ "`grep \"${DELETE_DOMAIN}_backup\" /etc/crontab`" != "" ]
     then
-        sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
-        sed -i "s/@daily root \/home\/${DOMAIN}.*//g" /etc/crontab
+        sed -i "s/# ----- ${DELETE_DOMAIN}_backup --------------------------------------//g" /etc/crontab
+        sed -i "s/@daily root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab
     fi
     service nginx restart
     sleep 2
@@ -1691,21 +1698,48 @@ delete_cinemapress() {
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----           ${G}Ваш сайт успешно удален с сервера.${C}             ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Домен : ${G}${DOMAIN}\n${NC}"
+    printf "     ${NC}Домен : ${G}${DELETE_DOMAIN}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
 }
 
-add_mirror() {
-    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
-    sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR} m\.${MIRROR};/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
-
-    if [ "`grep \"#ssl on\" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
+create_mirror() {
+    printf "${C}-------------------------[ ${Y}СДЕЛАЙТЕ ВЫБОР${C} ]-----------------------\n${NC}"
+    printf "${C}---- ${G}1)${NC} Добавить зеркало к основному домену                   ${C}----\n${NC}"
+    printf "${C}---- ${G}2)${NC} Сделать зеркало основным доменом                      ${C}----\n${NC}"
+    printf "${C}------------------------------------------------------------------\n${NC}"
+    printf "\n${NC}"
+    if [ ${1} ]
     then
-        if [ "`grep \"onlyHTTPS\" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
+        CM=${1}
+        echo "ВАРИАНТ [1-2]: ${CM}"
+    else
+        read -e -p 'ВАРИАНТ [1-2]: ' CM
+        CM=`echo ${CM} | iconv -c -t UTF-8`
+    fi
+    printf "\n${NC}"
+    if [ "${CM}" = "2" ]
+    then
+        mirror_to_main
+    else
+        add_mirror
+    fi
+}
+
+add_mirror() {
+    MAIN_DOMAIN="${DOMAIN}"
+    if [ "${1}" != "" ]; then MAIN_DOMAIN="${1}"; fi
+    MIRROR_DOMAIN="${MIRROR}"
+    if [ "${2}" != "" ]; then MIRROR_DOMAIN="${2}"; fi
+    D=`grep -m 1 "server_name" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR_DOMAIN} m\.${MIRROR_DOMAIN};/g" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf
+
+    if [ "`grep \"#ssl on\" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
+    then
+        if [ "`grep \"onlyHTTPS\" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
         then
-            sed -i "s/server {listen 80;/#onlyHTTPS server {listen 80;/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+            sed -i "s/server {listen 80;/#onlyHTTPS server {listen 80;/" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf
         fi
 
         service nginx restart
@@ -1719,7 +1753,7 @@ add_mirror() {
                     DO="${i}"
                 fi
             done;
-        done <<< "${D} ${MIRROR} m.${MIRROR}"
+        done <<< "${D} ${MIRROR_DOMAIN} m.${MIRROR_DOMAIN}"
 
         if [ "${DO}" = "" ]
         then
@@ -1732,12 +1766,12 @@ add_mirror() {
             printf "${C}----     ${NC}невозможно. Исправьте ситуацию и заново создайте${C}     ----\n${NC}"
             printf "${C}----             ${NC}сертификат для основного домена.${C}             ----\n${NC}"
             printf "${C}----                                                          ${C}----\n${NC}"
-            printf "     ${NC}Основной домен    : ${DOMAIN}\n${NC}"
+            printf "     ${NC}Основной домен    : ${MAIN_DOMAIN}\n${NC}"
             printf "     ${NC}Недоступный домен : ${R}${DO}\n${NC}"
             printf "${C}----                                                          ${C}----\n${NC}"
             printf "${C}------------------------------------------------------------------\n${NC}"
             printf "\n${NC}"
-            sed -i "s/#onlyHTTPS //g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+            sed -i "s/#onlyHTTPS //g" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf
             service nginx restart
         fi
     fi
@@ -1746,11 +1780,33 @@ add_mirror() {
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----                 ${NC}Зеркало было добавлено!${C}                  ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Домен   : ${DOMAIN}\n${NC}"
-    printf "     ${NC}Зеркало : ${MIRROR}\n${NC}"
+    printf "     ${NC}Домен   : ${MAIN_DOMAIN}\n${NC}"
+    printf "     ${NC}Зеркало : ${MIRROR_DOMAIN}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
+}
+
+mirror_to_main() {
+    stop_cinemapress ${DOMAIN}
+    stop_cinemapress ${MIRROR}
+    mkdir -p /home/${MIRROR}/backup/${B_DIR}/oldCP && \
+    rm -rf /home/${DOMAIN}/backup && \
+    rm -rf /home/${DOMAIN}/node_modules && \
+    cp -r /home/${DOMAIN}/*                            /home/${MIRROR}/backup/${B_DIR}/oldCP/
+    cp -r /home/${DOMAIN}/config/comment/*             /home/${MIRROR}/config/comment/
+    cp -r /home/${DOMAIN}/config/content/*             /home/${MIRROR}/config/content/
+    cp -r /home/${DOMAIN}/config/rt/*                  /home/${MIRROR}/config/rt/
+    cp -r /home/${DOMAIN}/config/user/*                /home/${MIRROR}/config/user/
+    cp -r /home/${DOMAIN}/config/production/config.js  /home/${MIRROR}/config/production/config.js
+    cp -r /home/${DOMAIN}/config/production/modules.js /home/${MIRROR}/config/production/modules.js
+    DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+    CURRENT=`grep "CP_ALL" /home/${MIRROR}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/process.json
+    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/config/production/i
+    delete_cinemapress ${DOMAIN}
+    add_mirror ${MIRROR} ${DOMAIN}
+    restart_cinemapress ${MIRROR}
 }
 
 fail_1() {
@@ -2177,7 +2233,7 @@ do
 
             separator
 
-            add_mirror
+            create_mirror
             whileStop
         ;;
         * )
