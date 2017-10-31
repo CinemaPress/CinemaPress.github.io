@@ -300,6 +300,19 @@ read_mega_password() {
 
 pre_install() {
     VER=`lsb_release -cs`
+    if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
+    then
+        apt-get -y -qq autoremove
+        apt-get -y -qq install -f
+        apt-get -y -qq update
+        apt-get -y -qq install lsb-release
+        VER=`lsb_release -cs`
+        if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
+        then
+            printf "${R}WARNING:${NC} lsb_release не может определить версию системы. \n"
+            exit 0
+        fi
+    fi
     if [ "`arch`" = "x86_64" ]; then ARCH="amd64"; else ARCH="i386"; fi
     echo "proftpd-basic shared/proftpd/inetd_or_standalone select standalone" | debconf-set-selections
     echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debconf-set-selections
