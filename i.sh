@@ -2310,6 +2310,31 @@ do
                     ;;
                 esac
                 exit 0
+            elif [ "${1}" = "stop" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                stop_cinemapress
+                exit 0
+            elif [ "${1}" = "start" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                restart_cinemapress
+                exit 0
+            elif [ "${1}" = "restart" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                stop_cinemapress
+                restart_cinemapress
+                exit 0
             elif [ "${1}" = "update" ]
             then
                 read_domain ${2}
