@@ -602,7 +602,7 @@ add_user() {
     cp -r /home/${DOMAIN}/config/default/* /home/${DOMAIN}/config/production/
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico /home/${DOMAIN}/
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/
-    cp -r ${0} /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
+    cp -r "${0}" /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
 }
 
 conf_nginx() {
@@ -2341,6 +2341,8 @@ do
 
                 separator
 
+                cp -r "${0}" /home/${DOMAIN}/config/production/i && \
+                chmod +x /home/${DOMAIN}/config/production/i
                 DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
                 cd /home/${DOMAIN}/config/update/ && \
                 node update_cinemapress.js && \
