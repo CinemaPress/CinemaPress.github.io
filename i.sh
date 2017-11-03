@@ -1318,10 +1318,10 @@ import_db() {
 
     printf "${G}Загрузка ...\n"
 
-    wget -qO "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" http://database.cinemapress.org/${KEY}/${DOMAIN} || \
-    rm -f "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz"
+    wget -qO "/var/lib/sphinxsearch/tmp/${KEY}.tar" http://database.cinemapress.org/${KEY}/${DOMAIN} || \
+    rm -f "/var/lib/sphinxsearch/tmp/${KEY}.tar"
 
-    if [ -f "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" ]
+    if [ -f "/var/lib/sphinxsearch/tmp/${KEY}.tar" ]
     then
         printf "${G}Распаковка ...\n"
 
@@ -1336,14 +1336,14 @@ import_db() {
         rm -rf /var/lib/sphinxsearch/old/movies_${INDEX_DOMAIN}.*
         cp -R /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.* /var/lib/sphinxsearch/old/
         rm -rf /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.*
-        tar -xzf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz" -C "/var/lib/sphinxsearch/tmp" \
+        tar -xf "/var/lib/sphinxsearch/tmp/${KEY}.tar" -C "/var/lib/sphinxsearch/tmp" \
             &> /var/lib/sphinxsearch/data/${NOW}.log
 
         printf "${G}Установка ...\n"
 
         sleep 3
 
-        rm -rf "/var/lib/sphinxsearch/tmp/${KEY}.tar.gz"
+        rm -rf "/var/lib/sphinxsearch/tmp/${KEY}.tar"
 
         FILE_SPA=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep spa`
         FILE_SPD=`find /var/lib/sphinxsearch/tmp/*.* -type f | grep spd`
