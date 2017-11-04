@@ -1119,7 +1119,6 @@ update_cinemapress() {
     sed -i "s/_example_com_\"/_${INDEX_DOMAIN}_\"/g" /home/${DOMAIN}/config/production/i
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
     sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
-    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/config.js
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/default/config.js
 
     CURRENT=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
