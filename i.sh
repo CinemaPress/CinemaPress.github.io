@@ -1396,9 +1396,7 @@ import_db() {
 
         sleep 2
 
-        cd /home/${DOMAIN}/ && \
-        pm2 restart process.json && \
-        pm2 save
+        light_restart_cinemapress
 
         sleep 3
     else
