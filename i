@@ -921,6 +921,7 @@ stop_cinemapress() {
     STOP_DOMAIN="${DOMAIN}"
     if [ "${1}" != "" ]; then STOP_DOMAIN="${1}"; fi
     pm2 delete ${STOP_DOMAIN} &> /dev/null
+    pm2 save &> /dev/null
     searchd --stop --config "/home/${STOP_DOMAIN}/config/production/sphinx/sphinx.conf"
 }
 
@@ -967,6 +968,26 @@ restart_cinemapress() {
     pm2 save
     sleep 2
     node /home/${RESTART_DOMAIN}/config/update/update_cinemapress.js
+}
+
+light_restart_cinemapress() {
+    RESTART_DOMAIN="${DOMAIN}"
+    if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
+    pm2 delete ${RESTART_DOMAIN} &> /dev/null
+    pm2 save &> /dev/null
+    searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
+    sleep 2
+    service nginx restart
+    sleep 2
+    service fail2ban restart
+    sleep 2
+    service memcached_${RESTART_DOMAIN} restart
+    sleep 2
+    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
+    sleep 2
+    cd /home/${RESTART_DOMAIN}/ && \
+    pm2 start process.json && \
+    pm2 save
 }
 
 conf_mass() {
@@ -2335,6 +2356,14 @@ do
 
                 stop_cinemapress
                 restart_cinemapress
+                exit 0
+            elif [ "${1}" = "light_restart" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                light_restart_cinemapress
                 exit 0
             elif [ "${1}" = "update" ]
             then

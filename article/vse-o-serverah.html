@@ -207,7 +207,12 @@
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    По умолчанию система работает в режиме кластера, это означает, что каждое ядро Вашего сервера используется на полную мощность. Потому, чтобы ускорить работу сайта на максимум, достаточно добавить на сервере больше ядер, оперативной памяти, скорости работы SSD и расширить интернет-канал. У всех хостинг провайдеров это делается путем увеличения тарифного плана. Либо вынести компоненты, такие как <a href="/article/opcii-ustanovki-cinemapress-acms.html#option6" target="_blank">базу Sphinx</a> и <a href="/article/opcii-ustanovki-cinemapress-acms.html#option7" target="_blank">кэширующий сервер</a> на отдельный сервер.
+                    По умолчанию система работает в режиме кластера, это означает, что каждое ядро Вашего сервера используется на полную мощность. Потому, чтобы ускорить работу сайта на максимум, достаточно добавить на сервере больше ядер, оперативной памяти, скорости работы SSD и расширить интернет-канал. У всех хостинг провайдеров это делается путем увеличения тарифного плана. Либо вынести компоненты, такие как <a href="/article/opcii-ustanovki-cinemapress-acms.html#option6" target="_blank">базу Sphinx</a> и <a href="/article/opcii-ustanovki-cinemapress-acms.html#option7" target="_blank">кэширующий сервер</a> на отдельный сервер.<br>
+                    <strong>Команда для «легкой» перезагрузки сайта:</strong><br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i light_restart</code><br>
+                    <strong>Команда для полной перезагрузки сайта (рекомендуется сделать перед этим бэкап):</strong><br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i restart</code><br>
+                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
