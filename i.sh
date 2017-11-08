@@ -2456,10 +2456,13 @@ do
                 GEO=`grep "geoip_country" /etc/nginx/nginx.conf`
                 if [ "${GEO}" = "" ]
                 then
-                    sed -i "s/http {/http {\n\n    #geoIP geoip_country \/usr\/share\/GeoIP\/GeoIP.dat;\n    #geoIP map \$geoip_country_code \$allowed_country {\n    #geoIP     default no; RU yes; UA yes; KZ yes; BY yes; DE yes; NL yes; MD yes; US yes; KG yes; LV yes; GB yes; AM yes; IL yes; GE yes; LT yes; UZ yes; AZ yes; EE yes; PL yes; CA yes; FR yes; IT yes; RO yes; ES yes; KR yes; CZ yes; BG yes; GR yes; FI yes; TM yes; TJ yes;\n    #geoIP }\n/" /etc/nginx/nginx.conf
+                    sed -i "s/http {/http {\n\n    geoip_country \/usr\/share\/GeoIP\/GeoIP.dat;\n    map \$geoip_country_code \$allowed_country {\n        default no; RU yes; UA yes; KZ yes; BY yes; DE yes; NL yes; MD yes; US yes; KG yes; LV yes; GB yes; AM yes; IL yes; GE yes; LT yes; UZ yes; AZ yes; EE yes; PL yes; CA yes; FR yes; IT yes; RO yes; ES yes; KR yes; CZ yes; BG yes; GR yes; FI yes; TM yes; TJ yes;\n    }\n/" /etc/nginx/nginx.conf
                 fi
-                sed -i "s/#geoIP //g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
-                sed -i "s/#geoIP //g" /etc/nginx/nginx.conf
+                AC=`grep "allowed_country" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
+                if [ "${AC}" = "" ]
+                then
+                    sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = no) {return 444;}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+                fi
 
                 light_restart_cinemapress
                 exit 0
