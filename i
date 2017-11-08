@@ -953,10 +953,16 @@ restart_cinemapress() {
     cp /home/${RESTART_DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
         /etc/fail2ban/filter.d/nginx-x00.conf
     sleep 2
+    service nginx stop
+    service nginx start
     service nginx restart
     sleep 2
+    service fail2ban stop
+    service fail2ban start
     service fail2ban restart
     sleep 2
+    service memcached_${RESTART_DOMAIN} stop
+    service memcached_${RESTART_DOMAIN} start
     service memcached_${RESTART_DOMAIN} restart
     sleep 2
     searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
@@ -977,10 +983,16 @@ light_restart_cinemapress() {
     pm2 save &> /dev/null
     searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
     sleep 2
+    service nginx stop
+    service nginx start
     service nginx restart
     sleep 2
+    service fail2ban stop
+    service fail2ban start
     service fail2ban restart
     sleep 2
+    service memcached_${RESTART_DOMAIN} stop
+    service memcached_${RESTART_DOMAIN} start
     service memcached_${RESTART_DOMAIN} restart
     sleep 2
     searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
@@ -2415,6 +2427,41 @@ do
                         pm2 reload "${ID_RELOAD}" --force
                     fi
                 done <<< "`pm2 show ${NAME_CURRENT} | grep 'with id'`";
+                exit 0
+            elif [ "${1}" = "geo" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                NGINX_VV=`nginx -v 2>&1`
+                NGINX_V=`echo ${NGINX_VV} | grep -o '[0-9.]*'`
+                NGINX_CAA=`nginx -V 2>&1`
+                NGINX_CA=`echo ${NGINX_CAA} | grep "configure arguments:" | sed 's/.*\(--prefix=.*\)/\1/'`
+                wget -q "http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
+                if ! [ -f "nginx-${NGINX_V}.tar.gz" ]; then exit 0; fi
+                tar -xvf "nginx-${NGINX_V}.tar.gz"
+                aptitude -y -q install libpcre++-dev libssl-dev libgeoip-dev libxslt1-dev zlib1g-dev geoip-database libgeoip1
+                cd "nginx-${NGINX_V}" && \
+                ./configure ${NGINX_CA} --with-http_geoip_module && \
+                make && \
+                make install
+                mkdir -p /usr/share/GeoIP/ && cd /usr/share/GeoIP/ && \
+                wget -q http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz && \
+                wget -q http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+                if ! [ -f "/usr/share/GeoIP/GeoIP.dat.gz" ]; then exit 0; fi
+                if ! [ -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then exit 0; fi
+                gunzip -f GeoIP.dat.gz && gunzip -f GeoIPv6.dat.gz && \
+                rm -rf GeoIP.dat.gz && rm -rf GeoIPv6.dat.gz
+                GEO=`grep "geoip_country" /etc/nginx/nginx.conf`
+                if [ "${GEO}" = "" ]
+                then
+                    sed -i "s/http {/http {\n\n    #geoIP geoip_country \/usr\/share\/GeoIP\/GeoIP.dat;\n    #geoIP map \$geoip_country_code \$allowed_country {\n    #geoIP     default no; RU yes; UA yes; KZ yes; BY yes; DE yes; NL yes; MD yes; US yes; KG yes; LV yes; GB yes; AM yes; IL yes; GE yes; LT yes; UZ yes; AZ yes; EE yes; PL yes; CA yes; FR yes; IT yes; RO yes; ES yes; KR yes; CZ yes; BG yes; GR yes; FI yes; TM yes; TJ yes;\n    #geoIP }\n/" /etc/nginx/nginx.conf
+                fi
+                sed -i "s/#geoIP //g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+                sed -i "s/#geoIP //g" /etc/nginx/nginx.conf
+
+                light_restart_cinemapress
                 exit 0
             elif [ "${1}" = "zero" ]
             then
