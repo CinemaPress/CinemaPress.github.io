@@ -2438,8 +2438,8 @@ do
                 mkdir -p /usr/share/GeoIP/ && cd /usr/share/GeoIP/ && \
                 wget -q http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz && \
                 wget -q http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-                if ! [ -f "/usr/share/GeoIP/GeoIP.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIP"; exit 0; fi
-                if ! [ -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIPv6"; exit 0; fi
+                if ! [ -f "/usr/share/GeoIP/GeoIP.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIP\n\n"; exit 0; fi
+                if ! [ -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIPv6\n\n"; exit 0; fi
                 cd /usr/share/GeoIP/ && \
                 gunzip -f GeoIP.dat.gz && gunzip -f GeoIPv6.dat.gz && \
                 rm -rf GeoIP.dat.gz && rm -rf GeoIPv6.dat.gz && \
@@ -2449,9 +2449,9 @@ do
                 NGINX_V=`echo ${NGINX_VV} | grep -o '[0-9.]*'`
                 NGINX_CAA=`nginx -V 2>&1`
                 NGINX_CA=`echo ${NGINX_CAA} | grep "configure arguments:" | perl -p -ne "s|.*?(--prefix=.*?)(--with-cc-opt\|--with-ld-opt\|--add-module).*|\1|"`
-                if [ "`echo ${NGINX_CAA} | grep with-http_geoip_module`" != "" ]; then printf "\n\n${G}Installed${NC}"; exit 0; fi
+                if [ "`echo ${NGINX_CAA} | grep with-http_geoip_module`" != "" ]; then printf "\n\n${G}Installed${NC}\n\n"; exit 0; fi
                 wget -q "http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
-                if ! [ -f "nginx-${NGINX_V}.tar.gz" ]; then printf "\n\n${R}ERROR:${NC} Download NGINX"; exit 0; fi
+                if ! [ -f "nginx-${NGINX_V}.tar.gz" ]; then printf "\n\n${R}ERROR:${NC} Download NGINX\n\n"; exit 0; fi
                 tar -xvf "nginx-${NGINX_V}.tar.gz"
                 cp /usr/sbin/nginx /usr/sbin/nginx_back
                 cd "nginx-${NGINX_V}" && \
@@ -2464,7 +2464,7 @@ do
                     service nginx stop
                     cp /usr/sbin/nginx_back /usr/sbin/nginx
                     service nginx start
-                    printf "\n\n${R}ERROR:${NC} Not install"
+                    printf "\n\n${R}ERROR:${NC} Not install\n\n"
                     exit 0
                 fi
                 GEO=`grep "geoip_country" /etc/nginx/nginx.conf`
@@ -2475,7 +2475,7 @@ do
                 AC=`grep "allowed_country" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
                 if [ "${AC}" = "" ]
                 then
-                    sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = '') {set \$allowed_country yes;}\n    if (\$allowed_country = no) {return 444;}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+                    sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = '') {set \$allowed_country yes;}\n    if (\$allowed_country = no) {return 444;}/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
                 fi
 
                 light_restart_cinemapress
