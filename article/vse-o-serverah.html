@@ -241,6 +241,31 @@
         </div>
     </div>
 </section>
+<section class="ptb-100 functionalities bg-gray" id="attack">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#attack">Сайт под атакой и не открывается, что делать?</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Для начала убедитесь, что действительно идет атака/спам/боты и т.п., выполните по SSH:<br>
+                    <code>~# tail -f /var/log/nginx/access.log</code><br>
+                    Чтобы выйти нажмите <code>Ctrl+C</code><br>
+                    Видите много появляющихся запросов? Выберите несколько IP адресов (слева каждой строчки) и проверьте их через сервис:<br>
+                    <code>https://censys.io/ipv4/182.201.32.83</code><br>
+                    Постарайтесь найти между ними какое-то соответствие, к примеру они все из одной и той же страны, к примеру из Китая. В таком случае у Нас уже готова защита от таких атак. Для этого можно дать доступ к сайту только из 30 стран в мире, которые покрывают 99.99% всего кинотрафика рунета и как следствие Вашего сайта. Оставшиеся 0.01% это страны, из которых могут идти атаки/спам/боты чаще всего, это страны Африки и Азии. Для этого нужно установить модуль <a href="http://www.maxmind.com" target="_blank">GeoLite by MaxMind</a> и добавить его в Nginx. Это делается одной строчкой автоматически:<br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i geo</code><br>
+                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small>
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/vps/zero.png" class="img-responsive" alt="Как удалить стандартные фильмы на CinemaPress ACMS?" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
 <footer id="footer" class="dark-footer">
     <div class="main-footer ptb-100" id="contacts">
         <div class="container">

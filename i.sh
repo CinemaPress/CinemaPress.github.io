@@ -2434,25 +2434,38 @@ do
 
                 separator
 
+                aptitude -y -q install libpcre++-dev libssl-dev libgeoip-dev libxslt1-dev zlib1g-dev geoip-database libgeoip1
+                mkdir -p /usr/share/GeoIP/ && cd /usr/share/GeoIP/ && \
+                wget -q http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz && \
+                wget -q http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+                if ! [ -f "/usr/share/GeoIP/GeoIP.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIP"; exit 0; fi
+                if ! [ -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIPv6"; exit 0; fi
+                cd /usr/share/GeoIP/ && \
+                gunzip -f GeoIP.dat.gz && gunzip -f GeoIPv6.dat.gz && \
+                rm -rf GeoIP.dat.gz && rm -rf GeoIPv6.dat.gz
+
                 NGINX_VV=`nginx -v 2>&1`
                 NGINX_V=`echo ${NGINX_VV} | grep -o '[0-9.]*'`
                 NGINX_CAA=`nginx -V 2>&1`
                 NGINX_CA=`echo ${NGINX_CAA} | grep "configure arguments:" | sed 's/.*\(--prefix=.*\)/\1/'`
+                if [ "`echo ${NGINX_CAA} | grep with-http_geoip_module`" != "" ]; then printf "\n\n${G}Installed${NC}"; exit 0; fi
                 wget -q "http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
-                if ! [ -f "nginx-${NGINX_V}.tar.gz" ]; then exit 0; fi
+                if ! [ -f "nginx-${NGINX_V}.tar.gz" ]; then printf "\n\n${R}ERROR:${NC} Download NGINX"; exit 0; fi
                 tar -xvf "nginx-${NGINX_V}.tar.gz"
-                aptitude -y -q install libpcre++-dev libssl-dev libgeoip-dev libxslt1-dev zlib1g-dev geoip-database libgeoip1
+                cp /usr/sbin/nginx /usr/sbin/nginx_back
                 cd "nginx-${NGINX_V}" && \
                 ./configure ${NGINX_CA} --with-http_geoip_module && \
                 make && \
                 make install
-                mkdir -p /usr/share/GeoIP/ && cd /usr/share/GeoIP/ && \
-                wget -q http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz && \
-                wget -q http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-                if ! [ -f "/usr/share/GeoIP/GeoIP.dat.gz" ]; then exit 0; fi
-                if ! [ -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then exit 0; fi
-                gunzip -f GeoIP.dat.gz && gunzip -f GeoIPv6.dat.gz && \
-                rm -rf GeoIP.dat.gz && rm -rf GeoIPv6.dat.gz
+                NGINX_CAA2=`nginx -V 2>&1`
+                if [ "`echo ${NGINX_CAA2} | grep with-http_geoip_module`" = "" ]
+                then
+                    service nginx stop
+                    cp /usr/sbin/nginx_back /usr/sbin/nginx
+                    service nginx start
+                    printf "\n\n${R}ERROR:${NC} Not install"
+                    exit 0
+                fi
                 GEO=`grep "geoip_country" /etc/nginx/nginx.conf`
                 if [ "${GEO}" = "" ]
                 then
@@ -2461,7 +2474,7 @@ do
                 AC=`grep "allowed_country" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
                 if [ "${AC}" = "" ]
                 then
-                    sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = no) {return 444;}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+                    sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = '') {set \$allowed_country yes;}\n    if (\$allowed_country = no) {return 444;}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
                 fi
 
                 light_restart_cinemapress
