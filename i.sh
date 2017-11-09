@@ -2442,12 +2442,14 @@ do
                 if ! [ -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIPv6"; exit 0; fi
                 cd /usr/share/GeoIP/ && \
                 gunzip -f GeoIP.dat.gz && gunzip -f GeoIPv6.dat.gz && \
-                rm -rf GeoIP.dat.gz && rm -rf GeoIPv6.dat.gz
+                rm -rf GeoIP.dat.gz && rm -rf GeoIPv6.dat.gz && \
+                cd ~/
 
                 NGINX_VV=`nginx -v 2>&1`
                 NGINX_V=`echo ${NGINX_VV} | grep -o '[0-9.]*'`
                 NGINX_CAA=`nginx -V 2>&1`
-                NGINX_CA=`echo ${NGINX_CAA} | grep "configure arguments:" | sed 's/.*\(--prefix=.*\)/\1/'`
+                NGINX_CA=`echo ${NGINX_CAA} | grep "configure arguments:" | sed 's/.*\(--prefix=.*\)\(--with-cc-opt|--with-ld-opt\)/\1/'`
+                NGINX_CA=`echo ${NGINX_CAA} | grep "configure arguments:" | perl -p -ne "s|.*?(--prefix=.*?)(--with-cc-opt\|--with-ld-opt|--add-module).*|\1|"`
                 if [ "`echo ${NGINX_CAA} | grep with-http_geoip_module`" != "" ]; then printf "\n\n${G}Installed${NC}"; exit 0; fi
                 wget -q "http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
                 if ! [ -f "nginx-${NGINX_V}.tar.gz" ]; then printf "\n\n${R}ERROR:${NC} Download NGINX"; exit 0; fi
