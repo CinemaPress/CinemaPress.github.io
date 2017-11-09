@@ -253,11 +253,18 @@
                     Для начала убедитесь, что действительно идет атака/спам/боты и т.п., выполните по SSH:<br>
                     <code>~# tail -f /var/log/nginx/access.log</code><br>
                     Чтобы выйти нажмите <code>Ctrl+C</code><br>
-                    Видите много появляющихся запросов? Выберите несколько IP адресов (слева каждой строчки) и проверьте их через сервис, например:<br>
-                    <code>https://censys.io/ipv4/182.201.32.83</code><br>
-                    Постарайтесь найти между ними какое-то соответствие, к примеру они все из одной и той же страны, к примеру из Китая. В таком случае у Нас уже готова защита от таких атак. Для этого можно дать доступ к сайту только из 30 стран в мире, которые покрывают 99.99% всего кинотрафика рунета и как следствие Вашего сайта. Оставшиеся 0.01% это страны, из которых могут идти атаки/спам/боты чаще всего, это страны Африки и Азии. Для этого нужно установить модуль <a href="http://www.maxmind.com" target="_blank">GeoLite by MaxMind</a> и добавить его в Nginx. Это делается одной строчкой автоматически:<br>
+                    Видите много появляющихся запросов похожие друг на друга? Выберите несколько IP адресов (слева каждой строчки) и проверьте их через сервис, например:<br>
+                    <code>https://censys.io/ipv4/182.201.32.83</code> и <a href="https://2ip.ru/spam/" target="_blank">наличие IP в спам базах</a>.<br>
+                    Постарайтесь найти между ними какое-то соответствие, к примеру они все из одной и той же страны (Китай, Вьетнам, Индия и др.). В таком случае у Нас уже готова защита от таких нагрузок. Для этого можно дать доступ к сайту только из 30 стран в мире, которые покрывают 99.99% всего кинотрафика рунета и как следствие Вашего сайта тоже. Оставшиеся 0.01% это страны, из которых могут идти атаки/спам/боты чаще всего, это страны Африки и Азии. Для этого нужно установить модуль <a href="http://www.maxmind.com" target="_blank">GeoLite by MaxMind</a> и добавить его в Nginx. Это делается одной строчкой автоматически:<br>
                     <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i geo</code><br>
-                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small>
+                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small><br>
+                    Если и после этого ничего не поменялось, попробуйте ограничить посещение сайта только 4 странами. Откройте файл <code>/home/<strong>домен.net</strong>/config/production/nginx/conf.d/nginx.conf</code>, найдите строку:<br>
+                    <code>default no; RU yes; UA yes; KZ yes; BY yes; DE yes; NL yes; MD yes; US yes; KG yes; LV yes; GB yes; AM yes; IL yes; GE yes; LT yes; UZ yes; AZ yes; EE yes; PL yes; CA yes; FR yes; IT yes; RO yes; ES yes; KR yes; CZ yes; BG yes; GR yes; FI yes; TM yes; TJ yes;</code><br>
+                    и сделайте её такой:<br>
+                    <code>default no; RU yes; UA yes; KZ yes; BY yes;</code><br>
+                    Эти 4 страны охватывают 90% всего кинотрафика рунета. После этого, перезагрузите сайт:<br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i restart</code><br>
+                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small><br>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
