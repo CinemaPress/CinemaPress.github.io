@@ -1540,6 +1540,8 @@ create_mega_backup() {
         echo "@daily root /home/${DOMAIN}/config/production/i cron backup \"${DOMAIN}\" \"${MEGA_EMAIL}\" \"${MEGA_PASSWD}\" >> /home/${DOMAIN}/log/autostart.log" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
         cp -r "${0}" /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
+        CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
     fi
     MEGA_DAY=$(date +%d)
     MEGA_NOW=$(date +%Y-%m-%d)
@@ -2383,6 +2385,8 @@ do
 
                 cp -r "${0}" /home/${DOMAIN}/config/production/i && \
                 chmod +x /home/${DOMAIN}/config/production/i
+                CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+                sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
                 DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
                 cd /home/${DOMAIN}/config/update/ && \
                 node update_cinemapress.js && \
