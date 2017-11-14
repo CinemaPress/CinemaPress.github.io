@@ -2430,7 +2430,7 @@ do
                     then
                         pm2 reload "${ID_RELOAD}" --force
                     fi
-                done <<< "`pm2 show ${NAME_CURRENT} | grep 'with id'`";
+                done <<< "`pm2 show ${NAME_CURRENT} 2>/dev/null | grep 'with id'`";
                 exit 0
             elif [ "${1}" = "geo" ]
             then
