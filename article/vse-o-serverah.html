@@ -212,6 +212,8 @@
                     <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i light_restart</code><br>
                     <strong>Команда для полной перезагрузки сайта (рекомендуется сделать перед этим бэкап):</strong><br>
                     <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i restart</code><br>
+                    <strong>Команда для полной перезагрузки с удалением процесса (рекомендуется сделать перед этим бэкап):</strong><br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i hard_restart</code><br>
                     <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small>
                 </p>
             </div>
@@ -241,16 +243,16 @@
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="attack">
+<section class="ptb-100 functionalities bg-gray" id="spam">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#attack">Сайт под атакой и не открывается, что делать?</a></h3>
+                    <h3><a href="#spam">Как запретить доступ к сайту из определенной страны (Китай, Индия, и т.п.)?</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Для начала убедитесь, что действительно идет атака/спам/боты и т.п., выполните по SSH:<br>
+                    Для начала убедитесь, что действительно идет атака/спам/боты и т.п. из определенной страны, выполните по SSH:<br>
                     <code>~# tail -f /var/log/nginx/access.log</code><br>
                     Чтобы выйти нажмите <code>Ctrl+C</code><br>
                     Видите много появляющихся запросов похожие друг на друга? Выберите несколько IP адресов (слева каждой строчки) и проверьте их через сервис, например:<br>
@@ -268,7 +270,7 @@
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/vps/attack.png" class="img-responsive" alt="Сайт под атакой и не открывается, что делать?" data-action="zoom">
+                <img src="/images/vps/spam.png" class="img-responsive" alt="Как запретить доступ к сайту из определенной страны (Китай, Индия, и т.п.)?" data-action="zoom">
             </div>
         </div>
     </div>
