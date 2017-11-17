@@ -1898,6 +1898,7 @@ add_mirror() {
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
+    service nginx restart
 }
 
 mirror_to_main() {
