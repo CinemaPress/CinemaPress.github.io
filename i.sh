@@ -49,7 +49,8 @@ read_domain() {
         then
             if echo "${DOMAIN}" | grep -qE ^\-?[.a-z0-9-]+$
             then
-               AGAIN=no
+                DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+                AGAIN=no
             else
                 printf "${NC}         Вы ввели - ${DOMAIN} \n"
                 printf "${R}WARNING:${NC} Допускаются только латинские символы \n"
@@ -84,6 +85,7 @@ read_mirror() {
                     printf "${R}WARNING:${NC} Зеркало сайта не может быть таким же, \n"
                     printf "${NC}         как и домен основного сайта! \n"
                 else
+                    MIRROR_=`echo ${MIRROR} | sed -r "s/[^A-Za-z0-9]/_/g"`
                     AGAIN=no
                 fi
             else
@@ -667,10 +669,9 @@ conf_sphinx() {
             SPHINX_PORT=$((SPHINX_PORT+1))
         fi
     done
-    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
-    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
-    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/config/xmlpipe2/source.xml
+    sed -i "s/example_com/${DOMAIN_}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
+    sed -i "s/example_com/${DOMAIN_}/g" /home/${DOMAIN}/config/xmlpipe2/source.xml
     sed -i "s/:9306/:${MYSQL_PORT}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
     sed -i "s/:9312/:${SPHINX_PORT}/g" /home/${DOMAIN}/config/production/sphinx/sphinx.conf
     if [ "`grep \"${DOMAIN}_searchd\" /etc/crontab`" = "" ]
@@ -788,11 +789,10 @@ conf_cinemapress() {
         echo "*/1 * * * * root /home/${DOMAIN}/config/production/i cron oom >> /home/${DOMAIN}/log/autostart.log 2>&1" >> /etc/crontab
         echo "# ----- OOM --------------------------------------" >> /etc/crontab
     fi
-    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
-    sed -i "s/example_com\"/${INDEX_DOMAIN}\"/g" /home/${DOMAIN}/config/production/i
-    sed -i "s/_example_com_\"/_${INDEX_DOMAIN}_\"/g" /home/${DOMAIN}/config/production/i
+    sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
+    sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
-    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
+    sed -i "s/example_com/${DOMAIN_}/g" /home/${DOMAIN}/process.json
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/config.js
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/default/config.js
     sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/production/config.js
@@ -903,14 +903,13 @@ start_cinemapress() {
         sleep 2
     fi
     sleep 2
-    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
     cd /home/${DOMAIN}/ && \
-    CP_ALL="_${INDEX_DOMAIN}_" \
-    CP_XMLPIPE2="xmlpipe2_${INDEX_DOMAIN}" \
-    CP_RT="rt_${INDEX_DOMAIN}" \
-    CP_CONTENT="content_${INDEX_DOMAIN}" \
-    CP_COMMENT="comment_${INDEX_DOMAIN}" \
-    CP_USER="user_${INDEX_DOMAIN}" \
+    CP_ALL="_${DOMAIN_}_" \
+    CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" \
+    CP_RT="rt_${DOMAIN_}" \
+    CP_CONTENT="content_${DOMAIN_}" \
+    CP_COMMENT="comment_${DOMAIN_}" \
+    CP_USER="user_${DOMAIN_}" \
     node ./config/update/insert_default.js
     sleep 2
     cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save
@@ -1170,7 +1169,6 @@ update_cinemapress() {
         printf "\n${NC}"
         exit 0
     fi
-    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
 
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/oldCP
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/newCP
@@ -1214,10 +1212,10 @@ update_cinemapress() {
     cp -r "${0}" /home/${DOMAIN}/config/production/i && \
     chmod +x /home/${DOMAIN}/config/production/i
 
-    sed -i "s/example_com\"/${INDEX_DOMAIN}\"/g" /home/${DOMAIN}/config/production/i
-    sed -i "s/_example_com_\"/_${INDEX_DOMAIN}_\"/g" /home/${DOMAIN}/config/production/i
+    sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
+    sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/process.json
-    sed -i "s/example_com/${INDEX_DOMAIN}/g" /home/${DOMAIN}/process.json
+    sed -i "s/example_com/${DOMAIN_}/g" /home/${DOMAIN}/process.json
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/default/config.js
 
     CURRENT=`grep "CP_ALL" /home/${DOMAIN}/backup/${B_DIR}/oldCP/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
@@ -1336,9 +1334,9 @@ fail_4() {
 
     searchd --stop --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
 
-    rm -rf /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.*
+    rm -rf /var/lib/sphinxsearch/data/movies_${DOMAIN_}.*
 
-    cp -R /var/lib/sphinxsearch/old/movies_${INDEX_DOMAIN}.* /var/lib/sphinxsearch/data/
+    cp -R /var/lib/sphinxsearch/old/movies_${DOMAIN_}.* /var/lib/sphinxsearch/data/
 
     sleep 5
 
@@ -1426,16 +1424,15 @@ import_db() {
         printf "${G}Распаковка ...\n"
 
         NOW=$(date +%Y-%m-%d)
-        INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
 
         searchd --stop --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
         mkdir -p /var/lib/sphinxsearch/data
         mkdir -p /var/lib/sphinxsearch/old
 
-        rm -rf /var/lib/sphinxsearch/old/movies_${INDEX_DOMAIN}.*
-        cp -R /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.* /var/lib/sphinxsearch/old/
-        rm -rf /var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.*
+        rm -rf /var/lib/sphinxsearch/old/movies_${DOMAIN_}.*
+        cp -R /var/lib/sphinxsearch/data/movies_${DOMAIN_}.* /var/lib/sphinxsearch/old/
+        rm -rf /var/lib/sphinxsearch/data/movies_${DOMAIN_}.*
         tar -xf "/var/lib/sphinxsearch/tmp/${KEY}.tar" -C "/var/lib/sphinxsearch/tmp" \
             &> /var/lib/sphinxsearch/data/${NOW}.log
 
@@ -1454,10 +1451,10 @@ import_db() {
         then
             for file in `find /var/lib/sphinxsearch/tmp/*.* -type f`
             do
-                mv ${file} "/var/lib/sphinxsearch/data/movies_${INDEX_DOMAIN}.${file##*.}"
+                mv ${file} "/var/lib/sphinxsearch/data/movies_${DOMAIN_}.${file##*.}"
             done
         else
-            cp -R /var/lib/sphinxsearch/old/movies_${INDEX_DOMAIN}.* /var/lib/sphinxsearch/data/
+            cp -R /var/lib/sphinxsearch/old/movies_${DOMAIN_}.* /var/lib/sphinxsearch/data/
         fi
 
         printf "${G}Запуск ...\n"
@@ -1605,12 +1602,11 @@ create_mega_backup() {
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
         echo "@daily root /home/${DOMAIN}/config/production/i cron backup \"${DOMAIN}\" \"${MEGA_EMAIL}\" \"${MEGA_PASSWD}\" >> /home/${DOMAIN}/log/autostart.log" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
-        INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
         cp -r "${0}" /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
         CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
         sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
-        sed -i "s/example_com\"/${INDEX_DOMAIN}\"/g" /home/${DOMAIN}/config/production/i
-        sed -i "s/_example_com_\"/_${INDEX_DOMAIN}_\"/g" /home/${DOMAIN}/config/production/i
+        sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
+        sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
     fi
     MEGA_DAY=$(date +%d)
     MEGA_NOW=$(date +%Y-%m-%d)
@@ -1627,12 +1623,11 @@ create_mega_backup() {
     megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/
     megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest/
     sleep 2
-    INDEX_DOMAIN=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
     PORT_DOMAIN=`grep "mysql41" /home/${DOMAIN}/config/production/sphinx/sphinx.conf | sed 's/.*:\([0-9]*\):mysql41.*/\1/'`
-    echo "FLUSH RTINDEX rt_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
-    echo "FLUSH RTINDEX content_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
-    echo "FLUSH RTINDEX comment_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
-    echo "FLUSH RTINDEX user_${INDEX_DOMAIN}" | mysql -h0 -P${PORT_DOMAIN}
+    echo "FLUSH RTINDEX rt_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
+    echo "FLUSH RTINDEX content_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
+    echo "FLUSH RTINDEX comment_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
+    echo "FLUSH RTINDEX user_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
     sleep 2
     rm -rf /var/${DOMAIN} && mkdir -p /var/${DOMAIN}
     cd /home/${DOMAIN} && \
@@ -1908,8 +1903,6 @@ add_mirror() {
 mirror_to_main() {
     stop_cinemapress ${DOMAIN}
     stop_cinemapress ${MIRROR}
-    DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
-    MIRROR_=`echo ${MIRROR} | sed -r "s/[^A-Za-z0-9]/_/g"`
     mkdir -p /home/${MIRROR}/backup/${B_DIR}/oldCP && \
     rm -rf /home/${DOMAIN}/backup && \
     rm -rf /home/${DOMAIN}/node_modules && \
@@ -1935,7 +1928,6 @@ mirror_to_main() {
     cp -r /home/${DOMAIN}/themes/default/public/desktop/* /home/${MIRROR}/themes/default/public/desktop/
     cp -r /home/${DOMAIN}/themes/default/public/mobile/* /home/${MIRROR}/themes/default/public/mobile/
     cp -r /home/${DOMAIN}/themes/default/views/mobile/* /home/${MIRROR}/themes/default/views/mobile/
-    DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
     CURRENT=`grep "CP_ALL" /home/${MIRROR}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
     sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/process.json
     sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/config/production/i
@@ -2456,7 +2448,6 @@ do
 
                 separator
 
-                DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
                 cp -r "${0}" /home/${DOMAIN}/config/production/i && \
                 chmod +x /home/${DOMAIN}/config/production/i
                 CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
@@ -2565,7 +2556,6 @@ do
 
                 separator
 
-                DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
                 sed -i "s/xmlpipe_command =.*/xmlpipe_command =/" "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
                 indexer xmlpipe2_${DOMAIN_} --rotate --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
                 exit 0
