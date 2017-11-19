@@ -2382,6 +2382,7 @@ do
                         if [ "${OOM}" != "" ]
                         then
                             echo ${OOM}
+                            hard_restart_cinemapress
                             reboot
                         elif [ "${ENOMEM}" != "" ]
                         then
@@ -2389,9 +2390,7 @@ do
                             sed -i '/process out of memory/d' /root/.pm2/pm2.log
                             sed -i '/spawn ENOMEM/d' /root/.pm2/pm2.log
                             sed -i '/Error caught by domain/d' /root/.pm2/pm2.log
-                            pm2 kill
-                            for d in /home/*/; do if [ -f "$d/process.json" ]; then cd "$d" && pm2 start process.json; fi; done;
-                            pm2 save
+                            hard_restart_cinemapress
                         fi
                     ;;
                     * )
