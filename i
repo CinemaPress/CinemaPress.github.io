@@ -1365,7 +1365,7 @@ check_db() {
         printf "${C}----        ${NC}Сайт был создан до 1 октября 2017 года,${C}           ----\n${NC}"
         printf "${C}----    ${NC}потому следует полностью переустановить систему.${C}      ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${NC}  cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html\n${NC}"
+        printf "${NC}cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html#update\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -1471,7 +1471,7 @@ import_db() {
 
         sleep 2
 
-        light_restart_cinemapress
+        hard_restart_cinemapress
 
         sleep 3
     else
