@@ -1002,8 +1002,9 @@ light_restart_cinemapress() {
 }
 
 hard_restart_cinemapress() {
-    pm2 kill &> /dev/null
+    pm2 delete all &> /dev/null
     pm2 save &> /dev/null
+    pm2 kill &> /dev/null
     rm -rf ~/.pm2/dump.pm2
     npm remove pm2 -g
     sleep 1
@@ -1025,9 +1026,10 @@ hard_restart_cinemapress() {
     for d in /home/*; do
         if [ -f "$d/process.json" ]
         then
+            DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
             ln -sf ${d}/config/production/nginx/conf.d/nginx.conf \
-                /etc/nginx/conf.d/${d}.conf
+                /etc/nginx/conf.d/${DOMAIN}.conf
             cp ${d}/config/production/nginx/conf.d/blacklist.conf \
                 /etc/nginx/conf.d/blacklist.conf
             cp ${d}/config/production/nginx/conf.d/rewrite.conf \
@@ -1051,9 +1053,9 @@ hard_restart_cinemapress() {
             cp ${d}/config/production/fail2ban/filter.d/nginx-x00.conf \
                 /etc/fail2ban/filter.d/nginx-x00.conf
             sleep 1
-            service memcached_${d} stop
-            service memcached_${d} start
-            service memcached_${d} restart
+            service memcached_${DOMAIN} stop
+            service memcached_${DOMAIN} start
+            service memcached_${DOMAIN} restart
             sleep 1
             searchd --config "${d}/config/production/sphinx/sphinx.conf"
             sleep 1
