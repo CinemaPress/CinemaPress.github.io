@@ -1605,11 +1605,7 @@ create_mega_backup() {
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
         echo "@daily root /home/${DOMAIN}/config/production/i cron backup \"${DOMAIN}\" \"${MEGA_EMAIL}\" \"${MEGA_PASSWD}\" >> /home/${DOMAIN}/log/autostart.log" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
-        cp -r "${0}" /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
-        CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
-        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
-        sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
-        sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
+        update_i
     fi
     MEGA_DAY=$(date +%d)
     MEGA_NOW=$(date +%Y-%m-%d)
@@ -1818,6 +1814,22 @@ delete_cinemapress() {
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
+}
+
+update_i() {
+    for d in /home/*; do
+        if [ -f "$d/config/production/i" ]
+        then
+            DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+            DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+            cp -r ${0} /home/${DOMAIN}/config/production/i && \
+            chmod +x /home/${DOMAIN}/config/production/i
+            CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+            sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
+            sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
+            sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
+        fi
+    done
 }
 
 create_mirror() {
@@ -2451,12 +2463,7 @@ do
 
                 separator
 
-                cp -r "${0}" /home/${DOMAIN}/config/production/i && \
-                chmod +x /home/${DOMAIN}/config/production/i
-                CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
-                sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
-                sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
-                sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
+                update_i
                 cd /home/${DOMAIN}/config/update/ && \
                 node update_cinemapress.js && \
                 CP_ALL="_${DOMAIN_}_" \
@@ -2564,18 +2571,7 @@ do
                 exit 0
             elif [ "${1}" = "i" ]
             then
-                for d in /home/*; do
-                    if [ -f "$d/config/production/i" ]
-                    then
-                        DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
-                        cp -r "${0}" /home/${DOMAIN}/config/production/i && \
-                        chmod +x /home/${DOMAIN}/config/production/i
-                        CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
-                        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
-                        sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
-                        sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
-                    fi
-                done
+                update_i
                 exit 0
             fi
             option ${1}
