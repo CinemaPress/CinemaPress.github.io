@@ -1006,6 +1006,7 @@ hard_restart_cinemapress() {
     pm2 save &> /dev/null
     rm -rf ~/.pm2/dump.pm2
     npm remove pm2 -g
+    sleep 1
     I=`npm list -g --depth=0 | grep "pm2"`
     if ! [ -n "${I}" ]
     then
@@ -1021,48 +1022,48 @@ hard_restart_cinemapress() {
     service fail2ban stop
     service fail2ban start
     service fail2ban restart
-    for d in /home/*/; do
+    for d in /home/*; do
         if [ -f "$d/process.json" ]
         then
-            searchd --stop --config "/home/${d}/config/production/sphinx/sphinx.conf"
-            ln -sf /home/${d}/config/production/nginx/conf.d/nginx.conf \
+            searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
+            ln -sf ${d}/config/production/nginx/conf.d/nginx.conf \
                 /etc/nginx/conf.d/${d}.conf
-            cp /home/${d}/config/production/nginx/conf.d/blacklist.conf \
+            cp ${d}/config/production/nginx/conf.d/blacklist.conf \
                 /etc/nginx/conf.d/blacklist.conf
-            cp /home/${d}/config/production/nginx/conf.d/rewrite.conf \
+            cp ${d}/config/production/nginx/conf.d/rewrite.conf \
                 /etc/nginx/conf.d/rewrite.conf
-            cp /home/${d}/config/production/nginx/bots.d/blockbots.conf \
+            cp ${d}/config/production/nginx/bots.d/blockbots.conf \
                 /etc/nginx/bots.d/blockbots.conf
-            cp /home/${d}/config/production/nginx/bots.d/ddos.conf \
+            cp ${d}/config/production/nginx/bots.d/ddos.conf \
                 /etc/nginx/bots.d/ddos.conf
-            cp /home/${d}/config/production/nginx/bots.d/whitelist-domains.conf \
+            cp ${d}/config/production/nginx/bots.d/whitelist-domains.conf \
                 /etc/nginx/bots.d/whitelist-domains.conf
-            cp /home/${d}/config/production/nginx/bots.d/whitelist-ips.conf \
+            cp ${d}/config/production/nginx/bots.d/whitelist-ips.conf \
                 /etc/nginx/bots.d/whitelist-ips.conf
-            cp /home/${d}/config/production/sysctl/sysctl.conf \
+            cp ${d}/config/production/sysctl/sysctl.conf \
                 /etc/sysctl.conf
-            cp /home/${d}/config/production/fail2ban/jail.local \
+            cp ${d}/config/production/fail2ban/jail.local \
                 /etc/fail2ban/jail.local
-            cp /home/${d}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
+            cp ${d}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
                 /etc/fail2ban/action.d/nginxrepeatoffender.conf
-            cp /home/${d}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
+            cp ${d}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
                 /etc/fail2ban/filter.d/nginxrepeatoffender.conf
-            cp /home/${d}/config/production/fail2ban/filter.d/nginx-x00.conf \
+            cp ${d}/config/production/fail2ban/filter.d/nginx-x00.conf \
                 /etc/fail2ban/filter.d/nginx-x00.conf
             sleep 1
             service memcached_${d} stop
             service memcached_${d} start
             service memcached_${d} restart
             sleep 1
-            searchd --config "/home/${d}/config/production/sphinx/sphinx.conf"
+            searchd --config "${d}/config/production/sphinx/sphinx.conf"
             sleep 1
-            cd /home/${d}/ && npm i
+            cd ${d}/ && npm i
             sleep 1
-            cd /home/${d}/ && \
+            cd ${d}/ && \
             pm2 start process.json && \
             pm2 save
             sleep 1
-            node /home/${d}/config/update/update_cinemapress.js
+            node ${d}/config/update/update_cinemapress.js
         fi
     done
 }
