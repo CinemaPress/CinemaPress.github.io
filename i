@@ -1005,7 +1005,7 @@ hard_restart_cinemapress() {
     pm2 delete all &> /dev/null
     pm2 save &> /dev/null
     pm2 kill &> /dev/null
-    rm -rf ~/.pm2/dump.pm2
+    rm -rf ~/.pm2/dump.*
     npm remove pm2 -g
     sleep 1
     I=`npm list -g --depth=0 | grep "pm2"`
@@ -2561,6 +2561,21 @@ do
 
                 sed -i "s/xmlpipe_command =.*/xmlpipe_command =/" "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
                 indexer xmlpipe2_${DOMAIN_} --rotate --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
+                exit 0
+            elif [ "${1}" = "i" ]
+            then
+                for d in /home/*; do
+                    if [ -f "$d/config/production/i" ]
+                    then
+                        DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+                        cp -r "${0}" /home/${DOMAIN}/config/production/i && \
+                        chmod +x /home/${DOMAIN}/config/production/i
+                        CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+                        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
+                        sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
+                        sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
+                    fi
+                done
                 exit 0
             fi
             option ${1}
