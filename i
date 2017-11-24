@@ -1003,6 +1003,7 @@ light_restart_cinemapress() {
 
 hard_restart_cinemapress() {
     pm2 delete all &> /dev/null
+    pm2 uninstall pm2-logrotate &> /dev/null
     pm2 save &> /dev/null
     pm2 kill &> /dev/null
     rm -rf ~/.pm2/dump.*
