@@ -1136,7 +1136,7 @@ fail_2() {
     cd /home/${DOMAIN}/ && \
     rm -rf `find . | grep -v "backup"`
 
-    rsync -av --progress \
+    rsync -av --info=progress2 \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/* \
         /home/${DOMAIN}
 
@@ -1187,23 +1187,23 @@ update_cinemapress() {
 
     rm -rf /home/${DOMAIN}/node_modules
 
-    rsync -av --progress --exclude backup --remove-source-files \
+    rsync -av --info=progress2 --exclude backup --remove-source-files \
         /home/${DOMAIN}/* \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP && \
     cd /home/${DOMAIN}/ && \
     find . -depth -type d -empty -delete && \
-    rsync -av --progress \
+    rsync -av --info=progress2 \
         /home/${DOMAIN}/backup/${B_DIR}/newCP/* \
         /home/${DOMAIN}
-    rsync -av --progress --exclude default/public/admin --exclude default/views/admin \
+    rsync -av --info=progress2 --exclude default/public/admin --exclude default/views/admin \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/themes/* \
         /home/${DOMAIN}/themes
-    rsync -av --progress \
+    rsync -av --info=progress2 \
         /home/${DOMAIN}/config/default/* \
         /home/${DOMAIN}/config/production
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico \
         /home/${DOMAIN}/
-    rsync -av --progress --exclude default \
+    rsync -av --info=progress2 --exclude default \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/config/* \
         /home/${DOMAIN}/config
 
@@ -1749,9 +1749,9 @@ confirm_mega_backup() {
         exit 0
     fi
     printf "${C}-------------------------[ ${Y}СДЕЛАЙТЕ ВЫБОР${C} ]-----------------------\n${NC}"
-    printf "${C}---- ${G}1)${NC} Запустить бэкап                                       ${C}----\n${NC}"
-    printf "${C}---- ${G}2)${NC} Восстановить последний бэкап сайта                    ${C}----\n${NC}"
-    printf "${C}---- ${G}3)${NC} Остановить бэкап                                      ${C}----\n${NC}"
+    printf "${C}---- ${G}1)${NC} Запустить автоматическое создание бэкапа каждый день  ${C}----\n${NC}"
+    printf "${C}---- ${G}2)${NC} Восстановить сайт из последнего бэкапа                ${C}----\n${NC}"
+    printf "${C}---- ${G}3)${NC} Остановить автоматическое создание бэкапа             ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
     if [ ${1} ]
