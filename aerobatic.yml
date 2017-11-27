@@ -9,3 +9,7 @@ plugins:
   - name: webpage
     options:
       canonicalRedirects: false
+  - name: custom-errors
+    options:
+      errors:
+        404: /404.html
