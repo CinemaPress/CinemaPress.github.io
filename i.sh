@@ -15,7 +15,7 @@ then
 	exit 1
 fi
 
-if ! [ -f /etc/debian_version ]
+if [ ! -f /etc/debian_version ]
 then
 	printf "${R}WARNING:${NC} Система работает на Debian 9 x64!\n${NC}"
 	exit 1
@@ -825,7 +825,7 @@ conf_cinemapress() {
 }
 
 conf_sysctl() {
-    if ! [ -f "/etc/sysctl.old.conf" ]
+    if [ ! -f "/etc/sysctl.old.conf" ]
     then
         mv /etc/sysctl.conf /etc/sysctl.old.conf
     fi
@@ -833,7 +833,7 @@ conf_sysctl() {
 }
 
 conf_fail2ban() {
-    if ! [ -f "/etc/fail2ban/jail.old.local" ]
+    if [ ! -f "/etc/fail2ban/jail.old.local" ]
     then
         mv /etc/fail2ban/jail.local /etc/fail2ban/jail.old.local
     fi
@@ -892,7 +892,7 @@ start_cinemapress() {
     cd /home/${DOMAIN}/ && npm install --loglevel=silent --parseable
     sleep 2
     I=`npm list -g --depth=0 | grep "pm2"`
-    if ! [ -n "${I}" ]
+    if [ ! -n "${I}" ]
     then
         sleep 2
         npm install --loglevel=silent --parseable pm2 npm-check-updates -g
@@ -1010,7 +1010,7 @@ hard_restart_cinemapress() {
     npm remove pm2 -g
     sleep 1
     I=`npm list -g --depth=0 | grep "pm2"`
-    if ! [ -n "${I}" ]
+    if [ ! -n "${I}" ]
     then
         npm install --loglevel=silent --parseable pm2 npm-check-updates -g
         sleep 1
@@ -1073,7 +1073,7 @@ hard_restart_cinemapress() {
 
 conf_mass() {
     FILE_MASS=mass.txt
-    if ! [ -f ${FILE_MASS} ]
+    if [ ! -f ${FILE_MASS} ]
     then
         printf "\n${NC}"
         printf "${C}-------------------------[ ${Y}ФАЙЛ НЕ НАЙДЕН${C} ]------------------------\n${NC}"
@@ -1136,7 +1136,7 @@ fail_2() {
     cd /home/${DOMAIN}/ && \
     rm -rf `find . | grep -v "backup"`
 
-    rsync -av --info=progress2 \
+    rsync -av --stats \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/* \
         /home/${DOMAIN}
 
@@ -1181,29 +1181,36 @@ update_cinemapress() {
         https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git \
         /home/${DOMAIN}/backup/${B_DIR}/newCP
 
-    if ! [ -f "/home/${DOMAIN}/backup/${B_DIR}/newCP/app.js" ]; then exit 0; fi;
+    if [ ! -f "/home/${DOMAIN}/backup/${B_DIR}/newCP/app.js" ]; then exit 0; fi;
 
     stop_cinemapress
 
     rm -rf /home/${DOMAIN}/node_modules
 
-    rsync -av --info=progress2 --exclude backup --remove-source-files \
+    rsync -av --stats --exclude backup --remove-source-files \
         /home/${DOMAIN}/* \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP && \
     cd /home/${DOMAIN}/ && \
-    find . -depth -type d -empty -delete && \
-    rsync -av --info=progress2 \
+    find . -depth -type d -empty -delete
+
+    if [ -f "/home/${DOMAIN}/config/default/config.js" ] && [ ! -f "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/default/config.js" ]
+    then
+        fail_2
+        exit 0
+    fi
+
+    rsync -av --stats \
         /home/${DOMAIN}/backup/${B_DIR}/newCP/* \
         /home/${DOMAIN}
-    rsync -av --info=progress2 --exclude default/public/admin --exclude default/views/admin \
+    rsync -av --stats --exclude default/public/admin --exclude default/views/admin \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/themes/* \
         /home/${DOMAIN}/themes
-    rsync -av --info=progress2 \
+    rsync -av --stats \
         /home/${DOMAIN}/config/default/* \
         /home/${DOMAIN}/config/production
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico \
         /home/${DOMAIN}/
-    rsync -av --info=progress2 --exclude default \
+    rsync -av --stats --exclude default \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/config/* \
         /home/${DOMAIN}/config
 
@@ -1237,6 +1244,7 @@ update_cinemapress() {
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
     restart_cinemapress
+
 }
 
 confirm_update_cinemapress() {
@@ -1271,7 +1279,7 @@ confirm_update_cinemapress() {
 }
 
 update_theme() {
-    if ! [ -d /home/${DOMAIN}/themes/${THEME} ]
+    if [ ! -d /home/${DOMAIN}/themes/${THEME} ]
     then
         git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
     else
@@ -1571,7 +1579,7 @@ get_ssl() {
     DS=""
     D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
     while IFS=' ' read -ra ADDR; do for i in "${ADDR[@]}"; do DS="${DS} -d ${i}"; done; done <<< "${D}"
-    if ! [ -f "/etc/certbot-auto" ] || [ "${DS}" = "" ]
+    if [ ! -f "/etc/certbot-auto" ] || [ "${DS}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
@@ -2519,8 +2527,8 @@ do
                 mkdir -p /usr/share/GeoIP/ && cd /usr/share/GeoIP/ && \
                 wget -q http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz && \
                 wget -q http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
-                if ! [ -f "/usr/share/GeoIP/GeoIP.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIP\n\n"; exit 0; fi
-                if ! [ -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIPv6\n\n"; exit 0; fi
+                if [ ! -f "/usr/share/GeoIP/GeoIP.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIP\n\n"; exit 0; fi
+                if [ ! -f "/usr/share/GeoIP/GeoIPv6.dat.gz" ]; then printf "\n\n${R}ERROR:${NC} Download GeoIPv6\n\n"; exit 0; fi
                 cd /usr/share/GeoIP/ && \
                 gunzip -f GeoIP.dat.gz && gunzip -f GeoIPv6.dat.gz && \
                 rm -rf GeoIP.dat.gz && rm -rf GeoIPv6.dat.gz && \
@@ -2532,7 +2540,7 @@ do
                 NGINX_CA=`echo ${NGINX_CAA} | grep "configure arguments:" | perl -p -ne "s|.*?(--prefix=.*?)(--with-cc-opt\|--with-ld-opt\|--add-module).*|\1|"`
                 if [ "`echo ${NGINX_CAA} | grep with-http_geoip_module`" != "" ]; then printf "\n\n${G}Installed${NC}\n\n"; exit 0; fi
                 wget -q "http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
-                if ! [ -f "nginx-${NGINX_V}.tar.gz" ]; then printf "\n\n${R}ERROR:${NC} Download NGINX\n\n"; exit 0; fi
+                if [ ! -f "nginx-${NGINX_V}.tar.gz" ]; then printf "\n\n${R}ERROR:${NC} Download NGINX\n\n"; exit 0; fi
                 tar -xvf "nginx-${NGINX_V}.tar.gz"
                 cp /usr/sbin/nginx /usr/sbin/nginx_back
                 cd "nginx-${NGINX_V}" && \
