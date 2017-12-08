@@ -87,7 +87,7 @@ function req() {
     }
 
     var pass = generate();
-    var theme = 'drogo';
+    var theme = 'arya';
 
     var http = new XMLHttpRequest();
     var params =
