@@ -2464,6 +2464,7 @@ do
                 exit 0
             elif [ "${1}" = "hard_restart" ]
             then
+                update_i
                 hard_restart_cinemapress
                 exit 0
             elif [ "${1}" = "update" ]
