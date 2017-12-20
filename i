@@ -927,6 +927,7 @@ stop_cinemapress() {
 restart_cinemapress() {
     RESTART_DOMAIN="${DOMAIN}"
     if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
+    check_config ${RESTART_DOMAIN}
     ln -sf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/nginx.conf \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
     cp /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
@@ -978,6 +979,7 @@ restart_cinemapress() {
 light_restart_cinemapress() {
     RESTART_DOMAIN="${DOMAIN}"
     if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
+    check_config ${RESTART_DOMAIN}
     pm2 delete ${RESTART_DOMAIN} &> /dev/null
     pm2 save &> /dev/null
     searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
@@ -1028,6 +1030,7 @@ hard_restart_cinemapress() {
         if [ -f "$d/process.json" ]
         then
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+            check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
             ln -sf ${d}/config/production/nginx/conf.d/nginx.conf \
                 /etc/nginx/conf.d/${DOMAIN}.conf
@@ -1069,6 +1072,27 @@ hard_restart_cinemapress() {
             node ${d}/config/update/update_cinemapress.js
         fi
     done
+}
+
+check_config() {
+    CHECK_DOMAIN="${DOMAIN}"
+    if [ "${1}" != "" ]; then CHECK_DOMAIN="${1}"; fi
+    if [ -f /home/${CHECK_DOMAIN}/config/production/config.js ] && [ ! -s /home/${CHECK_DOMAIN}/config/production/config.js ]
+    then
+        if [ -f /home/${CHECK_DOMAIN}/config/production/config.prev.js ] && [ -s /home/${CHECK_DOMAIN}/config/production/config.prev.js ]
+        then
+            cp /home/${CHECK_DOMAIN}/config/production/config.prev.js \
+                /home/${CHECK_DOMAIN}/config/production/config.js
+        fi
+    fi
+    if [ -f /home/${CHECK_DOMAIN}/config/production/modules.js ] && [ ! -s /home/${CHECK_DOMAIN}/config/production/modules.js ]
+    then
+        if [ -f /home/${CHECK_DOMAIN}/config/production/modules.prev.js ] && [ -s /home/${CHECK_DOMAIN}/config/production/modules.prev.js ]
+        then
+            cp /home/${CHECK_DOMAIN}/config/production/modules.prev.js \
+                /home/${CHECK_DOMAIN}/config/production/modules.js
+        fi
+    fi
 }
 
 conf_mass() {
