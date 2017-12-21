@@ -353,7 +353,8 @@ upgrade_server() {
 }
 
 install_full() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm logrotate
+    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
+    # aptitude -y -q install php5-curl php5-cli php5-fpm
     if [ "`lsb_release -cs`" = "stretch" ]
     then
         aptitude -y -q install libmysqlclient18
@@ -465,7 +466,8 @@ install_full() {
 }
 
 install_cinemapress() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 php5-curl php5-cli php5-fpm logrotate
+    aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
+    # aptitude -y -q install php5-curl php5-cli php5-fpm
     if [ "`lsb_release -cs`" = "stretch" ]
     then
         aptitude -y -q install libmysqlclient18
