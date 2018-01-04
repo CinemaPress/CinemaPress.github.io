@@ -2609,6 +2609,21 @@ do
             then
                 update_i
                 exit 0
+            elif [ "${1}" = "info" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                cd /home/${DOMAIN}/ && \
+                CP_ALL="_${DOMAIN_}_" \
+                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" \
+                CP_RT="rt_${DOMAIN_}" \
+                CP_CONTENT="content_${DOMAIN_}" \
+                CP_COMMENT="comment_${DOMAIN_}" \
+                CP_USER="user_${DOMAIN_}" \
+                node ./config/update/update_info.js
+                exit 0
             fi
             option ${1}
         ;;
