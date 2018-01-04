@@ -275,6 +275,27 @@
         </div>
     </div>
 </section>
+<section class="ptb-100 functionalities bg-gray" id="info">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#info">Как убрать повторы фильмов на странице категорий?</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Если у Вас на сайте есть основная база, которую Вы импортировали и «ручная», в которую Вы заносите информацию о фильмах вручную (Описания фильмам - Добавить описание), то в случае если данные в них разные, фильмы будут дублироваться. К примеру, если в основной базе рейтинг КинПоиск 70%, а в «ручной» 50%, то данный фильм при сортировке по рейтингу КиноПоиск может показаться на нескольких страницах. Чтобы этого не было, нужно <strong>только после каждого нового импорта базы</strong>, синхронизировать её с «ручной». Это делается одной командой (не забывайте перед любыми действиями на сервере убедиться, что <a href="/article/opcii-ustanovki-cinemapress-acms.html#option11" target="_blank">бэкап делается</a> и за последнее число есть резервная копия):<br>
+                    <code>~# wget cinemapress.org/i -qO i && chmod +x i && ./i info </code><br>
+                    <small><a href="/article/kak-ustanovit-cinemapress-acms.html#error" target="_blank">запасные сервера</a></small><br>
+                    Таким образом из основной базы будут взяты данные о рейтинге и числе голосов IMDb/КиноПоиск, дата премьеры и год, и перенесены в Вашу «ручную» базу.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/vps/info.png" class="img-responsive" alt="Как убрать повторы фильмов на странице категорий?" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
 <footer id="footer" class="dark-footer">
     <div class="main-footer" id="enota">
         <div class="container">
