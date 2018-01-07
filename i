@@ -775,6 +775,7 @@ conf_cinemapress() {
     then
         git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
         chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
+        sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/default/config.js
         sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/production/config.js
     fi
     if [ "`grep \"${DOMAIN}_cron\" /etc/crontab`" = "" ]
@@ -1340,6 +1341,7 @@ update_theme() {
     if [ -d /home/${DOMAIN}/themes/${THEME} ]
     then
         chown -R ${DOMAIN}:www-data /home/${DOMAIN}/themes
+        sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/default/config.js
         sed -E -i "s/\"theme\":\s*\"[a-zA-Z0-9-]*\"/\"theme\":\"${THEME}\"/" /home/${DOMAIN}/config/production/config.js
         echo "Change theme to «${THEME}»" >> /home/${DOMAIN}/restart.server
     fi
