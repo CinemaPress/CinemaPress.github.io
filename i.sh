@@ -1509,7 +1509,7 @@ import_db() {
 
         sleep 2
 
-        hard_restart_cinemapress
+        reboot
 
         sleep 3
     else
