@@ -1511,7 +1511,12 @@ import_db() {
 
         sleep 2
 
-        reboot
+        if [ "${1}" = "" ]
+        then
+            hard_restart_cinemapress
+        else
+            reboot
+        fi
 
         sleep 3
     else
@@ -2310,7 +2315,7 @@ do
             separator
 
             check_db
-            import_db
+            import_db ${4}
             confirm_import_db ${4}
             whileStop
         ;;
