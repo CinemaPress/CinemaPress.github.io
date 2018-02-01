@@ -1511,12 +1511,7 @@ import_db() {
 
         sleep 2
 
-        if [ "${1}" = "" ]
-        then
-            hard_restart_cinemapress
-        else
-            reboot
-        fi
+        cd /home/${DOMAIN} && pm2 reload process.json --update-env
 
         sleep 3
     else
