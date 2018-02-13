@@ -1014,8 +1014,7 @@ hard_restart_cinemapress() {
     rm -rf ~/.pm2/dump.*
     npm remove pm2 -g
     sleep 1
-    I=`npm list -g --depth=0 | grep "pm2"`
-    if [ ! -n "${I}" ] || [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
+    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
         npm install --loglevel=silent --parseable pm2 npm-check-updates -g
         sleep 1
