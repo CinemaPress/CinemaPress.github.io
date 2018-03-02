@@ -1267,6 +1267,19 @@ update_cinemapress() {
     MEMCACHED_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:5[0-9]*\)\".*/\1/'`
     sed -i "s/127\.0\.0\.1:11211/${MEMCACHED_ADDR}/" /home/${DOMAIN}/config/default/config.js
 
+    KEY_=`grep "\"key\"" "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/default/config.js"`
+    KEY=`echo ${KEY_} | sed 's/.*\"key\":\s*\"\([0-9a-zA-Z]{32}\)\".*/\1/'`
+    if [ "${KEY}" != "" ];
+    then
+        sed -i "s/FREE/${KEY}/" /home/${DOMAIN}/config/default/config.js
+    fi
+    DATE_=`grep "\"date\"" "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/default/config.js"`
+    DATE=`echo ${DATE_} | sed 's/.*\"date\":\s*\"\([0-9-]{10}\)\".*/\1/'`
+    if [ "${DATE}" != "" ];
+    then
+        sed -i "s/\"date\": \"\"/\"date\": \"${DATE}\"/" /home/${DOMAIN}/config/default/config.js
+    fi
+
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
     restart_cinemapress
