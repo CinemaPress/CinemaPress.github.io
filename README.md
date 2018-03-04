@@ -11,4 +11,4 @@
 3. [Установка CinemaPress ACMS](https://CinemaPress.org/index.html#install)
 4. [Добавление всех фильмов в мире](https://CinemaPress.org/index.html#import)
 
-#### Ⓚ 2017 CinemaPress. All rights reversed.
+#### Ⓚ 2018 CinemaPress. All rights reversed.
