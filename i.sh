@@ -1268,8 +1268,8 @@ update_cinemapress() {
     sed -i "s/127\.0\.0\.1:11211/${MEMCACHED_ADDR}/" /home/${DOMAIN}/config/default/config.js
 
     KEY_=`grep "\"key\"" "/home/${DOMAIN}/backup/${B_DIR}/oldCP/config/default/config.js"`
-    KEY=`echo ${KEY_} | sed 's/.*\"key\":\s*\"\([0-9a-zA-Z]\{32\}\)\".*/\1/'`
-    if [ "${KEY}" != "" ];
+    KEY=`echo ${KEY_} | sed 's/.*\"key\":\s*\"\([0-9a-zA-Z]\{32\}\|FREE\)\".*/\1/'`
+    if [ "${KEY}" != "FREE" ];
     then
         sed -i "s/FREE/${KEY}/" /home/${DOMAIN}/config/default/config.js
     fi
