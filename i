@@ -1869,14 +1869,14 @@ update_i() {
     for d in /home/*; do
         if [ -f "$d/config/production/i" ]
         then
-            DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
-            DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
-            cp -r ${0} /home/${DOMAIN}/config/production/i && \
-            chmod +x /home/${DOMAIN}/config/production/i
-            CURRENT=`grep "CP_ALL" /home/${DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
-            sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT}\"/" /home/${DOMAIN}/config/production/i
-            sed -i "s/example_com\"/${DOMAIN_}\"/g" /home/${DOMAIN}/config/production/i
-            sed -i "s/_example_com_\"/_${DOMAIN_}_\"/g" /home/${DOMAIN}/config/production/i
+            I_DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+            I_DOMAIN_=`echo ${I_DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
+            cp -r ${0} /home/${I_DOMAIN}/config/production/i && \
+            chmod +x /home/${I_DOMAIN}/config/production/i
+            I_CURRENT=`grep "CP_ALL" /home/${I_DOMAIN}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+            sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${I_CURRENT}\"/" /home/${I_DOMAIN}/config/production/i
+            sed -i "s/example_com\"/${I_DOMAIN_}\"/g" /home/${I_DOMAIN}/config/production/i
+            sed -i "s/_example_com_\"/_${I_DOMAIN_}_\"/g" /home/${I_DOMAIN}/config/production/i
         fi
     done
 }
