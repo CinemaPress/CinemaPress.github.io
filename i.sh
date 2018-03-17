@@ -2322,7 +2322,7 @@ do
             separator
 
             check_db
-            import_db ${4}
+            import_db
             confirm_import_db ${4}
             whileStop
         ;;
