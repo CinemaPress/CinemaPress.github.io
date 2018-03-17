@@ -887,6 +887,14 @@ conf_iptables() {
         iptables -A INPUT -p tcp -s 127.0.0.1 --dport ${NGINX_PORT} -j ACCEPT
         iptables -A INPUT -p tcp --dport ${NGINX_PORT} -j REJECT
     fi
+    if [ "`grep \"iptables\" /etc/crontab`" = "" ]
+    then
+        echo -e "\n" >> /etc/crontab
+        echo "# ----- iptables --------------------------------------" >> /etc/crontab
+        echo "@reboot root iptables-restore < /etc/iptables/rules.v4" >> /etc/crontab
+        echo "@reboot root ip6tables-restore < /etc/iptables/rules.v6" >> /etc/crontab
+        echo "# ----- iptables --------------------------------------" >> /etc/crontab
+    fi
     iptables-save >/etc/iptables/rules.v4
     ip6tables-save >/etc/iptables/rules.v6
 }
