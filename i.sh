@@ -891,8 +891,8 @@ conf_iptables() {
     then
         echo -e "\n" >> /etc/crontab
         echo "# ----- iptables --------------------------------------" >> /etc/crontab
-        echo "@reboot root iptables-restore < /etc/iptables/rules.v4" >> /etc/crontab
-        echo "@reboot root ip6tables-restore < /etc/iptables/rules.v6" >> /etc/crontab
+        echo "@reboot root sh -c 'iptables-restore < /etc/iptables/rules.v4'" >> /etc/crontab
+        echo "@reboot root sh -c 'ip6tables-restore < /etc/iptables/rules.v6'" >> /etc/crontab
         echo "# ----- iptables --------------------------------------" >> /etc/crontab
     fi
     iptables-save >/etc/iptables/rules.v4
