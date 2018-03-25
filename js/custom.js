@@ -87,7 +87,7 @@ function req() {
     }
 
     var pass = generate();
-    var theme = 'arya';
+    var theme = 'mormont';
 
     var http = new XMLHttpRequest();
     var params =
