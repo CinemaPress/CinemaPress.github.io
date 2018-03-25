@@ -2463,6 +2463,19 @@ do
                             sed -i '/spawn ENOMEM/d' /root/.pm2/pm2.log
                             sed -i '/Error caught by domain/d' /root/.pm2/pm2.log
                             hard_restart_cinemapress
+                        else
+                            for d in /home/*; do
+                                if [ -f "$d/process.json" ]
+                                then
+                                    DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+                                    ERR_PID=`pm2 pid ${DOMAIN}`
+                                    if [ "${ERR_PID}" = "" ] || [ "${ERR_PID}" = "0" ]
+                                    then
+                                        stop_cinemapress ${DOMAIN}
+                                        restart_cinemapress ${DOMAIN}
+                                    fi
+                                fi
+                            done
                         fi
                     ;;
                     * )
