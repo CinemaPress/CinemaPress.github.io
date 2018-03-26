@@ -645,7 +645,7 @@ conf_nginx() {
     LRZ=`grep "zone=cinemapress" /etc/nginx/nginx.conf`
     if [ "${LRZ}" = "" ]
     then
-        sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n/g" /etc/nginx/nginx.conf
+        sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n\n    set_real_ip_from 103.21.244.0\/22;\n    set_real_ip_from 103.22.200.0\/22;\n    set_real_ip_from 103.31.4.0\/22;\n    set_real_ip_from 104.16.0.0\/12;\n    set_real_ip_from 108.162.192.0\/18;\n    set_real_ip_from 131.0.72.0\/22;\n    set_real_ip_from 141.101.64.0\/18;\n    set_real_ip_from 162.158.0.0\/15;\n    set_real_ip_from 172.64.0.0\/13;\n    set_real_ip_from 173.245.48.0\/20;\n    set_real_ip_from 188.114.96.0\/20;\n    set_real_ip_from 190.93.240.0\/20;\n    set_real_ip_from 197.234.240.0\/22;\n    set_real_ip_from 198.41.128.0\/17;\n    set_real_ip_from 2400:cb00::\/32;\n    set_real_ip_from 2606:4700::\/32;\n    set_real_ip_from 2803:f800::\/32;\n    set_real_ip_from 2405:b500::\/32;\n    set_real_ip_from 2405:8100::\/32;\n    set_real_ip_from 2c0f:f248::\/32;\n    set_real_ip_from 2a06:98c0::\/29;\n    real_ip_header CF-Connecting-IP;\n/g" /etc/nginx/nginx.conf
     fi
     rm -rf /etc/nginx/nginx_pass_${DOMAIN}
     OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
