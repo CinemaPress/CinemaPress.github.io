@@ -939,6 +939,16 @@ restart_cinemapress() {
     RESTART_DOMAIN="${DOMAIN}"
     if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
     check_config ${RESTART_DOMAIN}
+    sleep 1
+    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
+    then
+        npm install --loglevel=silent --parseable pm2 npm-check-updates -g
+        sleep 1
+        pm2 startup
+        sleep 1
+        pm2 install pm2-logrotate
+    fi
+    sleep 1
     ln -sf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/nginx.conf \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
     cp /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
@@ -963,27 +973,27 @@ restart_cinemapress() {
         /etc/fail2ban/filter.d/nginxrepeatoffender.conf
     cp /home/${RESTART_DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
         /etc/fail2ban/filter.d/nginx-x00.conf
-    sleep 2
+    sleep 1
     service nginx stop
     service nginx start
     service nginx restart
-    sleep 2
+    sleep 1
     service fail2ban stop
     service fail2ban start
     service fail2ban restart
-    sleep 2
+    sleep 1
     service memcached_${RESTART_DOMAIN} stop
     service memcached_${RESTART_DOMAIN} start
     service memcached_${RESTART_DOMAIN} restart
-    sleep 2
+    sleep 1
     searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
-    sleep 2
+    sleep 1
     cd /home/${RESTART_DOMAIN}/ && npm i
-    sleep 2
+    sleep 1
     cd /home/${RESTART_DOMAIN}/ && \
     pm2 start process.json && \
     pm2 save
-    sleep 2
+    sleep 1
     node /home/${RESTART_DOMAIN}/config/update/update_cinemapress.js
 }
 
@@ -993,22 +1003,32 @@ light_restart_cinemapress() {
     check_config ${RESTART_DOMAIN}
     pm2 delete ${RESTART_DOMAIN} &> /dev/null
     pm2 save &> /dev/null
+    sleep 1
+    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
+    then
+        npm install --loglevel=silent --parseable pm2 npm-check-updates -g
+        sleep 1
+        pm2 startup
+        sleep 1
+        pm2 install pm2-logrotate
+    fi
+    sleep 1
     searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
-    sleep 2
+    sleep 1
     service nginx stop
     service nginx start
     service nginx restart
-    sleep 2
+    sleep 1
     service fail2ban stop
     service fail2ban start
     service fail2ban restart
-    sleep 2
+    sleep 1
     service memcached_${RESTART_DOMAIN} stop
     service memcached_${RESTART_DOMAIN} start
     service memcached_${RESTART_DOMAIN} restart
-    sleep 2
+    sleep 1
     searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
-    sleep 2
+    sleep 1
     cd /home/${RESTART_DOMAIN}/ && \
     pm2 start process.json && \
     pm2 save
@@ -1021,13 +1041,10 @@ hard_restart_cinemapress() {
     pm2 kill &> /dev/null
     rm -rf ~/.pm2/dump.*
     npm remove pm2 -g
-    sleep 1
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
         npm install --loglevel=silent --parseable pm2 npm-check-updates -g
-        sleep 1
         pm2 startup
-        sleep 1
         pm2 install pm2-logrotate
     fi
     service nginx stop
@@ -1066,19 +1083,14 @@ hard_restart_cinemapress() {
                 /etc/fail2ban/filter.d/nginxrepeatoffender.conf
             cp ${d}/config/production/fail2ban/filter.d/nginx-x00.conf \
                 /etc/fail2ban/filter.d/nginx-x00.conf
-            sleep 1
             service memcached_${DOMAIN} stop
             service memcached_${DOMAIN} start
             service memcached_${DOMAIN} restart
-            sleep 1
             searchd --config "${d}/config/production/sphinx/sphinx.conf"
-            sleep 1
             cd ${d}/ && npm i
-            sleep 1
             cd ${d}/ && \
             pm2 start process.json && \
             pm2 save
-            sleep 1
             node ${d}/config/update/update_cinemapress.js
         fi
     done
@@ -2464,18 +2476,22 @@ do
                             sed -i '/Error caught by domain/d' /root/.pm2/pm2.log
                             hard_restart_cinemapress
                         else
-                            for d in /home/*; do
-                                if [ -f "$d/process.json" ]
-                                then
-                                    DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
-                                    ERR_PID=`pm2 pid ${DOMAIN}`
-                                    if [ "${ERR_PID}" = "" ] || [ "${ERR_PID}" = "0" ]
+                            MINUTE=`date +"%M"`
+                            if [ $((10#$MINUTE % 3)) = "0" ]
+                            then
+                                for d in /home/*; do
+                                    if [ -f "$d/process.json" ]
                                     then
-                                        stop_cinemapress ${DOMAIN}
-                                        restart_cinemapress ${DOMAIN}
+                                        DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+                                        ERR_PID=`pm2 pid ${DOMAIN}`
+                                        if [ "${ERR_PID}" = "" ] || [ "${ERR_PID}" = "0" ]
+                                        then
+                                            stop_cinemapress ${DOMAIN}
+                                            restart_cinemapress ${DOMAIN}
+                                        fi
                                     fi
-                                fi
-                            done
+                                done
+                            fi
                         fi
                     ;;
                     * )
