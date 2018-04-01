@@ -2477,7 +2477,7 @@ do
                             hard_restart_cinemapress
                         else
                             MINUTE=`date +"%M"`
-                            if [ $((10#$MINUTE % 3)) = "0" ]
+                            if [ $((10#$MINUTE % 5)) = "0" ]
                             then
                                 for d in /home/*; do
                                     if [ -f "$d/process.json" ]
