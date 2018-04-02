@@ -822,7 +822,7 @@ conf_cinemapress() {
     cp /home/${DOMAIN}/config/production/config.js /home/${DOMAIN}/config/production/config.prev.js
 
     IMG=`randomNum 1 7`
-    cp "/themes/default/public/desktop/img/player${IMG}.png" "/themes/default/public/desktop/img/player.png"
+    cp "/home/${DOMAIN}/themes/default/public/desktop/img/player${IMG}.png" "/home/${DOMAIN}/themes/default/public/desktop/img/player.png"
 
     wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
     tar xvfz "geo.tar.gz"
