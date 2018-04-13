@@ -828,6 +828,11 @@ conf_cinemapress() {
     tar xvfz "geo.tar.gz"
     mv GeoLite2*/GeoLite2-City.mmdb /home/${DOMAIN}/files/GeoLite2-City.mmdb
     rm -rf geo.tar.gz GeoLite2-City_*
+
+    wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
+    tar xvfz "geo.tar.gz"
+    mv GeoLite2*/GeoLite2-Country.mmdb /home/${DOMAIN}/files/GeoLite2-Country.mmdb
+    rm -rf geo.tar.gz GeoLite2-Country_*
 }
 
 conf_sysctl() {
@@ -1267,6 +1272,11 @@ update_cinemapress() {
     tar xvfz "geo.tar.gz"
     mv GeoLite2*/GeoLite2-City.mmdb /home/${DOMAIN}/files/GeoLite2-City.mmdb
     rm -rf geo.tar.gz GeoLite2-City_*
+
+    wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
+    tar xvfz "geo.tar.gz"
+    mv GeoLite2*/GeoLite2-Country.mmdb /home/${DOMAIN}/files/GeoLite2-Country.mmdb
+    rm -rf geo.tar.gz GeoLite2-Country_*
 
     cd ~/ && \
     cp -r "${0}" /home/${DOMAIN}/config/production/i && \
