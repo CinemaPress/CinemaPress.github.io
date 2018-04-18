@@ -307,7 +307,7 @@ pre_install() {
         apt-get -y -qq autoremove
         apt-get -y -qq install -f
         apt-get -y -qq update
-        apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools
+        apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2
         VER=`lsb_release -cs`
         if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
         then
