@@ -1862,7 +1862,7 @@ delete_cinemapress() {
     stop_cinemapress
     service memcached_${DELETE_DOMAIN} stop
     rm -rf /etc/memcached_${DELETE_DOMAIN}.conf
-    rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf;
+    rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/nginx_pass_${DELETE_DOMAIN}
     rm -rf /etc/letsencrypt/live/${DELETE_DOMAIN}
     userdel -r -f ${DELETE_DOMAIN}
@@ -2164,6 +2164,7 @@ success_9() {
     printf "${C}------------------[ ${Y}ИМПОРТ СТАТИЧЕСКИХ ФАЙЛОВ${C} ]-------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----       ${G}УРА! Все статические файлы импортированы!${C}          ----\n${NC}"
+    printf "${C}----     ${G}Для их распаковки потребуется несколько часов!${C}       ----\n${NC}"
     printf "${C}----     ${G}Чтобы все постеры отдавались с Вашего домена${C}         ----\n${NC}"
     printf "${C}----                ${G}измените в админ-панели${C}                   ----\n${NC}"
     printf "${C}----      ${G}«Распределение нагрузки» -> «Сервер картинок»${C}       ----\n${NC}"
@@ -2702,6 +2703,40 @@ do
                 CP_COMMENT="comment_${DOMAIN_}" \
                 CP_USER="user_${DOMAIN_}" \
                 node ./config/update/insert_default.js
+                exit 0
+            elif [ "${1}" = "clean_vps" ]
+            then
+                for d in /home/*; do
+                    if [ -f "$d/process.json" ]
+                    then
+                        DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+                        delete_cinemapress ${DOMAIN}
+                    fi
+                done
+                pm2 delete all &> /dev/null
+                pm2 uninstall pm2-logrotate &> /dev/null
+                pm2 save &> /dev/null
+                pm2 kill &> /dev/null
+                rm -rf ~/.pm2
+                npm remove pm2 -g
+                service nginx stop
+                service proftpd stop
+                service fail2ban stop
+                dpkg -r sphinxsearch
+                userdel -r -f sphinxsearch
+                rm -rf /var/lib/sphinxsearch /etc/sphinxsearch
+                aptitude -y -q purge nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent libcurl3 logrotate php5-curl php5-cli php5-fpm libmysqlclient18 nodejs build-essential apache2 sphinxsearch
+                apt-get -y -qq purge --auto-remove nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent libcurl3 logrotate php5-curl php5-cli php5-fpm libmysqlclient18 nodejs build-essential apache2
+                printf "${C}------------------------------------------------------------------\n${NC}"
+                logo
+                printf "${C}------------------------[ ${Y}ОЧИСТКА СЕРВЕРА${C} ]-----------------------\n${NC}"
+                printf "${C}----                                                          ${C}----\n${NC}"
+                printf "${C}----                 ${G}Сервер полностью очищен и${C}                ----\n${NC}"
+                printf "${C}----                 ${G}отправлен на перезагрузку!${C}               ----\n${NC}"
+                printf "${C}----                                                          ${C}----\n${NC}"
+                printf "${C}------------------------------------------------------------------\n${NC}"
+                printf "\n${NC}"
+                reboot
                 exit 0
             fi
             option ${1}
