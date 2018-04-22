@@ -1609,6 +1609,7 @@ import_static() {
     wget -O /home/images.tar http://static.cinemapress.org/images.tar
     mkdir -p /var/local/images/poster
     wget http://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
+    wget http://cinemapress.org/images/web/no-poster.jpg -qO /var/local/images/poster/no-poster.jpg
     printf "\n${NC}"
     printf "${G}Распаковка в фоновом режиме ...\n"
     printf "${NC}Может занять несколько часов.\n"
