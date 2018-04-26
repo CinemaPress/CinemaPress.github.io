@@ -865,6 +865,8 @@ conf_fail2ban() {
 conf_iptables() {
     if [ "${MEMCACHED_PORT}" != "" ]
     then
+        sed -i -e "/dport ${MEMCACHED_PORT}/d" /etc/iptables/rules.v4
+        iptables-restore < /etc/iptables/rules.v4
         if [ "${IP}" != "" ]
         then
             iptables -A INPUT -p tcp -s ${IP} --dport ${MEMCACHED_PORT} -j ACCEPT
@@ -876,6 +878,8 @@ conf_iptables() {
     fi
     if [ "${MYSQL_PORT}" != "" ]
     then
+        sed -i -e "/dport ${MYSQL_PORT}/d" /etc/iptables/rules.v4
+        iptables-restore < /etc/iptables/rules.v4
         if [ "${IP}" != "" ]
         then
             iptables -A INPUT -p tcp -s ${IP} --dport ${MYSQL_PORT} -j ACCEPT
@@ -887,11 +891,15 @@ conf_iptables() {
     fi
     if [ "${SPHINX_PORT}" != "" ]
     then
+        sed -i -e "/dport ${SPHINX_PORT}/d" /etc/iptables/rules.v4
+        iptables-restore < /etc/iptables/rules.v4
         iptables -A INPUT -p tcp -s 127.0.0.1 --dport ${SPHINX_PORT} -j ACCEPT
         iptables -A INPUT -p tcp --dport ${SPHINX_PORT} -j REJECT
     fi
     if [ "${NGINX_PORT}" != "" ]
     then
+        sed -i -e "/dport ${NGINX_PORT}/d" /etc/iptables/rules.v4
+        iptables-restore < /etc/iptables/rules.v4
         iptables -A INPUT -p tcp -s 127.0.0.1 --dport ${NGINX_PORT} -j ACCEPT
         iptables -A INPUT -p tcp --dport ${NGINX_PORT} -j REJECT
     fi
@@ -1862,6 +1870,24 @@ delete_cinemapress() {
     USERID=`id -u ${DELETE_DOMAIN}`
     stop_cinemapress
     service memcached_${DELETE_DOMAIN} stop
+    C_PORT=`grep "\"addr\"" /home/${DELETE_DOMAIN}/config/production/config.js | sed 's/.*"addr":\s*".*:\(5[0-9]*\)".*/\1/'`
+    if [ "${C_PORT}" != "" ]
+    then
+        sed -i -e "/dport ${C_PORT}/d" /etc/iptables/rules.v4
+        iptables-restore < /etc/iptables/rules.v4
+    fi
+    S_PORT=`grep "\"addr\"" /home/${DELETE_DOMAIN}/config/production/config.js | sed 's/.*"addr":\s*".*:\(2[0-9]*\)".*/\1/'`
+    if [ "${S_PORT}" != "" ]
+    then
+        sed -i -e "/dport ${S_PORT}/d" /etc/iptables/rules.v4
+        iptables-restore < /etc/iptables/rules.v4
+    fi
+    N_PORT=`grep "\"addr\"" /home/${DELETE_DOMAIN}/config/production/config.js | sed 's/.*"addr":\s*".*:\(3[0-9]*\)".*/\1/'`
+    if [ "${N_PORT}" != "" ]
+    then
+        sed -i -e "/dport ${N_PORT}/d" /etc/iptables/rules.v4
+        iptables-restore < /etc/iptables/rules.v4
+    fi
     rm -rf /etc/memcached_${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/nginx_pass_${DELETE_DOMAIN}
