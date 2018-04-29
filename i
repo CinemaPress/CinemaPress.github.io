@@ -307,7 +307,7 @@ pre_install() {
         apt-get -y -qq autoremove
         apt-get -y -qq install -f
         apt-get -y -qq update
-        apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2
+        apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev
         VER=`lsb_release -cs`
         if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
         then
@@ -329,7 +329,7 @@ pre_install() {
 
 update_server() {
     apt-get -y -qq update
-    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools
+    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev
     pre_install
     if [ "${VER}" = "stretch" ]
     then
@@ -352,8 +352,28 @@ upgrade_server() {
     aptitude -y -q upgrade
 }
 
+install_pagespeed() {
+    INSTALL_PS=`2>&1 nginx -V | tr -- - '\n' | grep pagespeed`
+    if [ "${INSTALL_PS}" = "" ]
+    then
+        bash <(curl -f -L -sS https://ngxpagespeed.com/install) \
+            -n latest \
+            -a "--prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'" \
+            -b /usr/lib/nginx/modules \
+            -y
+    fi
+    PS=`grep "pagespeed" /etc/nginx/nginx.conf`
+    INSTALL_PS=`2>&1 nginx -V | tr -- - '\n' | grep pagespeed`
+    if [ "${PS}" = "" ] && [ "${INSTALL_PS}" != "" ]
+    then
+        sed -i "s/http {/http {\n\n    pagespeed on;\n    pagespeed FileCachePath \/var\/ngx_pagespeed_cache;\n    pagespeed RewriteLevel OptimizeForBandwidth;\n/g" /etc/nginx/nginx.conf
+    fi
+    service nginx restart
+}
+
 install_full() {
     aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
+    install_pagespeed
     # aptitude -y -q install php5-curl php5-cli php5-fpm
     if [ "`lsb_release -cs`" = "stretch" ]
     then
@@ -467,6 +487,7 @@ install_full() {
 
 install_cinemapress() {
     aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
+    install_pagespeed
     # aptitude -y -q install php5-curl php5-cli php5-fpm
     if [ "`lsb_release -cs`" = "stretch" ]
     then
@@ -625,17 +646,13 @@ conf_nginx() {
     done
     mkdir /etc/nginx/bots.d
     rm -rf /etc/nginx/conf.d/${DOMAIN}.conf
-    ln -s /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
-    cp /home/${DOMAIN}/config/production/nginx/conf.d/blacklist.conf /etc/nginx/conf.d/blacklist.conf
-    cp /home/${DOMAIN}/config/production/nginx/conf.d/rewrite.conf /etc/nginx/conf.d/rewrite.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/blockbots.conf /etc/nginx/bots.d/blockbots.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/ddos.conf /etc/nginx/bots.d/ddos.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf /etc/nginx/bots.d/whitelist-domains.conf
-    cp /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf /etc/nginx/bots.d/whitelist-ips.conf
+    cp -rf /home/${DOMAIN}/config/production/nginx/conf.d/* /etc/nginx/conf.d/
+    cp -rf /home/${DOMAIN}/config/production/nginx/bots.d/* /etc/nginx/bots.d/
+    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
     sed -i "s/:3000/:${NGINX_PORT}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
-    sed -i "s/#gzip/ gzip_disable \"msie6\"; \n gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript; \n gzip_vary on; \n gzip_proxied any; \n gzip_http_version 1.0; \n gzip/g" /etc/nginx/nginx.conf
+    sed -i "s/#gzip/gzip_disable \"msie6\"; \n    gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript;\n    gzip_vary on;\n    gzip_proxied any;\n    gzip_http_version 1.1;\n    gzip/g" /etc/nginx/nginx.conf
     mv /etc/nginx/sites-enabled/default /etc/nginx/default 2>/dev/null
     SNHBS=`grep "server_names_hash_max_size" /etc/nginx/nginx.conf`
     if [ "${SNHBS}" = "" ]
@@ -645,7 +662,7 @@ conf_nginx() {
     LRZ=`grep "zone=cinemapress" /etc/nginx/nginx.conf`
     if [ "${LRZ}" = "" ]
     then
-        sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n\n     set_real_ip_from 186.2.160.0\/24;\n    set_real_ip_from 103.21.244.0\/22;\n    set_real_ip_from 103.22.200.0\/22;\n    set_real_ip_from 103.31.4.0\/22;\n    set_real_ip_from 104.16.0.0\/12;\n    set_real_ip_from 108.162.192.0\/18;\n    set_real_ip_from 131.0.72.0\/22;\n    set_real_ip_from 141.101.64.0\/18;\n    set_real_ip_from 162.158.0.0\/15;\n    set_real_ip_from 172.64.0.0\/13;\n    set_real_ip_from 173.245.48.0\/20;\n    set_real_ip_from 188.114.96.0\/20;\n    set_real_ip_from 190.93.240.0\/20;\n    set_real_ip_from 197.234.240.0\/22;\n    set_real_ip_from 198.41.128.0\/17;\n    set_real_ip_from 2400:cb00::\/32;\n    set_real_ip_from 2606:4700::\/32;\n    set_real_ip_from 2803:f800::\/32;\n    set_real_ip_from 2405:b500::\/32;\n    set_real_ip_from 2405:8100::\/32;\n    set_real_ip_from 2c0f:f248::\/32;\n    set_real_ip_from 2a06:98c0::\/29;\n    real_ip_header X-Forwarded-For;\n/g" /etc/nginx/nginx.conf
+        sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n/g" /etc/nginx/nginx.conf
     fi
     rm -rf /etc/nginx/nginx_pass_${DOMAIN}
     OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
@@ -965,20 +982,12 @@ restart_cinemapress() {
         pm2 install pm2-logrotate
     fi
     sleep 1
+    cp -rf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/* \
+        /etc/nginx/conf.d/
+    cp -rf /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/* \
+        /etc/nginx/bots.d/
     ln -sf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/nginx.conf \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
-    cp /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/blacklist.conf \
-        /etc/nginx/conf.d/blacklist.conf
-    cp /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/rewrite.conf \
-        /etc/nginx/conf.d/rewrite.conf
-    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/blockbots.conf \
-        /etc/nginx/bots.d/blockbots.conf
-    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/ddos.conf \
-        /etc/nginx/bots.d/ddos.conf
-    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf \
-        /etc/nginx/bots.d/whitelist-domains.conf
-    cp /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/whitelist-ips.conf \
-        /etc/nginx/bots.d/whitelist-ips.conf
     cp /home/${RESTART_DOMAIN}/config/production/sysctl/sysctl.conf \
         /etc/sysctl.conf
     cp /home/${RESTART_DOMAIN}/config/production/fail2ban/jail.local \
@@ -1075,20 +1084,12 @@ hard_restart_cinemapress() {
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
+            cp -rf ${d}/config/production/nginx/conf.d/* \
+                /etc/nginx/conf.d/
+            cp -rf ${d}/config/production/nginx/bots.d/* \
+                /etc/nginx/bots.d/
             ln -sf ${d}/config/production/nginx/conf.d/nginx.conf \
                 /etc/nginx/conf.d/${DOMAIN}.conf
-            cp ${d}/config/production/nginx/conf.d/blacklist.conf \
-                /etc/nginx/conf.d/blacklist.conf
-            cp ${d}/config/production/nginx/conf.d/rewrite.conf \
-                /etc/nginx/conf.d/rewrite.conf
-            cp ${d}/config/production/nginx/bots.d/blockbots.conf \
-                /etc/nginx/bots.d/blockbots.conf
-            cp ${d}/config/production/nginx/bots.d/ddos.conf \
-                /etc/nginx/bots.d/ddos.conf
-            cp ${d}/config/production/nginx/bots.d/whitelist-domains.conf \
-                /etc/nginx/bots.d/whitelist-domains.conf
-            cp ${d}/config/production/nginx/bots.d/whitelist-ips.conf \
-                /etc/nginx/bots.d/whitelist-ips.conf
             cp ${d}/config/production/sysctl/sysctl.conf \
                 /etc/sysctl.conf
             cp ${d}/config/production/fail2ban/jail.local \
@@ -1319,6 +1320,11 @@ update_cinemapress() {
     if [ "${DATE}" != "" ];
     then
         sed -i "s/\"date\": \"\"/\"date\": \"${DATE}\"/" /home/${DOMAIN}/config/default/config.js
+    fi
+    RIH=`grep "real_ip_header" /etc/nginx/nginx.conf`
+    if [ "${RIH}" != "" ]
+    then
+        sed -i "s/real_ip_header/#real_ip_header/g" /etc/nginx/nginx.conf
     fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
