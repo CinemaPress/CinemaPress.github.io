@@ -648,6 +648,7 @@ conf_nginx() {
     rm -rf /etc/nginx/conf.d/${DOMAIN}.conf
     cp -rf /home/${DOMAIN}/config/production/nginx/conf.d/* /etc/nginx/conf.d/
     cp -rf /home/${DOMAIN}/config/production/nginx/bots.d/* /etc/nginx/bots.d/
+    rm -rf /etc/nginx/conf.d/nginx.conf
     ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
     sed -i "s/:3000/:${NGINX_PORT}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
@@ -986,6 +987,7 @@ restart_cinemapress() {
         /etc/nginx/conf.d/
     cp -rf /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/* \
         /etc/nginx/bots.d/
+    rm -rf /etc/nginx/conf.d/nginx.conf
     ln -sf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/nginx.conf \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
     cp /home/${RESTART_DOMAIN}/config/production/sysctl/sysctl.conf \
@@ -1088,6 +1090,7 @@ hard_restart_cinemapress() {
                 /etc/nginx/conf.d/
             cp -rf ${d}/config/production/nginx/bots.d/* \
                 /etc/nginx/bots.d/
+            rm -rf /etc/nginx/conf.d/nginx.conf
             ln -sf ${d}/config/production/nginx/conf.d/nginx.conf \
                 /etc/nginx/conf.d/${DOMAIN}.conf
             cp ${d}/config/production/sysctl/sysctl.conf \
