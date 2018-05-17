@@ -696,8 +696,8 @@ conf_nginx() {
         echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/pass/${DOMAIN}.pass
         service nginx restart
     else
-        NGINX_IP=`echo ${NGINX} | sed 's/.*:\([0-9]*\).*/\1/'`
-        NGINX_PORT=`echo ${NGINX} | sed 's/\([^:]*\):.*/\1/'`
+        NGINX_IP=`echo ${NGINX} | sed 's/\([^:]*\):.*/\1/'`
+        NGINX_PORT=`echo ${NGINX} | sed 's/.*:\([0-9]*\).*/\1/'`
     fi
 }
 
