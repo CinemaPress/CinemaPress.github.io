@@ -190,6 +190,14 @@ read_sphinx() {
     fi
 }
 
+read_nginx() {
+    if [ ${1} ]
+    then
+        NGINX=${1}
+        NGINX=`echo ${NGINX} | iconv -c -t UTF-8`
+    fi
+}
+
 read_ip() {
     printf "${C}---------------------------[ ${Y}IP ДОМЕНА${C} ]--------------------------\n${NC}"
     AGAIN=yes
@@ -486,8 +494,7 @@ install_full() {
 }
 
 install_cinemapress() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
-    install_pagespeed
+    aptitude -y -q install proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
     # aptitude -y -q install php5-curl php5-cli php5-fpm
     if [ "`lsb_release -cs`" = "stretch" ]
     then
@@ -594,6 +601,14 @@ install_cinemapress() {
     fi
 }
 
+install_nginx() {
+    if [ "${NGINX}" = "" ]
+    then
+        aptitude -y -q install nginx fail2ban iptables-persistent logrotate
+        install_pagespeed
+    fi
+}
+
 install_memcached() {
     aptitude -y -q install memcached fail2ban iptables-persistent logrotate
 }
@@ -631,44 +646,53 @@ add_user() {
 }
 
 conf_nginx() {
-    RND=`randomNum 1 9999`
-    NGINX_PORT=$((30000 + RND))
-    AGAIN=yes
-    while [ "${AGAIN}" = "yes" ]
-    do
-        NGINX_PORT_TEST=`netstat -tunlp | grep ${NGINX_PORT}`
-        if [ "${NGINX_PORT_TEST}" = "" ]
+    if [ "${NGINX}" = "" ]
+    then
+        RND=`randomNum 1 9999`
+        NGINX_PORT=$((30000 + RND))
+        AGAIN=yes
+        while [ "${AGAIN}" = "yes" ]
+        do
+            NGINX_PORT_TEST=`netstat -tunlp | grep ${NGINX_PORT}`
+            if [ "${NGINX_PORT_TEST}" = "" ]
+            then
+                AGAIN=no
+            else
+                NGINX_PORT=$((NGINX_PORT+1))
+            fi
+        done
+        mkdir -p /etc/nginx/html && rm -rf /etc/nginx/html/*
+        ln -s /home/${DOMAIN}/themes/default/public/admin/html/errors/* /etc/nginx/html/
+        mkdir -p /etc/nginx/bots.d
+        rm -rf /etc/nginx/conf.d/${DOMAIN}.conf
+        sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf
+        cp -rf /home/${DOMAIN}/config/production/nginx/conf.d/* /etc/nginx/conf.d/
+        cp -rf /home/${DOMAIN}/config/production/nginx/bots.d/* /etc/nginx/bots.d/
+        mv /etc/nginx/conf.d/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
+        sed -i "s/:3000/:${NGINX_PORT}/g" /etc/nginx/conf.d/${DOMAIN}.conf
+        sed -i "s/example\.com/${DOMAIN}/g" /etc/nginx/conf.d/${DOMAIN}.conf
+        sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
+        sed -i "s/#gzip/gzip_disable \"msie6\"; \n    gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript;\n    gzip_vary on;\n    gzip_proxied any;\n    gzip_http_version 1.1;\n    gzip/g" /etc/nginx/nginx.conf
+        mv /etc/nginx/sites-enabled/default /etc/nginx/default 2>/dev/null
+        SNHBS=`grep "server_names_hash_max_size" /etc/nginx/nginx.conf`
+        if [ "${SNHBS}" = "" ]
         then
-            AGAIN=no
-        else
-            NGINX_PORT=$((NGINX_PORT+1))
+            sed -i "s/http {/http {\n\n    server_names_hash_bucket_size 64;\n    server_names_hash_max_size 4096;\n/g" /etc/nginx/nginx.conf
         fi
-    done
-    mkdir /etc/nginx/bots.d
-    rm -rf /etc/nginx/conf.d/${DOMAIN}.conf
-    cp -rf /home/${DOMAIN}/config/production/nginx/conf.d/* /etc/nginx/conf.d/
-    cp -rf /home/${DOMAIN}/config/production/nginx/bots.d/* /etc/nginx/bots.d/
-    rm -rf /etc/nginx/conf.d/nginx.conf
-    ln -sf /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf /etc/nginx/conf.d/${DOMAIN}.conf
-    sed -i "s/:3000/:${NGINX_PORT}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
-    sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
-    sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
-    sed -i "s/#gzip/gzip_disable \"msie6\"; \n    gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript;\n    gzip_vary on;\n    gzip_proxied any;\n    gzip_http_version 1.1;\n    gzip/g" /etc/nginx/nginx.conf
-    mv /etc/nginx/sites-enabled/default /etc/nginx/default 2>/dev/null
-    SNHBS=`grep "server_names_hash_max_size" /etc/nginx/nginx.conf`
-    if [ "${SNHBS}" = "" ]
-    then
-        sed -i "s/http {/http {\n\n    server_names_hash_bucket_size 64;\n    server_names_hash_max_size 4096;\n/g" /etc/nginx/nginx.conf
+        LRZ=`grep "zone=cinemapress" /etc/nginx/nginx.conf`
+        if [ "${LRZ}" = "" ]
+        then
+            sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=30r\/s;\n/g" /etc/nginx/nginx.conf
+        fi
+        mkdir -p /etc/nginx/pass
+        rm -rf /etc/nginx/pass/${DOMAIN}.pass
+        OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
+        echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/pass/${DOMAIN}.pass
+        service nginx restart
+    else
+        NGINX_IP=`echo ${NGINX} | sed 's/.*:\([0-9]*\).*/\1/'`
+        NGINX_PORT=`echo ${NGINX} | sed 's/\([^:]*\):.*/\1/'`
     fi
-    LRZ=`grep "zone=cinemapress" /etc/nginx/nginx.conf`
-    if [ "${LRZ}" = "" ]
-    then
-        sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=5r\/s;\n/g" /etc/nginx/nginx.conf
-    fi
-    rm -rf /etc/nginx/nginx_pass_${DOMAIN}
-    OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
-    echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}
-    service nginx restart
 }
 
 conf_sphinx() {
@@ -918,8 +942,14 @@ conf_iptables() {
     then
         sed -i -e "/dport ${NGINX_PORT}/d" /etc/iptables/rules.v4
         iptables-restore < /etc/iptables/rules.v4
-        iptables -A INPUT -p tcp -s 127.0.0.1 --dport ${NGINX_PORT} -j ACCEPT
-        iptables -A INPUT -p tcp --dport ${NGINX_PORT} -j REJECT
+        if [ "${NGINX_IP}" != "" ]
+        then
+            iptables -A INPUT -p tcp -s ${NGINX_IP} --dport ${NGINX_PORT} -j ACCEPT
+            iptables -A INPUT -p tcp --dport ${NGINX_PORT} -j REJECT
+        else
+            iptables -A INPUT -p tcp -s 127.0.0.1 --dport ${NGINX_PORT} -j ACCEPT
+            iptables -A INPUT -p tcp --dport ${NGINX_PORT} -j REJECT
+        fi
     fi
     if [ "`grep \"iptables\" /etc/crontab`" = "" ]
     then
@@ -983,12 +1013,13 @@ restart_cinemapress() {
         pm2 install pm2-logrotate
     fi
     sleep 1
+    sed -i "s/example\.com/${RESTART_DOMAIN}/g" \
+        /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf
     cp -rf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/* \
         /etc/nginx/conf.d/
     cp -rf /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/* \
         /etc/nginx/bots.d/
-    rm -rf /etc/nginx/conf.d/nginx.conf
-    ln -sf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/nginx.conf \
+    mv /etc/nginx/conf.d/nginx.conf \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
     cp /home/${RESTART_DOMAIN}/config/production/sysctl/sysctl.conf \
         /etc/sysctl.conf
@@ -1086,12 +1117,13 @@ hard_restart_cinemapress() {
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
+            sed -i "s/example\.com/${DOMAIN}/g" \
+                ${d}/config/production/nginx/bots.d/whitelist-domains.conf
             cp -rf ${d}/config/production/nginx/conf.d/* \
                 /etc/nginx/conf.d/
             cp -rf ${d}/config/production/nginx/bots.d/* \
                 /etc/nginx/bots.d/
-            rm -rf /etc/nginx/conf.d/nginx.conf
-            ln -sf ${d}/config/production/nginx/conf.d/nginx.conf \
+            mv /etc/nginx/conf.d/nginx.conf \
                 /etc/nginx/conf.d/${DOMAIN}.conf
             cp ${d}/config/production/sysctl/sysctl.conf \
                 /etc/sysctl.conf
@@ -1635,7 +1667,7 @@ import_static() {
 }
 
 check_domain() {
-    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
     DO=""
     while IFS=' ' read -ra ADDR; do
         for i in "${ADDR[@]}"; do
@@ -1668,7 +1700,7 @@ check_domain() {
 get_ssl() {
     wget https://dl.eff.org/certbot-auto -qO /etc/certbot-auto && chmod a+x /etc/certbot-auto
     DS=""
-    D=`grep -m 1 "server_name" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
     while IFS=' ' read -ra ADDR; do for i in "${ADDR[@]}"; do DS="${DS} -d ${i}"; done; done <<< "${D}"
     if [ ! -f "/etc/certbot-auto" ] || [ "${DS}" = "" ]
     then
@@ -1683,19 +1715,22 @@ get_ssl() {
     fi
     /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --email support@${DOMAIN} -w /home/${DOMAIN}/ ${DS}
     openssl dhparam -out /etc/letsencrypt/live/${DOMAIN}/dhparam.pem 2048
-    sed -i "s/#ssl/ssl/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
-    sed -i "s/#listen/listen/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
-    sed -i "s/#onlyHTTPS //g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
-    sed -E -i "s/\"protocol\":\s*\"http:\/\/\"/\"protocol\":\"https:\/\/\"/" /home/${DOMAIN}/config/production/config.js
-    if [ "`grep \"renew_ssl\" /etc/crontab`" = "" ]
+    if [ -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]
     then
-        echo -e "\n" >> /etc/crontab
-        echo "# ----- renew_ssl --------------------------------------" >> /etc/crontab
-        echo "40 5 * * 1 root /etc/certbot-auto renew --quiet --post-hook \"service nginx reload\" >> /var/log/le-renew.log" >> /etc/crontab
-        echo "# ----- renew_ssl --------------------------------------" >> /etc/crontab
+        sed -i "s/#onlyHTTPS //g" /etc/nginx/conf.d/${DOMAIN}.conf
+        sed -i "s/#enableHTTPS //g" /etc/nginx/conf.d/${DOMAIN}.conf
+        sed -i "s/#nonWWW //g" /etc/nginx/conf.d/${DOMAIN}.conf
+        sed -E -i "s/\"protocol\":\s*\"http:\/\/\"/\"protocol\":\"https:\/\/\"/" /home/${DOMAIN}/config/production/config.js
+        if [ "`grep \"renew_ssl\" /etc/crontab`" = "" ]
+        then
+            echo -e "\n" >> /etc/crontab
+            echo "# ----- renew_ssl --------------------------------------" >> /etc/crontab
+            echo "40 5 * * 1 root /etc/certbot-auto renew --quiet --post-hook \"service nginx reload\" >> /var/log/le-renew.log" >> /etc/crontab
+            echo "# ----- renew_ssl --------------------------------------" >> /etc/crontab
+        fi
+        pm2 restart ${DOMAIN}
+        service nginx restart
     fi
-    pm2 restart ${DOMAIN}
-    service nginx restart
 }
 
 create_mega_backup() {
@@ -1899,7 +1934,7 @@ delete_cinemapress() {
     fi
     rm -rf /etc/memcached_${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf
-    rm -rf /etc/nginx/nginx_pass_${DELETE_DOMAIN}
+    rm -rf /etc/nginx/pass/${DELETE_DOMAIN}.pass
     rm -rf /etc/letsencrypt/live/${DELETE_DOMAIN}
     userdel -r -f ${DELETE_DOMAIN}
     echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DELETE_DOMAIN} --shell=/bin/false --home=/home/${DELETE_DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
@@ -1978,14 +2013,18 @@ add_mirror() {
     if [ "${1}" != "" ]; then MAIN_DOMAIN="${1}"; fi
     MIRROR_DOMAIN="${MIRROR}"
     if [ "${2}" != "" ]; then MIRROR_DOMAIN="${2}"; fi
-    D=`grep -m 1 "server_name" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
-    sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR_DOMAIN} m\.${MIRROR_DOMAIN};/g" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR_DOMAIN} m\.${MIRROR_DOMAIN};/g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
 
-    if [ "`grep \"#ssl on\" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
+    if [ "`grep \"#enableHTTPS ssl.*on\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
     then
-        if [ "`grep \"onlyHTTPS\" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf`" = "" ]
+        if [ "`grep \"onlyHTTPS\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
         then
-            sed -i "s/server {listen 80;/#onlyHTTPS server {listen 80;/" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf
+            sed -i "s/server {listen 80;/#onlyHTTPS server {listen 80;/" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
+        fi
+        if [ "`grep \"nonWWW\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
+        then
+            sed -i "s/server {listen 443;/#nonWWW server {listen 443;/" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
         fi
 
         service nginx restart
@@ -2017,7 +2056,8 @@ add_mirror() {
             printf "${C}----                                                          ${C}----\n${NC}"
             printf "${C}------------------------------------------------------------------\n${NC}"
             printf "\n${NC}"
-            sed -i "s/#onlyHTTPS //g" /home/${MAIN_DOMAIN}/config/production/nginx/conf.d/nginx.conf
+            sed -i "s/#onlyHTTPS //g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
+            sed -i "s/#nonWWW //g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
             service nginx restart
         fi
     fi
@@ -2403,12 +2443,14 @@ do
             read_password ${4}
             read_memcached ${5}
             read_sphinx ${6}
+            read_nginx ${7}
 
             separator
 
             update_server
             upgrade_server
             install_cinemapress
+            install_nginx
             add_user
             conf_nginx
             conf_proftpd
@@ -2625,9 +2667,12 @@ do
 
                 separator
 
+                mkdir -p /etc/nginx/pass
                 rm -rf /etc/nginx/nginx_pass_${DOMAIN}
+                rm -rf /etc/nginx/pass/${DOMAIN}.pass
                 OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
-                echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/nginx_pass_${DOMAIN}
+                echo "${DOMAIN}:$OPENSSL" >> /etc/nginx/pass/${DOMAIN}.pass
+                cp /etc/nginx/pass/${DOMAIN}.pass /etc/nginx/nginx_pass_${DOMAIN}
                 service nginx restart
                 USERID=`id -u ${DOMAIN}`
                 echo ${PASSWD} | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DOMAIN} --shell=/bin/false --home=/home/${DOMAIN} --uid=${USERID} --gid=${USERID}
@@ -2689,10 +2734,10 @@ do
                 then
                     sed -i "s/http {/http {\n\n    geoip_country \/usr\/share\/GeoIP\/GeoIP.dat;\n    map \$geoip_country_code \$allowed_country {\n        default no; RU yes; UA yes; KZ yes; BY yes; DE yes; NL yes; MD yes; US yes; KG yes; LV yes; GB yes; AM yes; IL yes; GE yes; LT yes; UZ yes; AZ yes; EE yes; PL yes; CA yes; FR yes; IT yes; RO yes; ES yes; KR yes; CZ yes; BG yes; GR yes; FI yes; TM yes; TJ yes;\n    }\n/" /etc/nginx/nginx.conf
                 fi
-                AC=`grep "allowed_country" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
+                AC=`grep "allowed_country" /etc/nginx/conf.d/${DOMAIN}.conf`
                 if [ "${AC}" = "" ]
                 then
-                    sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = '') {set \$allowed_country yes;}\n    if (\$allowed_country = no) {return 444;}/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+                    sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = '') {set \$allowed_country yes;}\n    if (\$allowed_country = no) {return 444;}/" /etc/nginx/conf.d/${DOMAIN}.conf
                 fi
 
                 light_restart_cinemapress
@@ -2773,6 +2818,10 @@ do
                 printf "${C}------------------------------------------------------------------\n${NC}"
                 printf "\n${NC}"
                 reboot
+                exit 0
+            elif [ "${1}" = "install_nginx" ]
+            then
+                install_nginx
                 exit 0
             fi
             option ${1}
