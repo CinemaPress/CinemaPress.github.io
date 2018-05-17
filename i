@@ -374,7 +374,7 @@ install_pagespeed() {
     INSTALL_PS=`2>&1 nginx -V | tr -- - '\n' | grep pagespeed`
     if [ "${PS}" = "" ] && [ "${INSTALL_PS}" != "" ]
     then
-        sed -i "s/http {/http {\n\n    pagespeed on;\n    pagespeed FileCachePath \/var\/ngx_pagespeed_cache;\n    pagespeed RewriteLevel OptimizeForBandwidth;\n/g" /etc/nginx/nginx.conf
+        sed -i "s/http {/http {\n\n    pagespeed on;\n    pagespeed FileCachePath \/var\/ngx_pagespeed_cache;\n    pagespeed EnableFilters trim_urls,collapse_whitespace,remove_comments,dedup_inlined_images;\n/g" /etc/nginx/nginx.conf
     fi
     service nginx restart
 }
@@ -683,6 +683,12 @@ conf_nginx() {
         if [ "${LRZ}" = "" ]
         then
             sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=30r\/s;\n/g" /etc/nginx/nginx.conf
+        fi
+        PCP=`grep "zone=cinemacache" /etc/nginx/nginx.conf`
+        if [ "${PCP}" = "" ]
+        then
+            mkdir -p /var/cinemacache
+            sed -i "s/http {/http {\n\n    proxy_cache_path \/var\/cinemacache levels=1:2 keys_zone=cinemacache:10m max_size=1g;\n/g" /etc/nginx/nginx.conf
         fi
         mkdir -p /etc/nginx/pass
         rm -rf /etc/nginx/pass/${DOMAIN}.pass
