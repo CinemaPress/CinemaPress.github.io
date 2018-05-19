@@ -610,6 +610,7 @@ install_nginx() {
     if [ "${1}" != "" ] && [ "${2}" != "" ] && [ "${3}" != "" ]
     then
         RAW="https://raw.githubusercontent.com/CinemaPress/CinemaPress-ACMS/master"
+        mkdir -p /etc/nginx/ssl/${1}
         mkdir -p /etc/nginx/html && rm -rf /etc/nginx/html/*
         mkdir -p /etc/nginx/bots.d && rm -rf /etc/nginx/bots.d/*
         mkdir -p /etc/nginx/pass && rm -rf /etc/nginx/pass/${1}.pass
@@ -650,6 +651,7 @@ install_nginx() {
         fi
         OPENSSL=`echo "${3}" | openssl passwd -1 -stdin -salt CP`
         echo "${1}:$OPENSSL" >> /etc/nginx/pass/${1}.pass
+        sleep 2
         service nginx restart
     fi
 }
@@ -1785,6 +1787,26 @@ get_ssl() {
     fi
 }
 
+install_ssl() {
+    wget -O -  https://get.acme.sh | sh
+    export CF_Key="${2}" && export CF_Email="${3}" && \
+    /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
+    /root/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --ecc \
+        --cert-file /etc/nginx/ssl/${1}/serialop.club.cer \
+        --key-file /etc/nginx/ssl/${1}/${1}.key  \
+        --fullchain-file /etc/nginx/ssl/${1}/fullchain.cer \
+        --reloadcmd "service nginx force-reload"
+    if [ -f "/etc/nginx/ssl/${1}/fullchain.cer" ]
+    then
+        sed -i "s~#onlyHTTPS ~~g" /etc/nginx/conf.d/${1}.conf
+        sed -i "s~#enableHTTPS ~~g" /etc/nginx/conf.d/${1}.conf
+        sed -i "s~#nonWWW ~~g" /etc/nginx/conf.d/${1}.conf
+        sed -i "s~ssl_certificate /etc/letsencrypt/live/${1}/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/${1}/privkey.pem; ssl_dhparam /etc/letsencrypt/live/${1}/dhparam.pem;~ssl_certificate /etc/nginx/ssl/${1}/fullchain.cer; ssl_certificate_key /etc/nginx/ssl/${1}/${1}.key; ssl_trusted_certificate /etc/nginx/ssl/${1}/${1}.cer;~g" /etc/nginx/conf.d/${1}.conf
+        sleep 2
+        service nginx restart
+    fi
+}
+
 create_mega_backup() {
     if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" = "" ]
     then
@@ -2876,6 +2898,12 @@ do
                 update_server
                 upgrade_server
                 install_nginx ${2} ${3} ${4}
+                exit 0
+            elif [ "${1}" = "install_ssl" ]
+            then
+                update_server
+                upgrade_server
+                install_ssl ${2} ${3} ${4}
                 exit 0
             fi
             option ${1}
