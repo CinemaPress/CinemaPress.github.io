@@ -604,8 +604,52 @@ install_cinemapress() {
 install_nginx() {
     if [ "${NGINX}" = "" ]
     then
-        aptitude -y -q install nginx fail2ban iptables-persistent logrotate
+        aptitude -y -q install nginx fail2ban iptables-persistent openssl logrotate
         install_pagespeed
+    fi
+    if [ "${1}" != "" ] && [ "${2}" != "" ] && [ "${3}" != "" ]
+    then
+        RAW="https://raw.githubusercontent.com/CinemaPress/CinemaPress-ACMS/master"
+        mkdir -p /etc/nginx/html && rm -rf /etc/nginx/html/*
+        mkdir -p /etc/nginx/bots.d && rm -rf /etc/nginx/bots.d/*
+        mkdir -p /etc/nginx/pass && rm -rf /etc/nginx/pass/${1}.pass
+        mkdir -p /etc/nginx/conf.d && rm -rf /etc/nginx/conf.d/${1}.conf
+        wget ${RAW}/themes/default/public/admin/html/errors/401.html -qO /etc/nginx/html/401.html
+        wget ${RAW}/themes/default/public/admin/html/errors/403.html -qO /etc/nginx/html/403.html
+        wget ${RAW}/themes/default/public/admin/html/errors/404.html -qO /etc/nginx/html/404.html
+        wget ${RAW}/themes/default/public/admin/html/errors/50x.html -qO /etc/nginx/html/50x.html
+        wget ${RAW}/config/default/nginx/bots.d/blockbots.conf -qO /etc/nginx/bots.d/blockbots.conf
+        wget ${RAW}/config/default/nginx/bots.d/ddos.conf -qO /etc/nginx/bots.d/ddos.conf
+        wget ${RAW}/config/default/nginx/bots.d/whitelist-domains.conf -qO /etc/nginx/bots.d/whitelist-domains.conf
+        wget ${RAW}/config/default/nginx/bots.d/whitelist-ips.conf -qO /etc/nginx/bots.d/whitelist-ips.conf
+        wget ${RAW}/config/default/nginx/conf.d/blacklist.conf -qO /etc/nginx/conf.d/blacklist.conf
+        wget ${RAW}/config/default/nginx/conf.d/real_ip.conf -qO /etc/nginx/conf.d/real_ip.conf
+        wget ${RAW}/config/default/nginx/conf.d/rewrite.conf -qO /etc/nginx/conf.d/rewrite.conf
+        wget ${RAW}/config/default/nginx/conf.d/nginx.conf -qO /etc/nginx/conf.d/${1}.conf
+        sed -i "s/127\.0\.0\.1:3000/${2}/g" /etc/nginx/conf.d/${1}.conf
+        sed -i "s/example\.com/${1}/g" /etc/nginx/conf.d/${1}.conf
+        sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
+        sed -i "s/#gzip/gzip_disable \"msie6\"; \n    gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript;\n    gzip_vary on;\n    gzip_proxied any;\n    gzip_http_version 1.1;\n    gzip/g" /etc/nginx/nginx.conf
+        mv /etc/nginx/sites-enabled/default /etc/nginx/default 2>/dev/null
+        SNHBS=`grep "server_names_hash_max_size" /etc/nginx/nginx.conf`
+        if [ "${SNHBS}" = "" ]
+        then
+            sed -i "s/http {/http {\n\n    server_names_hash_bucket_size 64;\n    server_names_hash_max_size 4096;\n/g" /etc/nginx/nginx.conf
+        fi
+        LRZ=`grep "zone=cinemapress" /etc/nginx/nginx.conf`
+        if [ "${LRZ}" = "" ]
+        then
+            sed -i "s/http {/http {\n\n    limit_req_zone \$binary_remote_addr zone=flood:50m rate=90r\/s;\n    limit_conn_zone \$binary_remote_addr zone=addr:50m;\n    limit_req_zone \$binary_remote_addr zone=cinemapress:10m rate=30r\/s;\n/g" /etc/nginx/nginx.conf
+        fi
+        PCP=`grep "zone=cinemacache" /etc/nginx/nginx.conf`
+        if [ "${PCP}" = "" ]
+        then
+            mkdir -p /var/cinemacache
+            sed -i "s/http {/http {\n\n    proxy_cache_path \/var\/cinemacache levels=1:2 keys_zone=cinemacache:10m max_size=1g;\n/g" /etc/nginx/nginx.conf
+        fi
+        OPENSSL=`echo "${3}" | openssl passwd -1 -stdin -salt CP`
+        echo "${1}:$OPENSSL" >> /etc/nginx/pass/${1}.pass
+        service nginx restart
     fi
 }
 
@@ -1673,12 +1717,12 @@ import_static() {
 }
 
 check_domain() {
-    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed "s/.*server_name \([a-zA-Z0-9. -]*\).*/\1 www.${DOMAIN}/"`
     DO=""
     while IFS=' ' read -ra ADDR; do
         for i in "${ADDR[@]}"; do
             STATUS_HOST=`wget --server-response "http://${i}" 2>&1 | awk '/^  HTTP/{print $2}'`
-            if [ "${STATUS_HOST}" != "200" ]
+            if [ "${STATUS_HOST}" != "200" ] || [ "${STATUS_HOST}" != "301" ]
             then
                 DO="${i}"
             fi
@@ -1719,7 +1763,7 @@ get_ssl() {
         printf "\n${NC}"
         exit 0
     fi
-    /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --email support@${DOMAIN} -w /home/${DOMAIN}/ ${DS}
+    /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --email support@${DOMAIN} -w /home/${DOMAIN}/ ${DS} -d www.${DOMAIN}
     openssl dhparam -out /etc/letsencrypt/live/${DOMAIN}/dhparam.pem 2048
     if [ -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]
     then
@@ -2827,7 +2871,7 @@ do
                 exit 0
             elif [ "${1}" = "install_nginx" ]
             then
-                install_nginx
+                install_nginx ${2} ${3} ${4}
                 exit 0
             fi
             option ${1}
