@@ -629,6 +629,7 @@ install_nginx() {
         sed -i "s/127\.0\.0\.1:3000/${2}/g" /etc/nginx/conf.d/${1}.conf
         sed -i "s/example\.com/${1}/g" /etc/nginx/conf.d/${1}.conf
         sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
+        sed -i "s/worker_processes  1;/worker_processes  auto;/g" /etc/nginx/nginx.conf
         sed -i "s/#gzip/gzip_disable \"msie6\"; \n    gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript;\n    gzip_vary on;\n    gzip_proxied any;\n    gzip_http_version 1.1;\n    gzip/g" /etc/nginx/nginx.conf
         mv /etc/nginx/sites-enabled/default /etc/nginx/default 2>/dev/null
         SNHBS=`grep "server_names_hash_max_size" /etc/nginx/nginx.conf`
@@ -716,6 +717,7 @@ conf_nginx() {
         sed -i "s/:3000/:${NGINX_PORT}/g" /etc/nginx/conf.d/${DOMAIN}.conf
         sed -i "s/example\.com/${DOMAIN}/g" /etc/nginx/conf.d/${DOMAIN}.conf
         sed -i "s/user  nginx;/user  www-data;/g" /etc/nginx/nginx.conf
+        sed -i "s/worker_processes  1;/worker_processes  auto;/g" /etc/nginx/nginx.conf
         sed -i "s/#gzip/gzip_disable \"msie6\"; \n    gzip_types text\/plain text\/css application\/json application\/x-javascript text\/xml application\/xml application\/xml+rss image\/svg+xml text\/javascript application\/javascript;\n    gzip_vary on;\n    gzip_proxied any;\n    gzip_http_version 1.1;\n    gzip/g" /etc/nginx/nginx.conf
         mv /etc/nginx/sites-enabled/default /etc/nginx/default 2>/dev/null
         SNHBS=`grep "server_names_hash_max_size" /etc/nginx/nginx.conf`
