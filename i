@@ -2896,13 +2896,11 @@ do
             elif [ "${1}" = "install_nginx" ]
             then
                 update_server
-                upgrade_server
                 install_nginx ${2} ${3} ${4}
                 exit 0
             elif [ "${1}" = "install_ssl" ]
             then
                 update_server
-                upgrade_server
                 install_ssl ${2} ${3} ${4}
                 exit 0
             fi
