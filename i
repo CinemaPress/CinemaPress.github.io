@@ -1792,7 +1792,7 @@ install_ssl() {
     export CF_Key="${2}" && export CF_Email="${3}" && \
     /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
     /root/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --ecc \
-        --cert-file /etc/nginx/ssl/${1}/serialop.club.cer \
+        --cert-file /etc/nginx/ssl/${1}/${1}.cer \
         --key-file /etc/nginx/ssl/${1}/${1}.key  \
         --fullchain-file /etc/nginx/ssl/${1}/fullchain.cer \
         --reloadcmd "service nginx force-reload"
