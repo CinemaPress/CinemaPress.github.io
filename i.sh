@@ -894,8 +894,15 @@ conf_cinemapress() {
     sed -i "s/example_com/${DOMAIN_}/g" /home/${DOMAIN}/process.json
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/config.js
     sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/default/config.js
-    sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/production/config.js
-    sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/default/config.js
+
+    if [ "${NGINX}" != "" ]
+    then
+        sed -i "s/127\.0\.0\.1:3000/:${NGINX}/" /home/${DOMAIN}/config/production/config.js
+        sed -i "s/127\.0\.0\.1:3000/:${NGINX}/" /home/${DOMAIN}/config/default/config.js
+    else
+        sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/production/config.js
+        sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/default/config.js
+    fi
 
     if [ "${MYSQL}" != "" ]
     then
