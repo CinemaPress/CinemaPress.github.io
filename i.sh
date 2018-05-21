@@ -1799,7 +1799,7 @@ get_ssl() {
 }
 
 install_ssl() {
-    wget -O -  https://get.acme.sh | sh
+    wget -O -  https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh | sh
     export CF_Key="${2}" && export CF_Email="${3}" && \
     /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --config-home /etc/nginx/ssl/${1} --dns dns_cf --keylength ec-256
     /root/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --config-home /etc/nginx/ssl/${1} --ecc \
