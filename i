@@ -604,8 +604,12 @@ install_cinemapress() {
 install_nginx() {
     if [ "${NGINX}" = "" ]
     then
-        aptitude -y -q install nginx fail2ban iptables-persistent openssl logrotate
-        install_pagespeed
+        if [ "`nginx -v 2>/dev/null`" = "" ]
+        then
+            update_server
+            aptitude -y -q install nginx fail2ban iptables-persistent openssl logrotate
+            install_pagespeed
+        fi
     fi
     if [ "${1}" != "" ] && [ "${2}" != "" ] && [ "${3}" != "" ]
     then
@@ -1797,8 +1801,8 @@ get_ssl() {
 install_ssl() {
     wget -O -  https://get.acme.sh | sh
     export CF_Key="${2}" && export CF_Email="${3}" && \
-    /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
-    /root/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --ecc \
+    /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --config-home /etc/nginx/ssl/${1} --dns dns_cf --keylength ec-256
+    /root/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --config-home /etc/nginx/ssl/${1} --ecc \
         --cert-file /etc/nginx/ssl/${1}/${1}.cer \
         --key-file /etc/nginx/ssl/${1}/${1}.key  \
         --fullchain-file /etc/nginx/ssl/${1}/fullchain.cer \
@@ -2904,12 +2908,10 @@ do
                 exit 0
             elif [ "${1}" = "install_nginx" ]
             then
-                update_server
                 install_nginx ${2} ${3} ${4}
                 exit 0
             elif [ "${1}" = "install_ssl" ]
             then
-                update_server
                 install_ssl ${2} ${3} ${4}
                 exit 0
             fi
