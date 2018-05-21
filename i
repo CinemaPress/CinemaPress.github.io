@@ -897,8 +897,8 @@ conf_cinemapress() {
 
     if [ "${NGINX}" != "" ]
     then
-        sed -i "s/127\.0\.0\.1:3000/:${NGINX}/" /home/${DOMAIN}/config/production/config.js
-        sed -i "s/127\.0\.0\.1:3000/:${NGINX}/" /home/${DOMAIN}/config/default/config.js
+        sed -i "s/127\.0\.0\.1:3000/${NGINX}/" /home/${DOMAIN}/config/production/config.js
+        sed -i "s/127\.0\.0\.1:3000/${NGINX}/" /home/${DOMAIN}/config/default/config.js
     else
         sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/production/config.js
         sed -i "s/:3000/:${NGINX_PORT}/" /home/${DOMAIN}/config/default/config.js
