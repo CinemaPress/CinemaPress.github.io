@@ -2596,7 +2596,8 @@ do
             whileStop
         ;;
         9 )
-            nohup import_static 2>&1 &
+            export -f import_static
+            nohup bash -c import_static 2>&1 &
             success_9
             whileStop
         ;;
