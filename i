@@ -1088,7 +1088,7 @@ restart_cinemapress() {
         /etc/nginx/bots.d/
     mv /etc/nginx/conf.d/nginx.conf \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
-    sed -i "s/127\.0\.0\.1:3000/:${NGINX_ADDR}/g" \
+    sed -i "s/127\.0\.0\.1:3000/${NGINX_ADDR}/g" \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
     sed -i "s/example\.com/${RESTART_DOMAIN}/g" \
         /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
@@ -1198,7 +1198,7 @@ hard_restart_cinemapress() {
                 /etc/nginx/bots.d/
             mv /etc/nginx/conf.d/nginx.conf \
                 /etc/nginx/conf.d/${DOMAIN}.conf
-            sed -i "s/127\.0\.0\.1:3000/:${NGINX_ADDR}/g" \
+            sed -i "s/127\.0\.0\.1:3000/${NGINX_ADDR}/g" \
                 /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
             sed -i "s/example\.com/${RESTART_DOMAIN}/g" \
                 /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
