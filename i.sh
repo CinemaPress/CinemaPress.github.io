@@ -1188,7 +1188,7 @@ hard_restart_cinemapress() {
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
-            ADDRS=`grep "\"addr\"" "/home/${RESTART_DOMAIN}/config/default/config.js"`
+            ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/config/default/config.js"`
             NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
             sed -i "s/example\.com/${DOMAIN}/g" \
                 ${d}/config/production/nginx/bots.d/whitelist-domains.conf
@@ -1199,9 +1199,9 @@ hard_restart_cinemapress() {
             mv /etc/nginx/conf.d/nginx.conf \
                 /etc/nginx/conf.d/${DOMAIN}.conf
             sed -i "s/127\.0\.0\.1:3000/${NGINX_ADDR}/g" \
-                /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
-            sed -i "s/example\.com/${RESTART_DOMAIN}/g" \
-                /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
+                /etc/nginx/conf.d/${DOMAIN}.conf
+            sed -i "s/example\.com/${DOMAIN}/g" \
+                /etc/nginx/conf.d/${DOMAIN}.conf
             cp ${d}/config/production/sysctl/sysctl.conf \
                 /etc/sysctl.conf
             cp ${d}/config/production/fail2ban/jail.local \
