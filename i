@@ -977,10 +977,10 @@ conf_iptables() {
         if [ "${IP}" != "" ]
         then
             iptables -A INPUT -s ${IP} -p tcp -m state --state NEW -m tcp --dport ${MEMCACHED_PORT} -j ACCEPT
-            iptables -A INPUT -p tcp -m state --state NEW tcp --dport ${MEMCACHED_PORT} -j REJECT
+            iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${MEMCACHED_PORT} -j REJECT
         else
             iptables -A INPUT -s 127.0.0.1 -p tcp -m state --state NEW -m tcp --dport ${MEMCACHED_PORT} -j ACCEPT
-            iptables -A INPUT -p tcp -m state --state NEW tcp --dport ${MEMCACHED_PORT} -j REJECT
+            iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${MEMCACHED_PORT} -j REJECT
         fi
     fi
     if [ "${MYSQL_PORT}" != "" ]
@@ -990,10 +990,10 @@ conf_iptables() {
         if [ "${IP}" != "" ]
         then
             iptables -A INPUT -s ${IP} -p tcp -m state --state NEW -m tcp --dport ${MYSQL_PORT} -j ACCEPT
-            iptables -A INPUT -p tcp -m state --state NEW tcp --dport ${MYSQL_PORT} -j REJECT
+            iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${MYSQL_PORT} -j REJECT
         else
             iptables -A INPUT -s 127.0.0.1 -p tcp -m state --state NEW -m tcp --dport ${MYSQL_PORT} -j ACCEPT
-            iptables -A INPUT -p tcp -m state --state NEW tcp --dport ${MYSQL_PORT} -j REJECT
+            iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${MYSQL_PORT} -j REJECT
         fi
     fi
     if [ "${SPHINX_PORT}" != "" ]
@@ -1001,7 +1001,7 @@ conf_iptables() {
         sed -i -e "/dport ${SPHINX_PORT}/d" /etc/iptables/rules.v4
         iptables-restore < /etc/iptables/rules.v4
         iptables -A INPUT -s 127.0.0.1 -p tcp -m state --state NEW -m tcp --dport ${SPHINX_PORT} -j ACCEPT
-        iptables -A INPUT -p tcp -m state --state NEW tcp --dport ${SPHINX_PORT} -j REJECT
+        iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${SPHINX_PORT} -j REJECT
     fi
     if [ "${NGINX_PORT}" != "" ]
     then
@@ -1010,10 +1010,10 @@ conf_iptables() {
         if [ "${NGINX_IP}" != "" ]
         then
             iptables -A INPUT -s ${NGINX_IP} -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j ACCEPT
-            iptables -A INPUT -p tcp -m state --state NEW tcp --dport ${NGINX_PORT} -j REJECT
+            iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j REJECT
         else
             iptables -A INPUT -s 127.0.0.1 -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j ACCEPT
-            iptables -A INPUT -p tcp -m state --state NEW tcp --dport ${NGINX_PORT} -j REJECT
+            iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j REJECT
         fi
     fi
     if [ "`grep \"iptables\" /etc/crontab`" = "" ]
