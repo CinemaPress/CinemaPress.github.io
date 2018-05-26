@@ -1813,7 +1813,7 @@ get_ssl() {
 install_ssl() {
     git clone https://github.com/Neilpang/acme.sh.git && cd ./acme.sh && ./acme.sh --install
     export CF_Key="${2}" && export CF_Email="${3}" && \
-    /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --config-home /etc/nginx/ssl/${1} --dns dns_cf --keylength ec-256
+    /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
     /root/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --config-home /etc/nginx/ssl/${1} --ecc \
         --cert-file /etc/nginx/ssl/${1}/${1}.cer \
         --key-file /etc/nginx/ssl/${1}/${1}.key  \
