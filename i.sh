@@ -1811,11 +1811,13 @@ get_ssl() {
 }
 
 install_ssl() {
-    rm -rf acme.sh
-    git clone https://github.com/Neilpang/acme.sh.git && cd ./acme.sh && ./acme.sh --install
+    rm -rf /etc/nginx/ssl/acme.sh
+    git clone https://github.com/Neilpang/acme.sh.git /etc/nginx/ssl/acme.sh && \
+    cd /etc/nginx/ssl/acme.sh && \
+    ./acme.sh --install --home "/etc/nginx/ssl/${1}/.acme.sh"
     export CF_Key="${2}" && export CF_Email="${3}" && \
-    /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
-    /root/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --config-home /etc/nginx/ssl/${1} --ecc \
+    /etc/nginx/ssl/${1}/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
+    /etc/nginx/ssl/${1}/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --ecc \
         --cert-file /etc/nginx/ssl/${1}/${1}.cer \
         --key-file /etc/nginx/ssl/${1}/${1}.key  \
         --fullchain-file /etc/nginx/ssl/${1}/fullchain.cer \
