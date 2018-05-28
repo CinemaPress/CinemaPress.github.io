@@ -1811,6 +1811,7 @@ get_ssl() {
 }
 
 install_ssl() {
+    rm -rf acme.sh
     git clone https://github.com/Neilpang/acme.sh.git && cd ./acme.sh && ./acme.sh --install
     export CF_Key="${2}" && export CF_Email="${3}" && \
     /root/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
