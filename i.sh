@@ -198,6 +198,14 @@ read_nginx() {
     fi
 }
 
+read_nginx_main_ip() {
+    if [ ${1} ]
+    then
+        NGINX_MAIN_IP=${1}
+        NGINX_MAIN_IP=`echo ${NGINX_MAIN_IP} | iconv -c -t UTF-8`
+    fi
+}
+
 read_ip() {
     printf "${C}---------------------------[ ${Y}IP ДОМЕНА${C} ]--------------------------\n${NC}"
     AGAIN=yes
@@ -1007,7 +1015,11 @@ conf_iptables() {
     then
         sed -i -e "/dport ${NGINX_PORT}/d" /etc/iptables/rules.v4
         iptables-restore < /etc/iptables/rules.v4
-        if [ "${NGINX_IP}" != "" ]
+        if [ "${NGINX_MAIN_IP}" != "" ]
+        then
+            iptables -A INPUT -s ${NGINX_MAIN_IP} -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j ACCEPT
+            iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j REJECT
+        elif [ "${NGINX_IP}" != "" ]
         then
             iptables -A INPUT -s ${NGINX_IP} -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j ACCEPT
             iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport ${NGINX_PORT} -j REJECT
@@ -2544,6 +2556,7 @@ do
             read_memcached ${5}
             read_sphinx ${6}
             read_nginx ${7}
+            read_nginx_main_ip ${8}
 
             separator
 
