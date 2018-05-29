@@ -1826,7 +1826,7 @@ install_ssl() {
     rm -rf /etc/nginx/ssl/acme.sh
     git clone https://github.com/Neilpang/acme.sh.git /etc/nginx/ssl/acme.sh && \
     cd /etc/nginx/ssl/acme.sh && \
-    ./acme.sh --install --home "/etc/nginx/ssl/${1}/.acme.sh"
+    ./acme.sh --install --nocron --home "/etc/nginx/ssl/${1}/.acme.sh"
     export CF_Key="${2}" && export CF_Email="${3}" && \
     /etc/nginx/ssl/${1}/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
     /etc/nginx/ssl/${1}/.acme.sh/acme.sh --install-cert -d ${1} -d "*.${1}" --ecc \
@@ -1836,6 +1836,14 @@ install_ssl() {
         --reloadcmd "service nginx force-reload"
     if [ -f "/etc/nginx/ssl/${1}/fullchain.cer" ]
     then
+        if [ "`grep \"${1}_ssl\" /etc/crontab`" = "" ]
+        then
+            MIN=`randomNum 1 59`
+            echo -e "\n" >> /etc/crontab
+            echo "# ----- ${1}_ssl --------------------------------------" >> /etc/crontab
+            echo "${MIN} 0 * * * \"/etc/nginx/ssl/${1}/.acme.sh\"/acme.sh --cron --home \"/etc/nginx/ssl/${1}/.acme.sh\" >> /var/log/ssl.log" >> /etc/crontab
+            echo "# ----- ${1}_ssl --------------------------------------" >> /etc/crontab
+        fi
         sed -i "s~#onlyHTTPS ~~g" /etc/nginx/conf.d/${1}.conf
         sed -i "s~#enableHTTPS ~~g" /etc/nginx/conf.d/${1}.conf
         sed -i "s~#nonWWW ~~g" /etc/nginx/conf.d/${1}.conf
