@@ -2061,6 +2061,7 @@ delete_cinemapress() {
     rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/pass/${DELETE_DOMAIN}.pass
     rm -rf /etc/letsencrypt/live/${DELETE_DOMAIN}
+    rm -rf /etc/nginx/ssl/${DELETE_DOMAIN}
     userdel -r -f ${DELETE_DOMAIN}
     echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DELETE_DOMAIN} --shell=/bin/false --home=/home/${DELETE_DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
     if [ "`grep \"${DELETE_DOMAIN}_searchd\" /etc/crontab`" != "" ]
