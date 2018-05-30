@@ -345,7 +345,7 @@ pre_install() {
 
 update_server() {
     apt-get -y -qq update
-    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev
+    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev socat
     pre_install
     if [ "${VER}" = "stretch" ]
     then
@@ -358,8 +358,8 @@ update_server() {
         echo "deb http://packages.dotdeb.org ${VER}-php56 all" >> /etc/apt/sources.list
         echo "deb-src http://packages.dotdeb.org ${VER}-php56 all" >> /etc/apt/sources.list
     fi
-    wget -q http://www.dotdeb.org/dotdeb.gpg; apt-key add dotdeb.gpg
-    wget -q http://nginx.org/keys/nginx_signing.key; apt-key add nginx_signing.key
+    wget -q http://www.dotdeb.org/dotdeb.gpg; apt-key add dotdeb.gpg >/dev/null
+    wget -q http://nginx.org/keys/nginx_signing.key; apt-key add nginx_signing.key >/dev/null
     rm -rf dotdeb.gpg; rm -rf nginx_signing.key
     aptitude -y -q update
 }
