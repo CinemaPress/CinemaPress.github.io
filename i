@@ -1064,7 +1064,7 @@ start_cinemapress() {
     CP_USER="user_${DOMAIN_}" \
     node ./config/update/insert_default.js
     sleep 2
-    cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save
+    cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save && pm2 flush
     hash -r
 }
 
@@ -1133,7 +1133,8 @@ restart_cinemapress() {
     sleep 1
     cd /home/${RESTART_DOMAIN}/ && \
     pm2 start process.json && \
-    pm2 save
+    pm2 save && \
+    pm2 flush
     sleep 1
     node /home/${RESTART_DOMAIN}/config/update/update_cinemapress.js
 }
@@ -1172,7 +1173,8 @@ light_restart_cinemapress() {
     sleep 1
     cd /home/${RESTART_DOMAIN}/ && \
     pm2 start process.json && \
-    pm2 save
+    pm2 save && \
+    pm2 flush
 }
 
 hard_restart_cinemapress() {
@@ -1231,7 +1233,8 @@ hard_restart_cinemapress() {
             cd ${d}/ && npm i
             cd ${d}/ && \
             pm2 start process.json && \
-            pm2 save
+            pm2 save &&
+            pm2 flush
             node ${d}/config/update/update_cinemapress.js
         fi
     done
@@ -2621,7 +2624,7 @@ do
         ;;
         9 )
             export -f import_static
-            nohup bash -c import_static 2>&1 &
+            nohup bash -c import_static >/dev/null 2>&1 &
             success_9
             whileStop
         ;;
@@ -2920,6 +2923,7 @@ do
                 pm2 uninstall pm2-logrotate &> /dev/null
                 pm2 save &> /dev/null
                 pm2 kill &> /dev/null
+                pm2 flush &> /dev/null
                 rm -rf ~/.pm2
                 npm remove pm2 -g
                 service nginx stop
