@@ -1826,9 +1826,10 @@ get_ssl() {
 }
 
 install_ssl() {
-    rm -rf /etc/nginx/ssl/acme.sh
-    git clone https://github.com/Neilpang/acme.sh.git /etc/nginx/ssl/acme.sh && \
-    cd /etc/nginx/ssl/acme.sh && \
+    rm -rf /etc/nginx/ssl/${1}
+    mkdir -p /etc/nginx/ssl/${1}
+    git clone https://github.com/Neilpang/acme.sh.git /etc/nginx/ssl/${1}/acme.sh && \
+    cd /etc/nginx/ssl/${1}/acme.sh && \
     ./acme.sh --install --nocron --home "/etc/nginx/ssl/${1}/.acme.sh"
     export CF_Key="${2}" && export CF_Email="${3}" && \
     /etc/nginx/ssl/${1}/.acme.sh/acme.sh --issue -d ${1} -d "*.${1}" --dns dns_cf --keylength ec-256
