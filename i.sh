@@ -320,10 +320,10 @@ pre_install() {
     VER=`lsb_release -cs`
     if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
     then
-        apt-get -y -qq autoremove
-        apt-get -y -qq install -f
-        apt-get -y -qq update
-        apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev
+        DEBIAN_FRONTEND=noninteractive apt-get -y -qq autoremove
+        DEBIAN_FRONTEND=noninteractive apt-get -y -qq install -f
+        DEBIAN_FRONTEND=noninteractive apt-get -y -qq update
+        DEBIAN_FRONTEND=noninteractive apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev
         VER=`lsb_release -cs`
         if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
         then
@@ -344,8 +344,8 @@ pre_install() {
 }
 
 update_server() {
-    apt-get -y -qq update
-    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev socat
+    DEBIAN_FRONTEND=noninteractive apt-get -y -qq update
+    DEBIAN_FRONTEND=noninteractive apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev socat
     pre_install
     if [ "${VER}" = "stretch" ]
     then
