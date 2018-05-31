@@ -2920,7 +2920,7 @@ do
                 CP_USER="user_${DOMAIN_}" \
                 node ./config/update/insert_default.js
                 exit 0
-            elif [ "${1}" = "clean_vps" ]
+            elif [ "${1}" = "clean_vps" ] || [ "${1}" = "clear_vps" ]
             then
                 for d in /home/*; do
                     if [ -f "$d/process.json" ]
