@@ -1854,6 +1854,14 @@ install_ssl() {
         sed -i "s~ssl_certificate /etc/letsencrypt/live/${1}/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/${1}/privkey.pem; ssl_dhparam /etc/letsencrypt/live/${1}/dhparam.pem;~ssl_certificate /etc/nginx/ssl/${1}/fullchain.cer; ssl_certificate_key /etc/nginx/ssl/${1}/${1}.key; ssl_trusted_certificate /etc/nginx/ssl/${1}/${1}.cer;~g" /etc/nginx/conf.d/${1}.conf
         sed -i "s~    listen 80;~    #listen 80;~g" /etc/nginx/conf.d/${1}.conf
         sed -i "s~    listen \[::\]:80;~    #listen \[::\]:80;~g" /etc/nginx/conf.d/${1}.conf
+        if [ "${4}" != "" ]
+        then
+            sed -i "s~listen 443;~listen ${4}:443;~g" /etc/nginx/conf.d/${1}.conf
+        fi
+        if [ "${5}" != "" ]
+        then
+            sed -i "s~listen \[::\]:443;~listen \[${5}\]:443;~g" /etc/nginx/conf.d/${1}.conf
+        fi
         sleep 2
         service nginx restart
     fi
