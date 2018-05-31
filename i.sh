@@ -2707,14 +2707,16 @@ do
                             if [ $((10#$MINUTE % 5)) = "0" ]
                             then
                                 for d in /home/*; do
-                                    if [ -f "$d/process.json" ]
+                                    if [ -f "$d/process.json" ] && [ ! -f "$d/restart.pid" ]
                                     then
                                         DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
                                         ERR_PID=`pm2 pid ${DOMAIN}`
                                         if [ "${ERR_PID}" = "" ] || [ "${ERR_PID}" = "0" ]
                                         then
+                                            touch "$d/restart.pid"
                                             stop_cinemapress ${DOMAIN}
                                             restart_cinemapress ${DOMAIN}
+                                            rm -rf "$d/restart.pid"
                                         fi
                                     fi
                                 done
@@ -2961,7 +2963,7 @@ do
                 exit 0
             elif [ "${1}" = "install_ssl" ]
             then
-                install_ssl ${2} ${3} ${4}
+                install_ssl ${2} ${3} ${4} ${5} ${6}
                 exit 0
             fi
             option ${1}
