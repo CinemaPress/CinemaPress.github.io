@@ -2088,6 +2088,10 @@ delete_cinemapress() {
         sed -i "s/# ----- ${DELETE_DOMAIN}_backup --------------------------------------//g" /etc/crontab
         sed -i "s/@daily root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab
     fi
+    if [ "`grep \"${DELETE_DOMAIN}\" /root/.bashrc`" != "" ]
+    then
+        sed -i "s/. \"\/etc\/nginx\/ssl\/${DELETE_DOMAIN}.*//g" /root/.bashrc
+    fi
     service nginx restart
     sleep 2
     service proftpd restart
