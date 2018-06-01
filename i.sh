@@ -1856,11 +1856,11 @@ install_ssl() {
         sed -i "s~    listen \[::\]:80;~    #listen \[::\]:80;~g" /etc/nginx/conf.d/${1}.conf
         if [ "${4}" != "" ]
         then
-            sed -i "s~listen 443;~listen ${4}:443;~g" /etc/nginx/conf.d/${1}.conf
+            sed -i "s~listen 443 ssl;~listen ${4}:443 ssl;~g" /etc/nginx/conf.d/${1}.conf
         fi
         if [ "${5}" != "" ]
         then
-            sed -i "s~listen \[::\]:443;~listen \[${5}\]:443;~g" /etc/nginx/conf.d/${1}.conf
+            sed -i "s~listen \[::\]:443 ssl;~listen \[${5}\]:443 ssl;~g" /etc/nginx/conf.d/${1}.conf
         fi
         sleep 2
         service nginx restart
