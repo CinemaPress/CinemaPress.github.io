@@ -1197,8 +1197,9 @@ hard_restart_cinemapress() {
     service fail2ban start
     service fail2ban restart
     for d in /home/*; do
-        if [ -f "$d/process.json" ]
+        if [ -f "$d/process.json" ] && [ ! -f "$d/restart.pid" ]
         then
+            touch "$d/restart.pid"
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
@@ -1236,6 +1237,7 @@ hard_restart_cinemapress() {
             pm2 save &&
             pm2 flush
             node ${d}/config/update/update_cinemapress.js
+            rm -rf "$d/restart.pid"
         fi
     done
 }
