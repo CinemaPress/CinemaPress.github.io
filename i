@@ -1227,6 +1227,19 @@ hard_restart_cinemapress() {
                 /etc/fail2ban/filter.d/nginxrepeatoffender.conf
             cp ${d}/config/production/fail2ban/filter.d/nginx-x00.conf \
                 /etc/fail2ban/filter.d/nginx-x00.conf
+            if [ -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]
+            then
+                sed -i "s/#onlyHTTPS //g" /etc/nginx/conf.d/${DOMAIN}.conf
+                sed -i "s/#enableHTTPS //g" /etc/nginx/conf.d/${DOMAIN}.conf
+                sed -i "s/#nonWWW //g" /etc/nginx/conf.d/${DOMAIN}.conf
+            fi
+            if [ -f "/etc/nginx/ssl/${DOMAIN}/fullchain.cer" ]
+            then
+                sed -i "s~#onlyHTTPS ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
+                sed -i "s~#enableHTTPS ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
+                sed -i "s~#nonWWW ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
+                sed -i "s~ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem; ssl_dhparam /etc/letsencrypt/live/${DOMAIN}/dhparam.pem;~ssl_certificate /etc/nginx/ssl/${DOMAIN}/fullchain.cer; ssl_certificate_key /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.key; ssl_trusted_certificate /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.cer;~g" /etc/nginx/conf.d/${DOMAIN}.conf
+            fi
             service memcached_${DOMAIN} stop
             service memcached_${DOMAIN} start
             service memcached_${DOMAIN} restart
@@ -1240,6 +1253,12 @@ hard_restart_cinemapress() {
             rm -rf "$d/restart.pid"
         fi
     done
+    service nginx stop
+    service nginx start
+    service nginx restart
+    service fail2ban stop
+    service fail2ban start
+    service fail2ban restart
 }
 
 check_config() {
