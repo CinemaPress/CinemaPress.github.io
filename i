@@ -1884,6 +1884,8 @@ install_ssl() {
             sed -i "s~listen \[::\]:443 ssl;~listen \[${5}\]:443 ssl;~g" /etc/nginx/conf.d/${1}.conf
         fi
         sleep 2
+        mv ~/.bashrc ~/.bashrc.old 2>/dev/null
+        mv ~/.profile ~/.profile.old 2>/dev/null
         service nginx restart
     fi
 }
