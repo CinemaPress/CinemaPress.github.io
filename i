@@ -2178,7 +2178,7 @@ add_mirror() {
     D=`grep -m 1 "server_name" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
     sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR_DOMAIN} m\.${MIRROR_DOMAIN};/g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
 
-    if [ "`grep \"#enableHTTPS ssl.*on;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ] && [ "`grep \"#ssl.*on;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
+    if [ "`grep \"#enableHTTPS ssl.*on\;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ] && [ "`grep \"#ssl.*on\;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
     then
         if [ "`grep \"onlyHTTPS\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
         then
@@ -2237,6 +2237,20 @@ add_mirror() {
 }
 
 mirror_to_main() {
+    if [ ! -f "/home/${MIRROR}/process.json" ]
+    then
+        printf "\n${NC}"
+        printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}----           ${NC}Создайте вначале сайт-зеркало${C}             ----\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "Домен   : ${G}${DOMAIN}\n${NC}"
+        printf "Зеркало : ${R}${MIRROR}\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}------------------------------------------------------------------\n${NC}"
+        printf "\n${NC}"
+        exit 0
+    fi
     stop_cinemapress ${DOMAIN}
     stop_cinemapress ${MIRROR}
     mkdir -p /home/${MIRROR}/backup/${B_DIR}/oldCP && \
