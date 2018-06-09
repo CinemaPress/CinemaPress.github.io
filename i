@@ -2178,7 +2178,7 @@ add_mirror() {
     D=`grep -m 1 "server_name" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
     sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR_DOMAIN} m\.${MIRROR_DOMAIN};/g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
 
-    if [ "`grep \"#enableHTTPS ssl.*on\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
+    if [ "`grep \"#enableHTTPS ssl.*on;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ] && [ "`grep \"#ssl.*on;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
     then
         if [ "`grep \"onlyHTTPS\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
         then
