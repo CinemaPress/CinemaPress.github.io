@@ -2148,102 +2148,14 @@ update_i() {
 }
 
 create_mirror() {
-    printf "${C}-------------------------[ ${Y}СДЕЛАЙТЕ ВЫБОР${C} ]-----------------------\n${NC}"
-    printf "${C}---- ${G}1)${NC} Добавить зеркало к основному домену                   ${C}----\n${NC}"
-    printf "${C}---- ${G}2)${NC} Сделать зеркало основным доменом                      ${C}----\n${NC}"
-    printf "${C}------------------------------------------------------------------\n${NC}"
-    printf "\n${NC}"
-    if [ ${1} ]
-    then
-        CM=${1}
-        echo "ВАРИАНТ [1-2]: ${CM}"
-    else
-        read -e -p 'ВАРИАНТ [1-2]: ' CM
-        CM=`echo ${CM} | iconv -c -t UTF-8`
-    fi
-    printf "\n${NC}"
-    if [ "${CM}" = "2" ]
-    then
-        mirror_to_main
-    else
-        add_mirror
-    fi
-}
-
-add_mirror() {
-    MAIN_DOMAIN="${DOMAIN}"
-    if [ "${1}" != "" ]; then MAIN_DOMAIN="${1}"; fi
-    MIRROR_DOMAIN="${MIRROR}"
-    if [ "${2}" != "" ]; then MIRROR_DOMAIN="${2}"; fi
-    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
-    sed -i "s/server_name \([a-zA-Z0-9. -]*\);/server_name ${D} ${MIRROR_DOMAIN} m\.${MIRROR_DOMAIN};/g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
-
-    if [ "`grep \"#enableHTTPS ssl.*on\;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ] && [ "`grep \"#ssl.*on\;\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
-    then
-        if [ "`grep \"onlyHTTPS\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
-        then
-            sed -i "s/server {listen 80;/#onlyHTTPS server {listen 80;/" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
-        fi
-        if [ "`grep \"nonWWW\" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf`" = "" ]
-        then
-            sed -i "s/server {listen 443;/#nonWWW server {listen 443;/" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
-        fi
-
-        service nginx restart
-
-        DO=""
-        while IFS=' ' read -ra ADDR; do
-            for i in "${ADDR[@]}"; do
-                STATUS_HOST=`wget --server-response "http://${i}" 2>&1 | awk '/^  HTTP/{print $2}'`
-                if [ "${STATUS_HOST}" != "200" ]
-                then
-                    DO="${i}"
-                fi
-            done;
-        done <<< "${D} ${MIRROR_DOMAIN} m.${MIRROR_DOMAIN}"
-
-        if [ "${DO}" = "" ]
-        then
-            get_ssl
-        else
-            printf "\n${NC}"
-            printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
-            printf "${C}----                                                          ${C}----\n${NC}"
-            printf "${C}---- ${NC}Один из доменов недоступен, потому создание сертификата${C}  ----\n${NC}"
-            printf "${C}----     ${NC}невозможно. Исправьте ситуацию и заново создайте${C}     ----\n${NC}"
-            printf "${C}----             ${NC}сертификат для основного домена.${C}             ----\n${NC}"
-            printf "${C}----                                                          ${C}----\n${NC}"
-            printf "     ${NC}Основной домен    : ${MAIN_DOMAIN}\n${NC}"
-            printf "     ${NC}Недоступный домен : ${R}${DO}\n${NC}"
-            printf "${C}----                                                          ${C}----\n${NC}"
-            printf "${C}------------------------------------------------------------------\n${NC}"
-            printf "\n${NC}"
-            sed -i "s/#onlyHTTPS //g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
-            sed -i "s/#nonWWW //g" /etc/nginx/conf.d/${MAIN_DOMAIN}.conf
-            service nginx restart
-        fi
-    fi
-    printf "\n${NC}"
-    printf "${C}------------------------[ ${Y}ЗЕРКАЛО САЙТА${C} ]-------------------------\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----                 ${NC}Зеркало было добавлено!${C}                  ----\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Домен   : ${MAIN_DOMAIN}\n${NC}"
-    printf "     ${NC}Зеркало : ${MIRROR_DOMAIN}\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}------------------------------------------------------------------\n${NC}"
-    printf "\n${NC}"
-    service nginx restart
-}
-
-mirror_to_main() {
     if [ ! -f "/home/${MIRROR}/process.json" ]
     then
         printf "\n${NC}"
         printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----           ${NC}Создайте вначале сайт-зеркало${C}             ----\n${NC}"
-        printf "${C}----        ${NC}и импортируйте на него базу фильмов.${C}         ----\n${NC}"
+        printf "${C}----           ${NC}Создайте вначале сайт-зеркало,${C}            ----\n${NC}"
+        printf "${C}----         ${NC}импортируйте на него базу фильмов${C}           ----\n${NC}"
+        printf "${C}----    ${NC}и настройте на нем HTTPS (если используете).${C}     ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "Домен   : ${G}${DOMAIN}\n${NC}"
         printf "Зеркало : ${R}${MIRROR}\n${NC}"
@@ -2257,26 +2169,36 @@ mirror_to_main() {
     mkdir -p /home/${MIRROR}/backup/${B_DIR}/oldCP && \
     rm -rf /home/${DOMAIN}/backup && \
     rm -rf /home/${DOMAIN}/node_modules && \
-    cp -r /home/${DOMAIN}/*                            /home/${MIRROR}/backup/${B_DIR}/oldCP/
+    cp -r /home/${DOMAIN}/* /home/${MIRROR}/backup/${B_DIR}/oldCP/
     rm -rf /home/${MIRROR}/config/comment /home/${MIRROR}/config/content /home/${MIRROR}/config/rt /home/${MIRROR}/config/user
-    cp -r /home/${DOMAIN}/config/comment             /home/${MIRROR}/config/comment
+    cp -r /home/${DOMAIN}/config/comment /home/${MIRROR}/config/comment
     for f in /home/${MIRROR}/config/comment/comment_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/comment_${DOMAIN_}/comment_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/content             /home/${MIRROR}/config/content
+    cp -r /home/${DOMAIN}/config/content /home/${MIRROR}/config/content
     for f in /home/${MIRROR}/config/content/content_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/content_${DOMAIN_}/content_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/rt                  /home/${MIRROR}/config/rt
+    cp -r /home/${DOMAIN}/config/rt /home/${MIRROR}/config/rt
     for f in /home/${MIRROR}/config/rt/rt_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/rt_${DOMAIN_}/rt_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/user                /home/${MIRROR}/config/user
+    cp -r /home/${DOMAIN}/config/user /home/${MIRROR}/config/user
     for f in /home/${MIRROR}/config/user/user_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/user_${DOMAIN_}/user_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/production/config.js /home/${MIRROR}/config/production/config.js
-    cp -r /home/${DOMAIN}/config/production/modules.js /home/${MIRROR}/config/production/modules.js
+    cp -r /home/${DOMAIN}/config/production/config.js     /home/${MIRROR}/config/production/config.js
+    cp -r /home/${DOMAIN}/config/production/modules.js    /home/${MIRROR}/config/production/modules.js
     cp -r /home/${DOMAIN}/themes/default/public/desktop/* /home/${MIRROR}/themes/default/public/desktop/
-    cp -r /home/${DOMAIN}/themes/default/public/mobile/* /home/${MIRROR}/themes/default/public/mobile/
-    cp -r /home/${DOMAIN}/themes/default/views/mobile/* /home/${MIRROR}/themes/default/views/mobile/
+    cp -r /home/${DOMAIN}/themes/default/public/mobile/*  /home/${MIRROR}/themes/default/public/mobile/
+    cp -r /home/${DOMAIN}/themes/default/views/mobile/*   /home/${MIRROR}/themes/default/views/mobile/
     CURRENT=`grep "CP_ALL" /home/${MIRROR}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
     sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/process.json
     sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/config/production/i
+    if [ "`grep \"${DOMAIN}\" /etc/nginx/conf.d/${MIRROR}.conf`" = "" ]
+    then
+        echo "server{server_name ${DOMAIN} m.${DOMAIN};rewrite ^ http://${MIRROR}\$request_uri? permanent;}" \
+        >> /etc/nginx/conf.d/${MIRROR}.conf
+    fi
+    SSL_ON=`grep "ssl; ssl on;" /etc/nginx/conf.d/${DOMAIN}.conf`
+    if [ "`grep \"#enableHTTPS\" /etc/nginx/conf.d/${DOMAIN}.conf`" = "" ] && [ "${SSL_ON}" != "" ]
+    then
+        echo "server{${SSL_ON}server_name ${DOMAIN} m.${DOMAIN};rewrite ^ https://${MIRROR}\$request_uri? permanent;}" \
+        >> /etc/nginx/conf.d/${MIRROR}.conf
+    fi
     delete_cinemapress ${DOMAIN}
-    add_mirror ${MIRROR} ${DOMAIN}
     restart_cinemapress ${MIRROR}
 }
 
