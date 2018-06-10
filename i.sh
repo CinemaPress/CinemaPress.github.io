@@ -2243,6 +2243,7 @@ mirror_to_main() {
         printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}----           ${NC}Создайте вначале сайт-зеркало${C}             ----\n${NC}"
+        printf "${C}----        ${NC}и импортируйте на него базу фильмов.${C}         ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "Домен   : ${G}${DOMAIN}\n${NC}"
         printf "Зеркало : ${R}${MIRROR}\n${NC}"
@@ -2257,22 +2258,15 @@ mirror_to_main() {
     rm -rf /home/${DOMAIN}/backup && \
     rm -rf /home/${DOMAIN}/node_modules && \
     cp -r /home/${DOMAIN}/*                            /home/${MIRROR}/backup/${B_DIR}/oldCP/
-    cp -r /home/${DOMAIN}/config/comment/*             /home/${MIRROR}/config/comment/
-    for f in /home/${MIRROR}/config/comment/content_${DOMAIN_}.*; do
-        mv "${f}" "`echo ${f} | sed s/comment_${DOMAIN_}/comment_${MIRROR_}/`"
-    done
-    cp -r /home/${DOMAIN}/config/content/*             /home/${MIRROR}/config/content/
-    for f in /home/${MIRROR}/config/content/content_${DOMAIN_}.*; do
-        mv "${f}" "`echo ${f} | sed s/content_${DOMAIN_}/content_${MIRROR_}/`"
-    done
-    cp -r /home/${DOMAIN}/config/rt/*                  /home/${MIRROR}/config/rt/
-    for f in /home/${MIRROR}/config/rt/rt_${DOMAIN_}.*; do
-        mv "${f}" "`echo ${f} | sed s/rt_${DOMAIN_}/rt_${MIRROR_}/`"
-    done
-    cp -r /home/${DOMAIN}/config/user/*                /home/${MIRROR}/config/user/
-    for f in /home/${MIRROR}/config/user/user_${DOMAIN_}.*; do
-        mv "${f}" "`echo ${f} | sed s/user_${DOMAIN_}/user_${MIRROR_}/`"
-    done
+    rm -rf /home/${MIRROR}/config/comment /home/${MIRROR}/config/content /home/${MIRROR}/config/rt /home/${MIRROR}/config/user
+    cp -r /home/${DOMAIN}/config/comment             /home/${MIRROR}/config/comment
+    for f in /home/${MIRROR}/config/comment/comment_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/comment_${DOMAIN_}/comment_${MIRROR_}/`"; done
+    cp -r /home/${DOMAIN}/config/content             /home/${MIRROR}/config/content
+    for f in /home/${MIRROR}/config/content/content_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/content_${DOMAIN_}/content_${MIRROR_}/`"; done
+    cp -r /home/${DOMAIN}/config/rt                  /home/${MIRROR}/config/rt
+    for f in /home/${MIRROR}/config/rt/rt_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/rt_${DOMAIN_}/rt_${MIRROR_}/`"; done
+    cp -r /home/${DOMAIN}/config/user                /home/${MIRROR}/config/user
+    for f in /home/${MIRROR}/config/user/user_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/user_${DOMAIN_}/user_${MIRROR_}/`"; done
     cp -r /home/${DOMAIN}/config/production/config.js /home/${MIRROR}/config/production/config.js
     cp -r /home/${DOMAIN}/config/production/modules.js /home/${MIRROR}/config/production/modules.js
     cp -r /home/${DOMAIN}/themes/default/public/desktop/* /home/${MIRROR}/themes/default/public/desktop/
