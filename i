@@ -1784,8 +1784,8 @@ check_domain() {
     DO=""
     while IFS=' ' read -ra ADDR; do
         for i in "${ADDR[@]}"; do
-            STATUS_HOST=`wget --server-response "http://${i}" 2>&1 | awk '/^  HTTP/{print $2}' | tr '\n' ' '`
-            if [ "${STATUS_HOST}" != "200" ] || [ "${STATUS_HOST}" != "301" ] || [ "${STATUS_HOST}" != "301 200 " ]
+            STATUS_HOST=`wget --max-redirect 0 --server-response "http://${i}" 2>&1 | awk '/^  HTTP/{print $2}'`
+            if [ "${STATUS_HOST}" != "200" ] && [ "${STATUS_HOST}" != "301" ]
             then
                 DO="${i}"
             fi
