@@ -382,7 +382,7 @@ install_pagespeed() {
     INSTALL_PS=`2>&1 nginx -V | tr -- - '\n' | grep pagespeed`
     if [ "${PS}" = "" ] && [ "${INSTALL_PS}" != "" ]
     then
-        sed -i "s/http {/http {\n\n    pagespeed on;\n    pagespeed FileCachePath \/var\/ngx_pagespeed_cache;\n    pagespeed EnableFilters trim_urls,collapse_whitespace,remove_comments,dedup_inlined_images;\n    pagespeed DisableFilters rewrite_css;\n    pagespeed ReportUnloadTime off;\n    pagespeed Statistics off;\n    pagespeed StatisticsLogging off;\n    pagespeed Disallow \"*\/admin*\";\n/g" /etc/nginx/nginx.conf
+        sed -i "s/http {/http {\n\n    pagespeed on;\n    pagespeed FileCachePath \/var\/ngx_pagespeed_cache;\n    pagespeed EnableFilters collapse_whitespace,remove_comments,dedup_inlined_images;\n    pagespeed DisableFilters rewrite_css;\n    pagespeed ReportUnloadTime off;\n    pagespeed Statistics off;\n    pagespeed StatisticsLogging off;\n    pagespeed Disallow \"*\/admin*\";\n/g" /etc/nginx/nginx.conf
     fi
     service nginx restart
 }
