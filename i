@@ -1073,7 +1073,7 @@ stop_cinemapress() {
     if [ "${1}" != "" ]; then STOP_DOMAIN="${1}"; fi
     pm2 delete ${STOP_DOMAIN} &> /dev/null
     pm2 save &> /dev/null
-    searchd --stop --config "/home/${STOP_DOMAIN}/config/production/sphinx/sphinx.conf"
+    searchd --stop --config "/home/${STOP_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
 }
 
 restart_cinemapress() {
@@ -1083,13 +1083,13 @@ restart_cinemapress() {
     sleep 1
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
-        npm install --loglevel=silent --parseable pm2 npm-check-updates -g
+        npm install --loglevel=silent --parseable pm2 npm-check-updates -g >/dev/null
         sleep 1
-        pm2 startup
+        pm2 startup >/dev/null
         sleep 1
-        pm2 install pm2-logrotate
+        pm2 install pm2-logrotate >/dev/null
+        sleep 1
     fi
-    sleep 1
     ADDRS=`grep "\"addr\"" "/home/${RESTART_DOMAIN}/config/default/config.js"`
     NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
     sed -i "s/example\.com/${RESTART_DOMAIN}/g" \
@@ -1115,28 +1115,25 @@ restart_cinemapress() {
     cp /home/${RESTART_DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
         /etc/fail2ban/filter.d/nginx-x00.conf
     sleep 1
-    service nginx stop
-    service nginx start
-    service nginx restart
+    service nginx stop >/dev/null
+    service nginx start >/dev/null
+    service nginx restart >/dev/null
     sleep 1
-    service fail2ban stop
-    service fail2ban start
-    service fail2ban restart
+    service fail2ban stop >/dev/null
+    service fail2ban start >/dev/null
+    service fail2ban restart >/dev/null
     sleep 1
-    service memcached_${RESTART_DOMAIN} stop
-    service memcached_${RESTART_DOMAIN} start
-    service memcached_${RESTART_DOMAIN} restart
+    service memcached_${RESTART_DOMAIN} stop &> /dev/null
+    service memcached_${RESTART_DOMAIN} start &> /dev/null
+    service memcached_${RESTART_DOMAIN} restart &> /dev/null
     sleep 1
-    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
+    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
     sleep 1
-    cd /home/${RESTART_DOMAIN}/ && npm i
-    sleep 1
-    cd /home/${RESTART_DOMAIN}/ && \
-    pm2 start process.json && \
-    pm2 save && \
-    pm2 flush
-    sleep 1
-    node /home/${RESTART_DOMAIN}/config/update/update_cinemapress.js
+    cd /home/${RESTART_DOMAIN}/ && npm i >/dev/null
+    cd /home/${RESTART_DOMAIN}/ && pm2 start process.json >/dev/null
+    cd /home/${RESTART_DOMAIN}/ && pm2 save >/dev/null
+    cd /home/${RESTART_DOMAIN}/ && pm2 flush >/dev/null
+    node /home/${RESTART_DOMAIN}/config/update/update_cinemapress.js >/dev/null
 }
 
 light_restart_cinemapress() {
@@ -1148,33 +1145,32 @@ light_restart_cinemapress() {
     sleep 1
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
-        npm install --loglevel=silent --parseable pm2 npm-check-updates -g
+        npm install --loglevel=silent --parseable pm2 npm-check-updates -g >/dev/null
         sleep 1
-        pm2 startup
+        pm2 startup >/dev/null
         sleep 1
-        pm2 install pm2-logrotate
+        pm2 install pm2-logrotate >/dev/null
     fi
     sleep 1
-    searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
+    searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
     sleep 1
-    service nginx stop
-    service nginx start
-    service nginx restart
+    service nginx stop >/dev/null
+    service nginx start >/dev/null
+    service nginx restart >/dev/null
     sleep 1
-    service fail2ban stop
-    service fail2ban start
-    service fail2ban restart
+    service fail2ban stop >/dev/null
+    service fail2ban start >/dev/null
+    service fail2ban restart >/dev/null
     sleep 1
-    service memcached_${RESTART_DOMAIN} stop
-    service memcached_${RESTART_DOMAIN} start
-    service memcached_${RESTART_DOMAIN} restart
+    service memcached_${RESTART_DOMAIN} stop &> /dev/null
+    service memcached_${RESTART_DOMAIN} start &> /dev/null
+    service memcached_${RESTART_DOMAIN} restart &> /dev/null
     sleep 1
-    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf"
+    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
     sleep 1
-    cd /home/${RESTART_DOMAIN}/ && \
-    pm2 start process.json && \
-    pm2 save && \
-    pm2 flush
+    cd /home/${RESTART_DOMAIN}/ && pm2 start process.json
+    cd /home/${RESTART_DOMAIN}/ && pm2 save
+    cd /home/${RESTART_DOMAIN}/ && pm2 flush
 }
 
 hard_restart_cinemapress() {
@@ -1198,9 +1194,9 @@ hard_restart_cinemapress() {
     service fail2ban start >/dev/null
     service fail2ban restart >/dev/null
     for d in /home/*; do
-        if [ -f "${d}/process.json" ] && [ ! -f "${d}/restart.pid" ]
+        if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         then
-            touch ${d}/restart.pid
+            touch ${d}/.lock
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             printf "\n${NC}[${Y}${DOMAIN}${NC}] перезагружается ...\n"
             DATE1=$(date +"%s");
@@ -1253,7 +1249,7 @@ hard_restart_cinemapress() {
             cd ${d} && pm2 save >/dev/null
             cd ${d} && pm2 flush >/dev/null
             node ${d}/config/update/update_cinemapress.js >/dev/null
-            rm -rf ${d}/restart.pid
+            rm -rf ${d}/.lock
             DATE2=$(date +"%s");
             printf "${NC}[${G}${DOMAIN}${NC}] за $((${DATE2}-${DATE1})) секунд.\n"
         fi
@@ -1264,7 +1260,7 @@ hard_restart_cinemapress() {
     service fail2ban stop >/dev/null
     service fail2ban start >/dev/null
     service fail2ban restart >/dev/null
-    for d in /home/*; do if [ -f "$d/process.json" ]; then rm -rf ${d}/restart.pid; fi done
+    for d in /home/*; do if [ -f "$d/process.json" ]; then rm -rf ${d}/.lock; fi done
 }
 
 check_config() {
@@ -2671,16 +2667,20 @@ do
                             if [ $((10#$MINUTE % 5)) = "0" ]
                             then
                                 for d in /home/*; do
-                                    if [ -f "$d/process.json" ] && [ ! -f "$d/restart.pid" ]
+                                    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
                                     then
                                         DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
                                         ERR_PID=`pm2 pid ${DOMAIN}`
                                         if [ "${ERR_PID}" = "" ] || [ "${ERR_PID}" = "0" ]
                                         then
-                                            touch "$d/restart.pid"
+                                            touch ${d}/.lock
+                                            printf "\n${NC}[${Y}${DOMAIN}${NC}] перезагружается ...\n"
+                                            DATE1=$(date +"%s");
                                             stop_cinemapress ${DOMAIN}
                                             restart_cinemapress ${DOMAIN}
-                                            rm -rf "$d/restart.pid"
+                                            rm -rf ${d}/.lock
+                                            DATE2=$(date +"%s");
+                                            printf "${NC}[${G}${DOMAIN}${NC}] за $((${DATE2}-${DATE1})) секунд.\n"
                                         fi
                                     fi
                                 done
