@@ -1202,7 +1202,8 @@ hard_restart_cinemapress() {
         then
             touch ${d}/restart.pid
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
-            printf "\n${NC}Домен [${Y}${DOMAIN}${NC}] перезагружается ...\n"
+            printf "\n${NC}[${Y}${DOMAIN}${NC}] перезагружается ...\n"
+            DATE1=$(date +"%s");
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
             ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/config/default/config.js"`
@@ -1253,7 +1254,8 @@ hard_restart_cinemapress() {
             cd ${d} && pm2 flush >/dev/null
             node ${d}/config/update/update_cinemapress.js >/dev/null
             rm -rf ${d}/restart.pid
-            printf "${NC}Домен [${G}${DOMAIN}${NC}] перезагружен!\n"
+            DATE2=$(date +"%s");
+            printf "${NC}[${G}${DOMAIN}${NC}] за $((${DATE2}-${DATE1})) секунд.\n"
         fi
     done
     service nginx stop >/dev/null
