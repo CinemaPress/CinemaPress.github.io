@@ -1197,9 +1197,9 @@ hard_restart_cinemapress() {
     service fail2ban start
     service fail2ban restart
     for d in /home/*; do
-        if [ -f "$d/process.json" ] && [ ! -f "$d/restart.pid" ]
+        if [ -f "${d}/process.json" ] && [ ! -f "${d}/restart.pid" ]
         then
-            touch "$d/restart.pid"
+            touch ${d}/restart.pid
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
@@ -1244,13 +1244,13 @@ hard_restart_cinemapress() {
             service memcached_${DOMAIN} start
             service memcached_${DOMAIN} restart
             searchd --config "${d}/config/production/sphinx/sphinx.conf"
-            cd ${d}/ && npm i
-            cd ${d}/ && \
-            pm2 start process.json && \
-            pm2 save &&
-            pm2 flush
-            node ${d}/config/update/update_cinemapress.js
-            rm -rf "$d/restart.pid"
+            sleep 3
+            cd ${d} && npm i >/dev/null
+            cd ${d} && pm2 start process.json >/dev/null
+            cd ${d} && pm2 save >/dev/null
+            cd ${d} && pm2 flush >/dev/null
+            node ${d}/config/update/update_cinemapress.js >/dev/null
+            rm -rf ${d}/restart.pid
         fi
     done
     service nginx stop
@@ -1259,6 +1259,7 @@ hard_restart_cinemapress() {
     service fail2ban stop
     service fail2ban start
     service fail2ban restart
+    for d in /home/*; do if [ -f "$d/process.json" ]; then rm -rf ${d}/restart.pid; fi done
 }
 
 check_config() {
