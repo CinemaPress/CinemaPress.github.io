@@ -1191,12 +1191,12 @@ hard_restart_cinemapress() {
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
     fi
-    service nginx stop
-    service nginx start
-    service nginx restart
-    service fail2ban stop
-    service fail2ban start
-    service fail2ban restart
+    service nginx stop >/dev/null
+    service nginx start >/dev/null
+    service nginx restart >/dev/null
+    service fail2ban stop >/dev/null
+    service fail2ban start >/dev/null
+    service fail2ban restart >/dev/null
     for d in /home/*; do
         if [ -f "${d}/process.json" ] && [ ! -f "${d}/restart.pid" ]
         then
@@ -1256,12 +1256,12 @@ hard_restart_cinemapress() {
             printf "${NC}Домен [${G}${DOMAIN}${NC}] перезагружен!\n"
         fi
     done
-    service nginx stop
-    service nginx start
-    service nginx restart
-    service fail2ban stop
-    service fail2ban start
-    service fail2ban restart
+    service nginx stop >/dev/null
+    service nginx start >/dev/null
+    service nginx restart >/dev/null
+    service fail2ban stop >/dev/null
+    service fail2ban start >/dev/null
+    service fail2ban restart >/dev/null
     for d in /home/*; do if [ -f "$d/process.json" ]; then rm -rf ${d}/restart.pid; fi done
 }
 
