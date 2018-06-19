@@ -1200,9 +1200,9 @@ hard_restart_cinemapress() {
     for d in /home/*; do
         if [ -f "${d}/process.json" ] && [ ! -f "${d}/restart.pid" ]
         then
-            printf "${NC}Домен [${Y}${DOMAIN}${NC}] перезагружается ...\n"
             touch ${d}/restart.pid
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+            printf "${NC}Домен [${Y}${DOMAIN}${NC}] перезагружается ...\n"
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
             ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/config/default/config.js"`
