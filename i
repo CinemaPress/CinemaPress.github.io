@@ -1178,17 +1178,18 @@ light_restart_cinemapress() {
 }
 
 hard_restart_cinemapress() {
+    printf "${NC}Запуск перезагрузки ...\n"
     pm2 delete all &> /dev/null
     pm2 uninstall pm2-logrotate &> /dev/null
     pm2 save &> /dev/null
     pm2 kill &> /dev/null
     rm -rf ~/.pm2/dump.*
-    npm remove pm2 -g
+    npm remove pm2 -g &> /dev/null
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
-        npm install --loglevel=silent --parseable pm2 npm-check-updates -g
-        pm2 startup
-        pm2 install pm2-logrotate
+        npm install --loglevel=silent --parseable pm2 npm-check-updates -g >/dev/null
+        pm2 startup >/dev/null
+        pm2 install pm2-logrotate >/dev/null
     fi
     service nginx stop
     service nginx start
@@ -1199,10 +1200,11 @@ hard_restart_cinemapress() {
     for d in /home/*; do
         if [ -f "${d}/process.json" ] && [ ! -f "${d}/restart.pid" ]
         then
+            printf "${NC}Домен [${Y}${DOMAIN}${NC}] перезагружается ...\n"
             touch ${d}/restart.pid
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
             check_config ${DOMAIN}
-            searchd --stop --config "${d}/config/production/sphinx/sphinx.conf"
+            searchd --stop --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
             ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/config/default/config.js"`
             NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
             sed -i "s/example\.com/${DOMAIN}/g" \
@@ -1240,10 +1242,10 @@ hard_restart_cinemapress() {
                 sed -i "s~#nonWWW ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
                 sed -i "s~ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem; ssl_dhparam /etc/letsencrypt/live/${DOMAIN}/dhparam.pem;~ssl_certificate /etc/nginx/ssl/${DOMAIN}/fullchain.cer; ssl_certificate_key /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.key; ssl_trusted_certificate /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.cer;~g" /etc/nginx/conf.d/${DOMAIN}.conf
             fi
-            service memcached_${DOMAIN} stop
-            service memcached_${DOMAIN} start
-            service memcached_${DOMAIN} restart
-            searchd --config "${d}/config/production/sphinx/sphinx.conf"
+            service memcached_${DOMAIN} stop >/dev/null
+            service memcached_${DOMAIN} start >/dev/null
+            service memcached_${DOMAIN} restart >/dev/null
+            searchd --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
             sleep 3
             cd ${d} && npm i >/dev/null
             cd ${d} && pm2 start process.json >/dev/null
@@ -1251,6 +1253,7 @@ hard_restart_cinemapress() {
             cd ${d} && pm2 flush >/dev/null
             node ${d}/config/update/update_cinemapress.js >/dev/null
             rm -rf ${d}/restart.pid
+            printf "${NC}Домен [${G}${DOMAIN}${NC}] перезагружен!\n"
         fi
     done
     service nginx stop
