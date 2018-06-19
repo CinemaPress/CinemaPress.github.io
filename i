@@ -1242,9 +1242,9 @@ hard_restart_cinemapress() {
                 sed -i "s~#nonWWW ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
                 sed -i "s~ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem; ssl_dhparam /etc/letsencrypt/live/${DOMAIN}/dhparam.pem;~ssl_certificate /etc/nginx/ssl/${DOMAIN}/fullchain.cer; ssl_certificate_key /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.key; ssl_trusted_certificate /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.cer;~g" /etc/nginx/conf.d/${DOMAIN}.conf
             fi
-            service memcached_${DOMAIN} stop >/dev/null
-            service memcached_${DOMAIN} start >/dev/null
-            service memcached_${DOMAIN} restart >/dev/null
+            service memcached_${DOMAIN} stop &> /dev/null
+            service memcached_${DOMAIN} start &> /dev/null
+            service memcached_${DOMAIN} restart &> /dev/null
             searchd --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
             sleep 3
             cd ${d} && npm i >/dev/null
