@@ -1202,7 +1202,7 @@ hard_restart_cinemapress() {
         then
             touch ${d}/restart.pid
             DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
-            printf "${NC}Домен [${Y}${DOMAIN}${NC}] перезагружается ...\n"
+            printf "\n${NC}Домен [${Y}${DOMAIN}${NC}] перезагружается ...\n"
             check_config ${DOMAIN}
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
             ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/config/default/config.js"`
