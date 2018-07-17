@@ -2028,7 +2028,8 @@ confirm_mega_backup() {
         ./autogen.sh --prefix=${HOME}/.local --disable-docs
         make -j4
         make install
-        export PATH="${HOME}/.local/bin:${PATH}"
+        echo "export PATH=\"${HOME}/.local/bin:\${PATH}\"" >> ~/.bash_profile
+        source ~/.bash_profile
     fi
     MEGA_LS=`megals -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
     if [ "${MEGA_LS}" = "error" ]
