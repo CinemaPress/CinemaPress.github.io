@@ -2021,15 +2021,17 @@ confirm_mega_backup() {
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
-        aptitude update
-        aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf
-        git clone git://megous.com/megatools
-        cd megatools
-        ./autogen.sh --prefix=${HOME}/.local --disable-docs
-        make -j4
-        make install
-        echo "export PATH=\"${HOME}/.local/bin:\${PATH}\"" >> ~/.bash_profile
-        source ~/.bash_profile
+        aptitude update &> /dev/null
+        aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf &> /dev/null
+        git clone git://megous.com/megatools &> /dev/null
+        cd megatools &> /dev/null
+        ./autogen.sh --prefix=${HOME}/.local --disable-docs &> /dev/null
+        make -j4 &> /dev/null
+        make install &> /dev/null
+        if [ "`grep \"/.local/bin\" /etc/profile`" = "" ]
+        then
+            echo "export PATH=\"${HOME}/.local/bin:${PATH}\"" >> /etc/profile
+        fi
     fi
     MEGA_LS=`megals -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
     if [ "${MEGA_LS}" = "error" ]
