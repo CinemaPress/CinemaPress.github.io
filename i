@@ -2032,6 +2032,10 @@ confirm_mega_backup() {
         then
             echo "export PATH=\"${HOME}/.local/bin:${PATH}\"" >> /etc/profile
         fi
+        if [ "`grep \"/.local/bin\" /etc/crontab`" = "" ]
+        then
+            sed -i "s~PATH=~PATH=$HOME\/.local\/bin:~" /etc/crontab
+        fi
     fi
     MEGA_LS=`megals -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
     if [ "${MEGA_LS}" = "error" ]
