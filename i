@@ -2023,6 +2023,7 @@ confirm_mega_backup() {
         printf "\n${NC}"
         aptitude update &> /dev/null
         aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf &> /dev/null
+        rm -rf megatools &> /dev/null
         git clone git://megous.com/megatools &> /dev/null
         cd megatools &> /dev/null
         ./autogen.sh --prefix=${HOME}/.local --disable-docs &> /dev/null
