@@ -393,11 +393,7 @@
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    При использовании сервиса CloudFlare Вы можете сделать доступность сайта по HTTPS <a href="/article/kak-soedinit-domen-s-serverom.html#ssl" target="_blank">одним нажатием</a>, однако если Вы хотите иметь свой собственный сертификат, Вы можете воспользоваться этим пунктом в установочном меню. Сертификат создается для сайта и мобильной версии одновременно, потому Вы должны убедиться, что сайт и мобильная версия доступна и работает иначе будет ошибка. После создания собственного сертификата, Вы должны будете отключить CloudFlare для A-записи, путем нажатия на «облако» напротив А-записи в DNS и в разделе «Crypto» уберите пункт «Always use HTTPS», так как система будет делать переадресацию без использования CloudFlare. Не используйте оба варианта создания HTTPS. Используйте либо сертификат CloudFlare, либо Свой. Рекомендуется использовать сертификат CloudFlare ввиду большей защищенности Вашего сайта. Если Вам потребуется отключить HTTPS, Вы должны будете открыть файл <code>/home/ВашСайт.com/config/production/nginx/conf.d/nginx.conf</code> и удалить всё что находится между
-                    <br><code># Only HTTPS start</code>
-                    <br><code>...</code>
-                    <br><code># Only HTTPS end</code><br>
-                    и изменить <code>ssl on;</code> на <code>ssl off;</code>. Затем перезагрузить nginx <code>service nginx restart</code>.<br>
+                    При использовании сервиса CloudFlare Вы можете сделать доступность сайта по HTTPS <a href="/article/kak-soedinit-domen-s-serverom.html#ssl" target="_blank">одним нажатием</a>, однако если Вы хотите иметь свой собственный сертификат, Вы можете воспользоваться этим пунктом в установочном меню. Сертификат создается для сайта и мобильной версии одновременно, потому Вы должны убедиться, что сайт и мобильная версия доступна и работает иначе будет ошибка.<br>
                     Так же Вам нужно добавить CAA-записи:<br>
                     <code>ВашДомен.com 299 IN CAA 0 issue "comodoca.com"</code><br>
                     <code>ВашДомен.com 299 IN CAA 0 issue "digicert.com"</code><br>
@@ -406,7 +402,12 @@
                     <code>ВашДомен.com 299 IN CAA 0 issuewild "comodoca.com"</code><br>
                     <code>ВашДомен.com 299 IN CAA 0 issuewild "digicert.com"</code><br>
                     <code>ВашДомен.com 299 IN CAA 0 issuewild "globalsign.com"</code><br>
-                    <code>ВашДомен.com 299 IN CAA 0 issuewild "letsencrypt.org"</code>
+                    <code>ВашДомен.com 299 IN CAA 0 issuewild "letsencrypt.org"</code><br><br>
+                    После создания собственного сертификата, Вы должны будете отключить CloudFlare для A-записи, путем нажатия на «облако» напротив А-записи в DNS и в разделе «Crypto» уберите пункт «Always use HTTPS», так как система будет делать переадресацию без использования CloudFlare. Не используйте оба варианта создания HTTPS. Используйте либо сертификат CloudFlare, либо Свой. Рекомендуется использовать сертификат CloudFlare ввиду большей защищенности Вашего сайта. Если Вам потребуется отключить HTTPS, Вы должны будете открыть файл <code>/home/ВашСайт.com/config/production/nginx/conf.d/nginx.conf</code> и удалить всё что находится между
+                    <br><code># Only HTTPS start</code>
+                    <br><code>...</code>
+                    <br><code># Only HTTPS end</code><br>
+                    и изменить <code>ssl on;</code> на <code>ssl off;</code>. Затем перезагрузить nginx <code>service nginx restart</code>.<br>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
