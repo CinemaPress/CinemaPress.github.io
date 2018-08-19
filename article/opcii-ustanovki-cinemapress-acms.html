@@ -397,11 +397,21 @@
                     <br><code># Only HTTPS start</code>
                     <br><code>...</code>
                     <br><code># Only HTTPS end</code><br>
-                    и изменить <code>ssl on;</code> на <code>ssl off;</code>. Затем перезагрузить nginx <code>service nginx restart</code>.
+                    и изменить <code>ssl on;</code> на <code>ssl off;</code>. Затем перезагрузить nginx <code>service nginx restart</code>.<br>
+                    Так же Вам нужно добавить CAA-записи:<br>
+                    <code>ВашДомен.com 299 IN CAA 0 issue "comodoca.com"</code><br>
+                    <code>ВашДомен.com 299 IN CAA 0 issue "digicert.com"</code><br>
+                    <code>ВашДомен.com 299 IN CAA 0 issue "globalsign.com"</code><br>
+                    <code>ВашДомен.com 299 IN CAA 0 issue "letsencrypt.org"</code><br>
+                    <code>ВашДомен.com 299 IN CAA 0 issuewild "comodoca.com"</code><br>
+                    <code>ВашДомен.com 299 IN CAA 0 issuewild "digicert.com"</code><br>
+                    <code>ВашДомен.com 299 IN CAA 0 issuewild "globalsign.com"</code><br>
+                    <code>ВашДомен.com 299 IN CAA 0 issuewild "letsencrypt.org"</code>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
                 <img src="/images/bash/option10.png" class="img-responsive" alt="Получение SSL-сертификата" data-action="zoom">
+                <img src="/images/dns/caa.png" class="img-responsive" alt="Как прописать CAA-записи?" data-action="zoom">
             </div>
         </div>
     </div>
