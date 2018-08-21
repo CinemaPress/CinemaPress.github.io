@@ -1815,7 +1815,7 @@ check_domain() {
 get_ssl() {
     wget https://dl.eff.org/certbot-auto -qO /etc/certbot-auto && chmod a+x /etc/certbot-auto
     DS=""
-    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
+    D=`grep -m 1 "    server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed 's/.*server_name \([a-zA-Z0-9. -]*\).*/\1/'`
     while IFS=' ' read -ra ADDR; do for i in "${ADDR[@]}"; do DS="${DS} -d ${i}"; done; done <<< "${D}"
     if [ ! -f "/etc/certbot-auto" ] || [ "${DS}" = "" ]
     then
