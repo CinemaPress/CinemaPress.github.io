@@ -2028,10 +2028,11 @@ confirm_mega_backup() {
         printf "\n${NC}"
         aptitude update &> /dev/null
         aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf &> /dev/null
-        rm -rf megatools &> /dev/null
-        git clone git://megous.com/megatools &> /dev/null
-        cd megatools &> /dev/null
-        ./autogen.sh --prefix=${HOME}/.local --disable-docs &> /dev/null
+        apt-get -y -q --no-install-recommends install asciidoc &> /dev/null
+        wget -q "https://megatools.megous.com/builds/megatools-1.10.2.tar.gz{,.asc}" &> /dev/null
+        gpg --verify megatools-1.10.2.tar.gz.asc &> /dev/null
+        cd megatools-1.10.2 &> /dev/null
+        ./configure --prefix=$HOME/.local &> /dev/null
         make -j4 &> /dev/null
         make install &> /dev/null
         if [ "`grep \"/.local/bin\" /etc/profile`" = "" ]
