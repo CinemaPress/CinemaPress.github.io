@@ -2036,6 +2036,7 @@ confirm_mega_backup() {
         ./configure --prefix=$HOME/.local &> /dev/null
         make -j4 &> /dev/null
         make install &> /dev/null
+        cd ${HOME} &> /dev/null
         if [ "`grep \"/.local/bin\" /etc/profile`" = "" ]
         then
             echo "export PATH=\"${HOME}/.local/bin:${PATH}\"" >> /etc/profile
