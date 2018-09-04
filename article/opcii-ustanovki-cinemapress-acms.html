@@ -403,11 +403,17 @@
                     <code>ВашДомен.com 299 IN CAA 0 issuewild "digicert.com"</code><br>
                     <code>ВашДомен.com 299 IN CAA 0 issuewild "globalsign.com"</code><br>
                     <code>ВашДомен.com 299 IN CAA 0 issuewild "letsencrypt.org"</code><br><br>
-                    После создания собственного сертификата, Вы должны будете отключить CloudFlare для A-записи, путем нажатия на «облако» напротив А-записи в DNS и в разделе «Crypto» уберите пункт «Always use HTTPS», так как система будет делать переадресацию без использования CloudFlare. Не используйте оба варианта создания HTTPS. Используйте либо сертификат CloudFlare, либо Свой. Рекомендуется использовать сертификат CloudFlare ввиду большей защищенности Вашего сайта. Если Вам потребуется отключить HTTPS, Вы должны будете открыть файл <code>/home/ВашСайт.com/config/production/nginx/conf.d/nginx.conf</code> и удалить всё что находится между
+                    После создания собственного сертификата, Вы должны будете отключить CloudFlare для A-записи, путем нажатия на «облако» напротив А-записи в DNS и в разделе «Crypto» уберите пункт «Always use HTTPS», так как система будет делать переадресацию без использования CloudFlare. Не используйте оба варианта создания HTTPS. Используйте либо сертификат CloudFlare, либо Свой. Рекомендуется использовать сертификат CloudFlare ввиду большей защищенности Вашего сайта. <br>Если Вам потребуется <strong>отключить HTTPS</strong>, Вы должны будете открыть файл <code>/etc/nginx/conf.d/ВашСайт.com.conf</code> и удалить всё что находится между
+                    <br><code># Non WWW start</code>
+                    <br><code>...</code>
+                    <br><code># Non WWW start</code><br>
                     <br><code># Only HTTPS start</code>
                     <br><code>...</code>
-                    <br><code># Only HTTPS end</code><br>
-                    и изменить <code>ssl on;</code> на <code>ssl off;</code>. Затем перезагрузить nginx <code>service nginx restart</code>.<br>
+                    <br><code># Only HTTPS end</code><br><br>
+                    <br><code># Enable HTTPS start</code>
+                    <br><code>...</code>
+                    <br><code># Enable HTTPS end</code><br><br>
+                    Затем перезагрузить nginx <code>service nginx restart</code>.<br>
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
