@@ -1833,7 +1833,7 @@ get_ssl() {
         printf "\n${NC}"
         exit 0
     fi
-    /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --email support@${DOMAIN} -w /home/${DOMAIN}/ ${DS} -d www.${DOMAIN}
+    /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --expand --email support@${DOMAIN} --cert-path /etc/letsencrypt/live/${DOMAIN}/ --chain-path /etc/letsencrypt/live/${DOMAIN}/ --fullchain-path /etc/letsencrypt/live/${DOMAIN}/ --key-path /etc/letsencrypt/live/${DOMAIN}/ --cert-name ${DOMAIN} -w /home/${DOMAIN}/ ${DS} -d www.${DOMAIN}
     openssl dhparam -out /etc/letsencrypt/live/${DOMAIN}/dhparam.pem 2048
     if [ -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]
     then
