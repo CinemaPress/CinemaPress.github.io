@@ -2904,6 +2904,23 @@ do
                 CP_USER="user_${DOMAIN_}" \
                 node ./config/update/insert_default.js
                 exit 0
+            elif [ "${1}" = "player" ]
+            then
+                read_domain ${2}
+
+                separator
+
+                wget -qO "/home/${DOMAIN}/config/update/default.json" http://static.cinemapress.org/default.json
+
+                cd /home/${DOMAIN}/ && \
+                CP_ALL="_${DOMAIN_}_" \
+                CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" \
+                CP_RT="rt_${DOMAIN_}" \
+                CP_CONTENT="content_${DOMAIN_}" \
+                CP_COMMENT="comment_${DOMAIN_}" \
+                CP_USER="user_${DOMAIN_}" \
+                node ./config/update/insert_default.js
+                exit 0
             elif [ "${1}" = "clean_vps" ] || [ "${1}" = "clear_vps" ]
             then
                 for d in /home/*; do
