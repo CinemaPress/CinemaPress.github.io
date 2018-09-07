@@ -1910,16 +1910,16 @@ create_mega_backup() {
     MEGA_NOW=$(date +%Y-%m-%d)
     MEGA_DELETE=$(date +%Y-%m-%d -d "30 day ago")
     THEME_NAME=`grep "\"theme\"" /home/${DOMAIN}/config/production/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
-    megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
+    /etc/megatools/bin/megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
     if [ "${MEGA_DAY}" != "10" ]
     then
-        megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
+        /etc/megatools/bin/megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
     fi
-    megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest &> /dev/null
+    /etc/megatools/bin/megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest &> /dev/null
     sleep 2
-    megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/ &> /dev/null
-    megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/
-    megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest/
+    /etc/megatools/bin/megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/ &> /dev/null
+    /etc/megatools/bin/megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/
+    /etc/megatools/bin/megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest/
     sleep 2
     PORT_DOMAIN=`grep "mysql41" /home/${DOMAIN}/config/production/sphinx/sphinx.conf | sed 's/.*:\([0-9]*\):mysql41.*/\1/'`
     echo "FLUSH RTINDEX rt_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
@@ -1945,19 +1945,19 @@ create_mega_backup() {
         themes/default/views/mobile \
         themes/${THEME_NAME}
     sleep 3
-    megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/${MEGA_NOW}/config.tar \
         /var/${DOMAIN}/config.tar
     sleep 1
-    megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/${MEGA_NOW}/themes.tar \
         /var/${DOMAIN}/themes.tar
     sleep 1
-    megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/latest/config.tar \
         /var/${DOMAIN}/config.tar
     sleep 1
-    megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/latest/themes.tar \
         /var/${DOMAIN}/themes.tar
     sleep 3
@@ -1977,10 +1977,10 @@ recover_mega_backup() {
 
     stop_cinemapress
 
-    megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
+    /etc/megatools/bin/megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
         --path /var/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/config.tar
-    megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
+    /etc/megatools/bin/megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
         --path /var/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/themes.tar
 
@@ -2016,7 +2016,7 @@ remove_mega_backup() {
 }
 
 confirm_mega_backup() {
-    MGT=`megals --help 2>/dev/null | grep "list files stored"`
+    MGT=`/etc/megatools/bin/megals --help 2>/dev/null | grep "list files stored"`
     if [ "${MGT}" = "" ]
     then
         printf "\n${NC}"
@@ -2033,20 +2033,12 @@ confirm_mega_backup() {
         tar -xzf megatools-1.10.2.tar.gz &> /dev/null
         gpg --verify megatools-1.10.2.tar.gz.asc &> /dev/null
         cd megatools-1.10.2 &> /dev/null
-        ./configure --prefix=$HOME/.local &> /dev/null
+        ./configure --prefix=/etc/megatools &> /dev/null
         make -j4 &> /dev/null
         make install &> /dev/null
         cd ${HOME} &> /dev/null
-        if [ "`grep \"/.local/bin\" /etc/profile`" = "" ]
-        then
-            echo "export PATH=\"${HOME}/.local/bin:${PATH}\"" >> /etc/profile
-        fi
-        if [ "`grep \"/.local/bin\" /etc/crontab`" = "" ]
-        then
-            sed -i "s~PATH=~PATH=$HOME\/.local\/bin:~" /etc/crontab
-        fi
     fi
-    MEGA_LS=`megals -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
+    MEGA_LS=`/etc/megatools/bin/megals -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
     if [ "${MEGA_LS}" = "error" ]
     then
         printf "\n${NC}"
