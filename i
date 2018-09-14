@@ -1083,12 +1083,11 @@ restart_cinemapress() {
     sleep 1
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
-        npm install --loglevel=silent --parseable pm2 npm-check-updates -g >/dev/null
-        sleep 1
+        npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
         pm2 startup >/dev/null
-        sleep 1
         pm2 install pm2-logrotate >/dev/null
-        sleep 1
+    else
+        npm install pm2@latest -g ; pm2 update
     fi
     ADDRS=`grep "\"addr\"" "/home/${RESTART_DOMAIN}/config/default/config.js"`
     NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
@@ -1145,13 +1144,12 @@ light_restart_cinemapress() {
     sleep 1
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
-        npm install --loglevel=silent --parseable pm2 npm-check-updates -g >/dev/null
-        sleep 1
+        npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
         pm2 startup >/dev/null
-        sleep 1
         pm2 install pm2-logrotate >/dev/null
+    else
+        npm install pm2@latest -g ; pm2 update
     fi
-    sleep 1
     searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
     sleep 1
     service nginx stop >/dev/null
@@ -1183,9 +1181,11 @@ hard_restart_cinemapress() {
     npm remove pm2 -g &> /dev/null
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
     then
-        npm install --loglevel=silent --parseable pm2 npm-check-updates -g >/dev/null
+        npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
+    else
+        npm install pm2@latest -g ; pm2 update
     fi
     service nginx stop >/dev/null
     service nginx start >/dev/null
@@ -2674,7 +2674,7 @@ do
                             hard_restart_cinemapress
                         else
                             MINUTE=`date +"%M"`
-                            if [ $((10#$MINUTE % 5)) = "0" ]
+                            if [ $((10#$MINUTE % 2)) = "0" ]
                             then
                                 for d in /home/*; do
                                     if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
