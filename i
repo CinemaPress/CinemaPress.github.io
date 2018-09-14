@@ -2027,12 +2027,13 @@ confirm_mega_backup() {
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
         aptitude update &> /dev/null
-        aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf &> /dev/null
-        apt-get -y -q --no-install-recommends install asciidoc &> /dev/null
+        aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf gcc make pkg-config &> /dev/null
+        aptitude -y -q -R install asciidoc &> /dev/null
         wget -q https://megatools.megous.com/builds/megatools-1.10.2.tar.gz{,.asc} &> /dev/null
         tar -xzf megatools-1.10.2.tar.gz &> /dev/null
         gpg --verify megatools-1.10.2.tar.gz.asc &> /dev/null
         cd megatools-1.10.2 &> /dev/null
+        CFLAGS="-std=gnu99" \
         ./configure --prefix=/etc/megatools &> /dev/null
         make -j4 &> /dev/null
         make install &> /dev/null
