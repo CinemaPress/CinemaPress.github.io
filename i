@@ -2083,23 +2083,23 @@ delete_cinemapress() {
     if [ "${1}" != "" ]; then DELETE_DOMAIN="${1}"; fi
     USERID=`id -u ${DELETE_DOMAIN}`
     stop_cinemapress
-    service memcached_${DELETE_DOMAIN} stop
+    service memcached_${DELETE_DOMAIN} stop &> /dev/null
     C_PORT=`grep "\"addr\"" /home/${DELETE_DOMAIN}/config/production/config.js | sed 's/.*"addr":\s*".*:\(5[0-9]*\)".*/\1/'`
     if [ "${C_PORT}" != "" ]
     then
-        sed -i -e "/dport ${C_PORT}/d" /etc/iptables/rules.v4
+        sed -i -e "/dport ${C_PORT}/d" /etc/iptables/rules.v4 &> /dev/null
         iptables-restore < /etc/iptables/rules.v4
     fi
     S_PORT=`grep "\"addr\"" /home/${DELETE_DOMAIN}/config/production/config.js | sed 's/.*"addr":\s*".*:\(2[0-9]*\)".*/\1/'`
     if [ "${S_PORT}" != "" ]
     then
-        sed -i -e "/dport ${S_PORT}/d" /etc/iptables/rules.v4
+        sed -i -e "/dport ${S_PORT}/d" /etc/iptables/rules.v4 &> /dev/null
         iptables-restore < /etc/iptables/rules.v4
     fi
     N_PORT=`grep "\"addr\"" /home/${DELETE_DOMAIN}/config/production/config.js | sed 's/.*"addr":\s*".*:\(3[0-9]*\)".*/\1/'`
     if [ "${N_PORT}" != "" ]
     then
-        sed -i -e "/dport ${N_PORT}/d" /etc/iptables/rules.v4
+        sed -i -e "/dport ${N_PORT}/d" /etc/iptables/rules.v4 &> /dev/null
         iptables-restore < /etc/iptables/rules.v4
     fi
     rm -rf /etc/memcached_${DELETE_DOMAIN}.conf
@@ -2107,27 +2107,27 @@ delete_cinemapress() {
     rm -rf /etc/nginx/pass/${DELETE_DOMAIN}.pass
     rm -rf /etc/letsencrypt/live/${DELETE_DOMAIN}
     rm -rf /etc/nginx/ssl/${DELETE_DOMAIN}
-    userdel -r -f ${DELETE_DOMAIN}
+    userdel -r -f ${DELETE_DOMAIN} &> /dev/null
     rm -rf /home/${DELETE_DOMAIN}
     echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DELETE_DOMAIN} --shell=/bin/false --home=/home/${DELETE_DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
     if [ "`grep \"${DELETE_DOMAIN}_searchd\" /etc/crontab`" != "" ]
     then
-        sed -i "s/# ----- ${DELETE_DOMAIN}_searchd --------------------------------------//g" /etc/crontab
-        sed -i "s/@reboot root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab
+        sed -i "s/# ----- ${DELETE_DOMAIN}_searchd --------------------------------------//g" /etc/crontab &> /dev/null
+        sed -i "s/@reboot root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab &> /dev/null
     fi
     if [ "`grep \"${DELETE_DOMAIN}_cron\" /etc/crontab`" != "" ]
     then
-        sed -i "s/# ----- ${DELETE_DOMAIN}_cron --------------------------------------//g" /etc/crontab
-        sed -i "s/@hourly root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab
+        sed -i "s/# ----- ${DELETE_DOMAIN}_cron --------------------------------------//g" /etc/crontab &> /dev/null
+        sed -i "s/@hourly root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab &> /dev/null
     fi
     if [ "`grep \"${DELETE_DOMAIN}_backup\" /etc/crontab`" != "" ]
     then
-        sed -i "s/# ----- ${DELETE_DOMAIN}_backup --------------------------------------//g" /etc/crontab
-        sed -i "s/@daily root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab
+        sed -i "s/# ----- ${DELETE_DOMAIN}_backup --------------------------------------//g" /etc/crontab &> /dev/null
+        sed -i "s/@daily root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab &> /dev/null
     fi
     if [ "`grep \"${DELETE_DOMAIN}\" /root/.bashrc`" != "" ]
     then
-        sed -i "s/. \"\/etc\/nginx\/ssl\/${DELETE_DOMAIN}.*//g" /root/.bashrc
+        sed -i "s/. \"\/etc\/nginx\/ssl\/${DELETE_DOMAIN}.*//g" /root/.bashrc &> /dev/null
     fi
     service nginx restart
     sleep 2
@@ -2178,29 +2178,35 @@ create_mirror() {
         printf "\n${NC}"
         exit 0
     fi
-    stop_cinemapress ${DOMAIN}
-    stop_cinemapress ${MIRROR}
-    mkdir -p /home/${MIRROR}/backup/${B_DIR}/oldCP && \
-    rm -rf /home/${DOMAIN}/backup && \
-    rm -rf /home/${DOMAIN}/node_modules && \
-    cp -r /home/${DOMAIN}/* /home/${MIRROR}/backup/${B_DIR}/oldCP/
-    rm -rf /home/${MIRROR}/config/comment /home/${MIRROR}/config/content /home/${MIRROR}/config/rt /home/${MIRROR}/config/user
-    cp -r /home/${DOMAIN}/config/comment /home/${MIRROR}/config/comment
-    for f in /home/${MIRROR}/config/comment/comment_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/comment_${DOMAIN_}/comment_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/content /home/${MIRROR}/config/content
-    for f in /home/${MIRROR}/config/content/content_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/content_${DOMAIN_}/content_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/rt /home/${MIRROR}/config/rt
-    for f in /home/${MIRROR}/config/rt/rt_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/rt_${DOMAIN_}/rt_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/user /home/${MIRROR}/config/user
-    for f in /home/${MIRROR}/config/user/user_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/user_${DOMAIN_}/user_${MIRROR_}/`"; done
-    cp -r /home/${DOMAIN}/config/production/config.js     /home/${MIRROR}/config/production/config.js
-    cp -r /home/${DOMAIN}/config/production/modules.js    /home/${MIRROR}/config/production/modules.js
-    cp -r /home/${DOMAIN}/themes/default/public/desktop/* /home/${MIRROR}/themes/default/public/desktop/
-    cp -r /home/${DOMAIN}/themes/default/public/mobile/*  /home/${MIRROR}/themes/default/public/mobile/
-    cp -r /home/${DOMAIN}/themes/default/views/mobile/*   /home/${MIRROR}/themes/default/views/mobile/
-    CURRENT=`grep "CP_ALL" /home/${MIRROR}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
-    sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/process.json
-    sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/config/production/i
+    if [ -f "/home/${DOMAIN}/process.json" ]
+    then
+        stop_cinemapress ${DOMAIN}
+        stop_cinemapress ${MIRROR}
+        mkdir -p /home/${MIRROR}/backup/${B_DIR}/oldCP && \
+        rm -rf /home/${DOMAIN}/backup && \
+        rm -rf /home/${DOMAIN}/node_modules && \
+        cp -r /home/${DOMAIN}/* /home/${MIRROR}/backup/${B_DIR}/oldCP/
+        rm -rf /home/${MIRROR}/config/comment /home/${MIRROR}/config/content /home/${MIRROR}/config/rt /home/${MIRROR}/config/user
+        cp -r /home/${DOMAIN}/config/comment /home/${MIRROR}/config/comment
+        for f in /home/${MIRROR}/config/comment/comment_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/comment_${DOMAIN_}/comment_${MIRROR_}/`"; done
+        cp -r /home/${DOMAIN}/config/content /home/${MIRROR}/config/content
+        for f in /home/${MIRROR}/config/content/content_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/content_${DOMAIN_}/content_${MIRROR_}/`"; done
+        cp -r /home/${DOMAIN}/config/rt /home/${MIRROR}/config/rt
+        for f in /home/${MIRROR}/config/rt/rt_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/rt_${DOMAIN_}/rt_${MIRROR_}/`"; done
+        cp -r /home/${DOMAIN}/config/user /home/${MIRROR}/config/user
+        for f in /home/${MIRROR}/config/user/user_${DOMAIN_}.*; do mv "${f}" "`echo ${f} | sed s/user_${DOMAIN_}/user_${MIRROR_}/`"; done
+        cp -r /home/${DOMAIN}/config/production/config.js     /home/${MIRROR}/config/production/config.js
+        cp -r /home/${DOMAIN}/config/production/modules.js    /home/${MIRROR}/config/production/modules.js
+        cp -r /home/${DOMAIN}/themes/default/public/desktop/* /home/${MIRROR}/themes/default/public/desktop/
+        cp -r /home/${DOMAIN}/themes/default/public/mobile/*  /home/${MIRROR}/themes/default/public/mobile/
+        cp -r /home/${DOMAIN}/themes/default/views/mobile/*   /home/${MIRROR}/themes/default/views/mobile/
+    fi
+    if [ "`grep \"${DOMAIN_}\" /home/${MIRROR}/process.json`" = "" ]
+    then
+        CURRENT=`grep "CP_ALL" /home/${MIRROR}/process.json | sed 's/.*"CP_ALL":\s*"\([a-zA-Z0-9_| -]*\)".*/\1/'`
+        sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/process.json
+        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"_${DOMAIN_}_ | ${CURRENT}\"/" /home/${MIRROR}/config/production/i
+    fi
     if [ "`grep \"${DOMAIN}\" /etc/nginx/conf.d/${MIRROR}.conf`" = "" ]
     then
         echo "server{server_name ${DOMAIN} m.${DOMAIN};rewrite ^ http://${MIRROR}\$request_uri? permanent;}" \
@@ -2210,9 +2216,9 @@ create_mirror() {
         echo "server{server_name ${DOMAIN} m.${DOMAIN};rewrite ^ http://${MIRROR}\$request_uri? permanent;}" \
         >> /home/${MIRROR}/config/production/nginx/conf.d/nginx.conf
     fi
-    SSL_ON=`grep "ssl; ssl" /etc/nginx/conf.d/${DOMAIN}.conf`
-    if [ "`grep \"#enableHTTPS\" /etc/nginx/conf.d/${DOMAIN}.conf`" = "" ] && [ "${SSL_ON}" != "" ]
+    if [ -f "/etc/nginx/conf.d/${DOMAIN}.conf" ] && [ "`grep \"#enableHTTPS\" /etc/nginx/conf.d/${DOMAIN}.conf`" = "" ]
     then
+        SSL_ON=`grep "ssl; ssl" /etc/nginx/conf.d/${DOMAIN}.conf`
         echo "server{${SSL_ON}server_name ${DOMAIN} m.${DOMAIN};rewrite ^ https://${MIRROR}\$request_uri? permanent;}" \
         >> /etc/nginx/conf.d/${MIRROR}.conf
         echo "server{${SSL_ON}server_name ${DOMAIN} m.${DOMAIN};rewrite ^ https://${MIRROR}\$request_uri? permanent;}" \
