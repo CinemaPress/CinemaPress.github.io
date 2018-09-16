@@ -2205,12 +2205,20 @@ create_mirror() {
     then
         echo "server{server_name ${DOMAIN} m.${DOMAIN};rewrite ^ http://${MIRROR}\$request_uri? permanent;}" \
         >> /etc/nginx/conf.d/${MIRROR}.conf
+        echo "server{server_name ${DOMAIN} m.${DOMAIN};rewrite ^ http://${MIRROR}\$request_uri? permanent;}" \
+        >> /home/${MIRROR}/config/default/nginx/conf.d/nginx.conf
+        echo "server{server_name ${DOMAIN} m.${DOMAIN};rewrite ^ http://${MIRROR}\$request_uri? permanent;}" \
+        >> /home/${MIRROR}/config/production/nginx/conf.d/nginx.conf
     fi
-    SSL_ON=`grep "ssl; ssl on;" /etc/nginx/conf.d/${DOMAIN}.conf`
+    SSL_ON=`grep "ssl; ssl" /etc/nginx/conf.d/${DOMAIN}.conf`
     if [ "`grep \"#enableHTTPS\" /etc/nginx/conf.d/${DOMAIN}.conf`" = "" ] && [ "${SSL_ON}" != "" ]
     then
         echo "server{${SSL_ON}server_name ${DOMAIN} m.${DOMAIN};rewrite ^ https://${MIRROR}\$request_uri? permanent;}" \
         >> /etc/nginx/conf.d/${MIRROR}.conf
+        echo "server{${SSL_ON}server_name ${DOMAIN} m.${DOMAIN};rewrite ^ https://${MIRROR}\$request_uri? permanent;}" \
+        >> /home/${MIRROR}/config/default/nginx/conf.d/nginx.conf
+        echo "server{${SSL_ON}server_name ${DOMAIN} m.${DOMAIN};rewrite ^ https://${MIRROR}\$request_uri? permanent;}" \
+        >> /home/${MIRROR}/config/production/nginx/conf.d/nginx.conf
     fi
     delete_cinemapress ${DOMAIN}
     restart_cinemapress ${MIRROR}
