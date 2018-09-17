@@ -1081,13 +1081,14 @@ restart_cinemapress() {
     if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
     check_config ${RESTART_DOMAIN}
     sleep 1
-    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
+    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
     then
         npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
     else
-        npm install pm2@latest -g ; pm2 update
+        npm install pm2@latest -g >/dev/null
+        pm2 update >/dev/null
     fi
     ADDRS=`grep "\"addr\"" "/home/${RESTART_DOMAIN}/config/default/config.js"`
     NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
@@ -1142,13 +1143,14 @@ light_restart_cinemapress() {
     pm2 delete ${RESTART_DOMAIN} &> /dev/null
     pm2 save &> /dev/null
     sleep 1
-    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
+    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
     then
         npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
     else
-        npm install pm2@latest -g ; pm2 update
+        npm install pm2@latest -g >/dev/null
+        pm2 update >/dev/null
     fi
     searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
     sleep 1
@@ -1179,13 +1181,14 @@ hard_restart_cinemapress() {
     pm2 kill &> /dev/null
     rm -rf ~/.pm2/dump.*
     npm remove pm2 -g &> /dev/null
-    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ]
+    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
     then
         npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
     else
-        npm install pm2@latest -g ; pm2 update
+        npm install pm2@latest -g >/dev/null
+        pm2 update >/dev/null
     fi
     service nginx stop >/dev/null
     service nginx start >/dev/null
