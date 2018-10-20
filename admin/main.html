@@ -453,16 +453,6 @@
                     <div class="inner-padding">
                         <div class="row">
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                                <a href="/admin/admin.html">
-                                    <div class="button-settings">
-                                        <i class="fa fa-home"></i>
-                                        <p>
-                                            Админ
-                                        </p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/main.html">
                                     <div class="button-settings active">
                                         <i class="fa fa-cog"></i>
@@ -493,21 +483,11 @@
                                 </a>
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                                <a href="/admin/urls.html">
-                                    <div class="button-settings">
-                                        <i class="fa fa-sitemap"></i>
-                                        <p>
-                                            URL
-                                        </p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/display.html">
                                     <div class="button-settings">
                                         <i class="fa fa-list"></i>
                                         <p>
-                                            Отображение
+                                            Страницы
                                         </p>
                                     </div>
                                 </a>
@@ -533,6 +513,16 @@
                                 </a>
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/h1.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-pencil"></i>
+                                        <p>
+                                            &lt;H1&gt;
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/descriptions.html">
                                     <div class="button-settings">
                                         <i class="fa fa-pencil-square-o"></i>
@@ -543,31 +533,23 @@
                                 </a>
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                <a href="/admin/urls.html">
+                                    <div class="button-settings">
+                                        <i class="fa fa-sitemap"></i>
+                                        <p>
+                                            URL
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/codes.html">
                                     <div class="button-settings">
                                         <i class="fa fa-code"></i>
                                         <p>
                                             Коды
-                                        </p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                                <a href="/admin/load.html">
-                                    <div class="button-settings">
-                                        <i class="fa fa-bar-chart-o"></i>
-                                        <p>
-                                            Нагрузка
-                                        </p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                                <a href="/admin/cache.html">
-                                    <div class="button-settings">
-                                        <i class="fa fa-rocket"></i>
-                                        <p>
-                                            Кэш
                                         </p>
                                     </div>
                                 </a>
@@ -665,6 +647,78 @@
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
                 <img src="/images/admin/main/theme.png" class="img-responsive" alt="Шаблон сайта" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-white" id="nginx">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#nginx">Nginx сервер</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Данный параметр носит исключительно информационных характер и не может быть изменен из админ-панели. Он отвечает за то, что говорит NodeJS на каком порту принимать посетителей сайта.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/admin/load/nginx.png" class="img-responsive" alt="Nginx сервер" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-gray" id="sphinx">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#sphinx">Sphinx сервер</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Настройка этого параметра нужна для того, чтобы когда Вы решите <a href="/article/opcii-ustanovki-cinemapress-acms.html#option6" target="_blank">вынести Sphinx на отдельный сервер</a>, Вы могли указать <code>IP:PORT</code> нового сервера, тем самым убрать нагрузку с текущего, где находится сайт.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/admin/load/sphinx.png" class="img-responsive" alt="Sphinx сервер" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-white" id="memcached">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#memcached">Memcached сервер</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Указание параметра доступа к кэширующему серверу нужен по аналогии со Sphinx сервером для того, чтобы снизить нагрузку на текущий сервер и <a href="/article/opcii-ustanovki-cinemapress-acms.html#option7" target="_blank">вынести Memcached на отдельный сервер</a>. Вы должны будете указать <code>IP:PORT</code> сервера, на который Вы установили Memcached.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/admin/load/memcached.png" class="img-responsive" alt="Memcached сервер" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-gray" id="image">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#image">Сервер картинок</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Все картинки на сайте будут загружаться с cdn.cinemapress.org, однако, если Вы хотите загружать картинки со своего домена, Вы можете пойти двумя путями, либо с <a href="/article/kak-soedinit-domen-s-serverom.html#picture" target="_blank">помощью DNS</a>, либо <a href="/article/opcii-ustanovki-cinemapress-acms.html#option9" target="_blank">загрузив картинки</a> (маленькие и средние постеры и маленькие кадры) на свой сервер и указать в этом поле Ваш домен. Если Вы Выбрали путь с помощью DNS, тогда Вы можете изменять размер постеров на сайте - <code>60px</code>, <code>90px</code>, <code>120px</code>, <code>180px</code>.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/admin/load/image.png" class="img-responsive" alt="Сервер картинок" data-action="zoom">
             </div>
         </div>
     </div>

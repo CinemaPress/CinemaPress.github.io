@@ -316,6 +316,35 @@ read_mega_password() {
     done
 }
 
+read_lang() {
+    printf "${C}--------------------------[ ${Y}ЯЗЫК САЙТА${C} ]--------------------------\n${NC}"
+    AGAIN=yes
+    while [ "${AGAIN}" = "yes" ]
+    do
+        if [ ${1} ]
+        then
+            LANG_=${1}
+            LANG_=`echo ${LANG_} | iconv -c -t UTF-8`
+            echo ": ${LANG_}"
+        else
+            read -e -p ': ' LANG_
+            LANG_=`echo ${LANG_} | iconv -c -t UTF-8`
+        fi
+        if [ "${LANG_}" = "" ]
+        then
+            AGAIN=no
+            LANG_='ru'
+        else
+            if [ "${LANG_}" = "ru" ] || [ "${LANG_}" = "en" ] || [ "${LANG_}" = "Русский" ] || [ "${LANG_}" = "English" ] || [ "${LANG_}" = "русский" ] || [ "${LANG_}" = "english" ]
+            then
+                AGAIN=no
+            else
+                printf "${R}WARNING:${NC} Нет такого языка. На данный момент существуют языки: ru и en. \n"
+            fi
+        fi
+    done
+}
+
 pre_install() {
     VER=`lsb_release -cs`
     if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
@@ -698,6 +727,7 @@ add_user() {
     fi
     rm -rf /home/${DOMAIN}/*; rm -rf /home/${DOMAIN}/.??*
     git clone https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}
+    cp -r /home/${DOMAIN}/config/locales/${LANG_}/* /home/${DOMAIN}/config/
     cp -r /home/${DOMAIN}/config/default/* /home/${DOMAIN}/config/production/
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico /home/${DOMAIN}/
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/
@@ -939,6 +969,8 @@ conf_cinemapress() {
     IMG=`randomNum 1 7`
     cp "/home/${DOMAIN}/themes/default/public/desktop/img/player${IMG}.png" "/home/${DOMAIN}/themes/default/public/desktop/img/player.png"
 
+    mkdir -p /var/local/balancer && ln -s /home/${DOMAIN}/files/bbb.mp4 /var/local/balancer/bbb.mp4
+
     wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
     tar xvfz "geo.tar.gz"
     mv GeoLite2*/GeoLite2-City.mmdb /home/${DOMAIN}/files/GeoLite2-City.mmdb
@@ -1041,13 +1073,13 @@ conf_iptables() {
 }
 
 start_cinemapress() {
-    cd /home/${DOMAIN}/ && npm install --loglevel=silent --parseable
+    cd /home/${DOMAIN}/ && npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock
     sleep 2
     I=`npm list -g --depth=0 | grep "pm2"`
     if [ ! -n "${I}" ]
     then
         sleep 2
-        npm install --loglevel=silent --parseable pm2 npm-check-updates -g
+        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2 -g
         sleep 2
         pm2 startup
         sleep 2
@@ -1083,11 +1115,11 @@ restart_cinemapress() {
     sleep 1
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
     then
-        npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
+        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
     else
-        npm install pm2@latest -g >/dev/null
+        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
         pm2 update >/dev/null
     fi
     ADDRS=`grep "\"addr\"" "/home/${RESTART_DOMAIN}/config/default/config.js"`
@@ -1129,7 +1161,7 @@ restart_cinemapress() {
     sleep 1
     searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
     sleep 1
-    cd /home/${RESTART_DOMAIN}/ && npm i >/dev/null
+    cd /home/${RESTART_DOMAIN}/ && npm i --no-optional --no-shrinkwrap --no-package-lock >/dev/null
     cd /home/${RESTART_DOMAIN}/ && pm2 start process.json >/dev/null
     cd /home/${RESTART_DOMAIN}/ && pm2 save >/dev/null
     cd /home/${RESTART_DOMAIN}/ && pm2 flush >/dev/null
@@ -1145,11 +1177,11 @@ light_restart_cinemapress() {
     sleep 1
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
     then
-        npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
+        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
     else
-        npm install pm2@latest -g >/dev/null
+        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
         pm2 update >/dev/null
     fi
     searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
@@ -1183,11 +1215,11 @@ hard_restart_cinemapress() {
     npm remove pm2 -g &> /dev/null
     if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
     then
-        npm install --loglevel=silent --parseable pm2@latest npm-check-updates -g >/dev/null
+        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
         pm2 startup >/dev/null
         pm2 install pm2-logrotate >/dev/null
     else
-        npm install pm2@latest -g >/dev/null
+        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
         pm2 update >/dev/null
     fi
     service nginx stop >/dev/null
@@ -1247,7 +1279,7 @@ hard_restart_cinemapress() {
             service memcached_${DOMAIN} restart &> /dev/null
             searchd --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
             sleep 3
-            cd ${d} && npm i >/dev/null
+            cd ${d} && npm i --no-optional --no-shrinkwrap --no-package-lock >/dev/null
             cd ${d} && pm2 start process.json >/dev/null
             cd ${d} && pm2 save >/dev/null
             cd ${d} && pm2 flush >/dev/null
@@ -1397,13 +1429,19 @@ update_cinemapress() {
         https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git \
         /home/${DOMAIN}/backup/${B_DIR}/newCP
 
+    L_=`grep "\"language\"" "/home/${DOMAIN}/config/production/config.js"`
+    LANG_=`echo ${L_} | sed 's/.*\"language\":\s*\"\([a-z]\{2\}\|\)\".*/\1/'`
+    if [ "${LANG_}" = "" ]; then LANG_="ru"; fi
+    cp -r /home/${DOMAIN}/backup/${B_DIR}/newCP/config/locales/${LANG_}/* \
+        /home/${DOMAIN}/backup/${B_DIR}/newCP/config/
+
     if [ ! -f "/home/${DOMAIN}/backup/${B_DIR}/newCP/app.js" ]; then exit 0; fi;
 
     stop_cinemapress
 
     rm -rf /home/${DOMAIN}/node_modules
 
-    rsync -av --stats --exclude backup --remove-source-files \
+    rsync -azh --stats --exclude backup --remove-source-files \
         /home/${DOMAIN}/* \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP && \
     cd /home/${DOMAIN}/ && \
@@ -1415,28 +1453,33 @@ update_cinemapress() {
         exit 0
     fi
 
-    rsync -av --stats \
+    rsync -azh --stats \
         /home/${DOMAIN}/backup/${B_DIR}/newCP/* \
         /home/${DOMAIN}
-    rsync -av --stats --exclude default/public/admin --exclude default/views/admin \
+    printf "\n${C}------------------------------------------------------------------\n${NC}"
+    rsync -azh --stats --exclude default/public/admin --exclude default/views/admin \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/themes/* \
         /home/${DOMAIN}/themes
-    rsync -av --stats \
+    printf "\n${C}------------------------------------------------------------------\n${NC}"
+    rsync -azh --stats \
         /home/${DOMAIN}/config/default/* \
         /home/${DOMAIN}/config/production
-    cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico \
-        /home/${DOMAIN}/
-    rsync -av --stats --exclude default \
+    printf "\n${C}------------------------------------------------------------------\n${NC}"
+    rsync -azh --stats --exclude default \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/config/* \
         /home/${DOMAIN}/config
+    printf "\n${C}------------------------------------------------------------------\n${NC}"
+
+    cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico \
+        /home/${DOMAIN}/
 
     wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
-    tar xvfz "geo.tar.gz"
+    tar xfz "geo.tar.gz"
     mv GeoLite2*/GeoLite2-City.mmdb /home/${DOMAIN}/files/GeoLite2-City.mmdb
     rm -rf geo.tar.gz GeoLite2-City_*
 
     wget -qO "geo.tar.gz" http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
-    tar xvfz "geo.tar.gz"
+    tar xfz "geo.tar.gz"
     mv GeoLite2*/GeoLite2-Country.mmdb /home/${DOMAIN}/files/GeoLite2-Country.mmdb
     rm -rf geo.tar.gz GeoLite2-Country_*
 
@@ -1478,6 +1521,13 @@ update_cinemapress() {
     if [ "${RIH}" != "" ]
     then
         sed -i "s/real_ip_header/#real_ip_header/g" /etc/nginx/nginx.conf
+    fi
+    mkdir -p /var/local/balancer && \
+    ln -s /home/${DOMAIN}/files/bbb.mp4 /var/local/balancer/bbb.mp4 2>/dev/null
+    BLN=`grep "/balancer/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
+    if [ "${BLN}" = "" ]
+    then
+        sed -i "s~location /images/~location /balancer/ \{\n        rewrite           \"^\/balancer\/([0-9]+)\.mp4\" \"/bbb.mp4\" break;\n        root              /var/local/balancer;\n        expires           30d;\n        access_log        off;\n        autoindex         off;\n        add_header        Cache-Control \"public, no-transform\";\n        proxy_cache       cinemacache;\n        proxy_cache_valid 404 500 502 503 504 1m;\n        proxy_cache_valid any 30d;\n        try_files \$uri    /bbb.mp4 =404;\n    \}\n\n    location /images/~g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
@@ -1623,7 +1673,7 @@ check_db() {
         printf "\n${NC}"
         exit 0
     fi
-    INDEX_TYPE=`wget -qO- "http://database.cinemapress.org/${KEY}/${DOMAIN}?status=CHECK"`
+    INDEX_TYPE=`wget -qO- "http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=CHECK"`
     sleep 1
     if [ "${INDEX_TYPE}" = "" ]
     then
@@ -1718,8 +1768,11 @@ import_db() {
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/production/config.js
         sed -E -i "s/\"key\":\s*\"(FREE|[a-zA-Z0-9-]{32})\"/\"key\":\"${KEY}\"/" /home/${DOMAIN}/config/default/config.js
         sed -E -i "s/\"date\":\s*\"[0-9-]*\"/\"date\":\"${NOW}\"/" /home/${DOMAIN}/config/default/config.js
-        sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"${CURRENT} | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
-        sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT} | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
+        if [ "`grep \"_${INDEX_TYPE}_\" /home/${DOMAIN}/process.json`" = "" ]
+        then
+            sed -E -i "s/\"CP_ALL\":\s*\"[a-zA-Z0-9_| -]*\"/\"CP_ALL\":\"${CURRENT} | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/process.json
+            sed -E -i "s/CP_ALL=\"[a-zA-Z0-9_| -]*\"/CP_ALL=\"${CURRENT} | _${INDEX_TYPE}_\"/" /home/${DOMAIN}/config/production/i
+        fi
 
         sleep 2
 
@@ -2502,9 +2555,10 @@ do
     case ${OPTION} in
         1 )
             read_domain ${2}
-            read_theme ${3}
+            read_lang ${3}
+            read_theme ${4}
             read_login
-            read_password ${4}
+            read_password ${5}
 
             separator
 
@@ -2549,23 +2603,25 @@ do
         4 )
             read_domain ${2}
             read_key ${3}
+            read_lang ${4}
 
             separator
 
             check_db
             import_db
-            confirm_import_db ${4}
+            confirm_import_db ${5}
             whileStop
         ;;
         5 )
             read_domain ${2}
-            read_theme ${3}
+            read_lang ${3}
+            read_theme ${4}
             read_login
-            read_password ${4}
-            read_memcached ${5}
-            read_sphinx ${6}
-            read_nginx ${7}
-            read_nginx_main_ip ${8}
+            read_password ${5}
+            read_memcached ${6}
+            read_sphinx ${7}
+            read_nginx ${8}
+            read_nginx_main_ip ${9}
 
             separator
 
@@ -2695,6 +2751,13 @@ do
                             if [ $((10#$MINUTE % 2)) = "0" ]
                             then
                                 for d in /home/*; do
+                                    CNFG="${d}/config/production/config.js"
+                                    CNFG_PREV="${d}/config/production/config.prev.js"
+                                    CNFG_BACKUP="${d}/config/production/config.backup.js"
+                                    MDLS="${d}/config/production/modules.js"
+                                    MDLS_PREV="${d}/config/production/modules.prev.js"
+                                    MDLS_BACKUP="${d}/config/production/modules.backup.js"
+
                                     if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
                                     then
                                         DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
@@ -2709,6 +2772,39 @@ do
                                             rm -rf ${d}/.lock
                                             DATE2=$(date +"%s");
                                             printf "${NC}[${G}${DOMAIN}${NC}] за $((${DATE2}-${DATE1})) секунд.\n"
+                                        fi
+                                        if [ ! -s "${CNFG}" ]
+                                        then
+                                            sleep 5
+                                            if [ ! -s "${CNFG}" ] && [ -s "${CNFG_PREV}" ]
+                                            then
+                                                cp "${CNFG_PREV}" "${CNFG}"
+                                            elif [ ! -s "${CNFG}" ] && [ -s "${CNFG_BACKUP}" ]
+                                            then
+                                                cp "${CNFG_BACKUP}" "${CNFG}"
+                                            fi
+                                        fi
+                                        if [ ! -s "${MDLS}" ]
+                                        then
+                                            sleep 5
+                                            if [ ! -s "${MDLS}" ] && [ -s "${MDLS_PREV}" ]
+                                            then
+                                                cp "${MDLS_PREV}" "${MDLS}"
+                                            elif [ ! -s "${MDLS}" ] && [ -s "${MDLS_BACKUP}" ]
+                                            then
+                                                cp "${MDLS_BACKUP}" "${MDLS}"
+                                            fi
+                                        fi
+                                    fi
+                                    if [ $((10#$MINUTE % 10)) = "0" ]
+                                    then
+                                        if [ -s "${CNFG}" ]
+                                        then
+                                            cp "${CNFG}" "${CNFG_BACKUP}"
+                                        fi
+                                        if [ -s "${MDLS}" ]
+                                        then
+                                            cp "${MDLS}" "${MDLS_BACKUP}"
                                         fi
                                     fi
                                 done

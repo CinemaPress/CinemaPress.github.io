@@ -85,7 +85,7 @@ function req() {
 
     if (!domain || !ip || !root || !theme || !lang) {
         self.addEventListener('click', req);
-        self.innerHTML = 'Установить';
+        self.innerHTML = 'Install';
         return;
     }
 
@@ -115,42 +115,42 @@ function req() {
                 document.querySelector('#user').style.display = 'block';
                 document.querySelector('input[name="login"]').value = domain;
                 document.querySelector('input[name="password"]').value = pass;
-                document.querySelector('#go').innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span> Сохраните этот пароль!';
-                document.querySelector('#info_mess').innerHTML = '<span class="fa fa-plug"></span> <a href="/article/kak-soedinit-domen-s-serverom.html" target="_blank">Пропишите DNS</a><span class="hidden-xs">, пока устанавливается!</span>';
+                document.querySelector('#go').innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span> Save this password!';
+                document.querySelector('#info_mess').innerHTML = '<span class="fa fa-plug"></span> <a href="/article/kak-soedinit-domen-s-serverom.html" target="_blank">Write DNS</a><span class="hidden-xs">, while installing!</span>';
                 timer(10, 'install', function (time) {
                     time.innerHTML = '<span class="text-success">OK</span>';
                     self.addEventListener('click', req);
                     document.querySelector('#go').setAttribute('href', 'http://' + domain + '/admin');
                     document.querySelector('#go').setAttribute('target', '_blank');
-                    document.querySelector('#go').innerHTML = 'Перейти в админ-панель';
+                    document.querySelector('#go').innerHTML = 'Go to admin panel';
                 });
                 if (http.responseText === 'APACHE') {
                     setTimeout(function () {
-                        document.querySelector('#info_mess').innerHTML = '<span class="fa fa-plug"></span> На сервере установлен Apache2, возможны проблемы!';
+                        document.querySelector('#info_mess').innerHTML = '<span class="fa fa-plug"></span> Apache2 is installed on the server, problems are possible!';
                     }, 60000);
                 }
             }
             else if (http.responseText === 'DEBIAN') {
                 document.querySelector('#info_debian').style.display = 'block';
                 self.addEventListener('click', req);
-                self.innerHTML = 'Установить';
+                self.innerHTML = 'Install';
             }
             else if (http.responseText === 'TIME') {
                 document.querySelector('#info_time').style.display = 'block';
                 timer(1, 'time', function () {
                     self.addEventListener('click', req);
-                    self.innerHTML = 'Установить';
+                    self.innerHTML = 'Install';
                 });
             }
             else if (http.responseText === 'OFFLINE') {
                 document.querySelector('#info_offline').style.display = 'block';
                 self.addEventListener('click', req);
-                self.innerHTML = 'Установить';
+                self.innerHTML = 'Install';
             }
             else {
                 document.querySelector('#info_connect').style.display = 'block';
                 self.addEventListener('click', req);
-                self.innerHTML = 'Установить';
+                self.innerHTML = 'Install';
             }
         }
     };
