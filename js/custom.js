@@ -89,7 +89,7 @@ function req() {
         req_theme.style.background = '#f7d6d6';
     }
 
-    var req_lang = document.querySelector('select[name="req_theme"]');
+    var req_lang = document.querySelector('select[name="req_lang"]');
     if (req_lang && req_lang.options[req_lang.selectedIndex].value){
         req_lang.style.background = '#fff';
         lang = req_lang.options[req_lang.selectedIndex].value;
