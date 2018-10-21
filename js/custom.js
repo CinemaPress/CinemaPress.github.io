@@ -80,8 +80,23 @@ function req() {
         req_root.style.background = '#f7d6d6';
     }
 
-    theme = document.querySelector('select[name="req_theme"]').value;
-    lang = document.querySelector('select[name="req_lang"]').value;
+    var req_theme = document.querySelector('select[name="req_theme"]');
+    if (req_theme && req_theme.options[req_theme.selectedIndex].value){
+        req_theme.style.background = '#fff';
+        theme = req_theme.options[req_theme.selectedIndex].value;
+    }
+    else {
+        req_theme.style.background = '#f7d6d6';
+    }
+
+    var req_lang = document.querySelector('select[name="req_theme"]');
+    if (req_lang && req_lang.options[req_lang.selectedIndex].value){
+        req_lang.style.background = '#fff';
+        lang = req_lang.options[req_lang.selectedIndex].value;
+    }
+    else {
+        req_lang.style.background = '#f7d6d6';
+    }
 
     if (!domain || !ip || !root || !theme || !lang) {
         self.addEventListener('click', req);
