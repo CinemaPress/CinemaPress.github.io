@@ -80,8 +80,8 @@ function req() {
         req_root.style.background = '#f7d6d6';
     }
 
-    theme = document.querySelector('select[name="req_theme"]');
-    lang = document.querySelector('select[name="req_lang"]');
+    theme = document.querySelector('select[name="req_theme"]').value;
+    lang = document.querySelector('select[name="req_lang"]').value;
 
     if (!domain || !ip || !root || !theme || !lang) {
         self.addEventListener('click', req);
