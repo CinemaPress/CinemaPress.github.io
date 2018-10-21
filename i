@@ -1524,10 +1524,17 @@ update_cinemapress() {
     fi
     mkdir -p /var/local/balancer && \
     ln -s /home/${DOMAIN}/files/bbb.mp4 /var/local/balancer/bbb.mp4 2>/dev/null
+    CNC=`grep "cinemacache" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
+    if [ "${CNC}" = "" ]
+    then
+        PRX=""
+    else
+        PRX="\n        proxy_cache       cinemacache;\n        proxy_cache_valid 404 500 502 503 504 1m;\n        proxy_cache_valid any 30d;"
+    fi
     BLN=`grep "/balancer/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
     if [ "${BLN}" = "" ]
     then
-        sed -i "s~location /images/~location /balancer/ \{\n        rewrite           \"^\/balancer\/([0-9]+)\.mp4\" \"/bbb.mp4\" break;\n        root              /var/local/balancer;\n        expires           30d;\n        access_log        off;\n        autoindex         off;\n        add_header        Cache-Control \"public, no-transform\";\n        proxy_cache       cinemacache;\n        proxy_cache_valid 404 500 502 503 504 1m;\n        proxy_cache_valid any 30d;\n        try_files \$uri    /bbb.mp4 =404;\n    \}\n\n    location /images/~g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+        sed -i "s~location /images~location /balancer/ \{\n        rewrite           \"^\/balancer\/([0-9]+)\.mp4\" \"/bbb.mp4\" break;\n        root              /var/local/balancer;\n        expires           30d;\n        access_log        off;\n        autoindex         off;\n        add_header        Cache-Control \"public, no-transform\";${PRX}\n        try_files \$uri    /bbb.mp4 =404;\n    \}\n\n    location /images~g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
