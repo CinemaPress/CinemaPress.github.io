@@ -2547,8 +2547,8 @@ case ${INSTALL_FILE} in
         GIT_SERVER="bitbucket.org"
     ;;
     a )
-        MAIN_SERVER="cinemapress.aerobatic.io"
-        GIT_SERVER="git.coding.net"
+        MAIN_SERVER="cinemapress.aerobaticapp.com"
+        GIT_SERVER="gitlab.com"
     ;;
     * )
         MAIN_SERVER="cinemapress.org"
