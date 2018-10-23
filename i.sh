@@ -1534,7 +1534,7 @@ update_cinemapress() {
     BLN=`grep "/balancer/" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
     if [ "${BLN}" = "" ]
     then
-        sed -i "s~location /images~location /balancer/ \{\n        rewrite           \"^\/balancer\/([0-9]+)\.mp4\" \"/bbb.mp4\" break;\n        root              /var/local/balancer;\n        expires           30d;\n        access_log        off;\n        autoindex         off;\n        add_header        Cache-Control \"public, no-transform\";${PRX}\n        try_files \$uri    /bbb.mp4 =404;\n    \}\n\n    location /images~g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+        sed -i "s~location /images~location /balancer/ \{\n        rewrite           \"^\\\/balancer\\\/([0-9]+)\\\.mp4\" \"/\$1.mp4\" break;\n        root              /var/local/balancer;\n        expires           30d;\n        access_log        off;\n        autoindex         off;\n        add_header        Cache-Control \"public, no-transform\";${PRX}\n        try_files \$uri    /bbb.mp4 =404;\n    \}\n\n    location /images~g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}

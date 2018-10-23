@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Модуль: Слайдер - CinemaPress ACMS</title>
-    <meta property="og:title" content="Модуль: Слайдер - CinemaPress ACMS"/>
-    <meta name="description" content="Указание фильмов, которые будут отображаться в слайдере на сайте">
-    <meta property="og:description" content="Указание фильмов, которые будут отображаться в слайдере на сайте"/>
-    <meta property="og:image" content="https://cinemapress.org/images/admin/slider/slider.png"/>
-    <link rel="image_src" href="https://cinemapress.org/images/admin/slider/slider.png"/>
-    <meta property="og:url" content="https://cinemapress.org/admin/slider.html"/>
+    <title>Параметр: Названия - CinemaPress ACMS</title>
+    <meta property="og:title" content="Параметр: Названия - CinemaPress ACMS"/>
+    <meta name="description" content="Написания названий для всех страниц на сайте">
+    <meta property="og:description" content="Написания названий для всех страниц на сайте"/>
+    <meta property="og:image" content="https://cinemapress.org/images/admin/seo/seo.png"/>
+    <link rel="image_src" href="https://cinemapress.org/images/admin/seo/seo.png"/>
+    <meta property="og:url" content="https://cinemapress.org/admin/titles.html"/>
     <meta property="og:site_name" content="CinemaPress ACMS"/>
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:site" content="@CinemaPress_org"/>
@@ -128,7 +128,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="main-banner-content text-center">
-                    <h1>Слайдер с фильмами на киносайте</h1>
+                    <h1>Написание названий для всех страниц сайта</h1>
                     <ul class="breadcrumbs">
                         <li>
                             <a href="/">Главная</a>
@@ -137,7 +137,7 @@
                             <a href="/admin/admin.html">Админ-панель</a>
                         </li>
                         <li>
-                            Слайдер
+                            Названия
                         </li>
                     </ul>
                 </div>
@@ -219,7 +219,7 @@
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/slider.html">
-                                    <div class="button-settings active">
+                                    <div class="button-settings">
                                         <i class="fa fa-picture-o"></i>
                                         <span class="corner-label green">
                                             <i class="fa fa-power-off"></i>
@@ -514,7 +514,7 @@
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 <a href="/admin/h1.html">
-                                    <div class="button-settings">
+                                    <div class="button-settings active">
                                         <i class="fa fa-pencil"></i>
                                         <p>
                                             &lt;H1&gt;
@@ -561,21 +561,60 @@
         </div>
     </div>
 </section>
-<section class="ptb-100 functionalities bg-gray" id="slider">
+<section class="ptb-100 functionalities bg-gray" id="year">
     <div class="container">
         <div class="row">
             <div class="col-md-7 col-sm-6 col-xs-12">
                 <div class="main-title">
-                    <h3><a href="#slider">Слайдер с фильмами</a></h3>
+                    <h3><a href="#year">H1 страниц с фильмами определенного года/жанра/страны/актера/режиссера/типа/поискового запроса</a></h3>
                     <div class="seperator"></div>
                 </div>
                 <p class="text-justify">
-                    Каждый новый пользователь, который будет заходить на Ваш сайт в первую очередь заметит фильмы в слайдере, потому Вы должны добавить туда только самые лучшие фильмы на текущий момент. Это завлечет пользователя к действию, что положительно скажется на кликабельности на сайте. Если шаблон имеет большой слайдер (например в теме Hodor), то чтобы в слайдере был максимально красивый кадр, можете самостоятельно добавить его путем <a href="/admin/movies.html#info" target="_blank">редактирования информации о фильмах</a> в слайдере.
+                    Написание H1 для этих страниц имеют практически одинаковую структуру, единственное отличие, это наличие разных кодов. Коды нужны для того, чтобы система зная на какой странице находится, выводить соответственное H1. К примеру код <code>[year]</code> будет отображаться в категории фильмов 2017 года, как <code>2017</code>, а код <code>[genre]</code> в категории комедийных фильмов, будет <code>комедия</code>. Таким образом, написав H1 <code>Лучшие фильмы из страны [country] онлайн</code>, Вы сделаете H1 с фильмами из США - <code>Лучшие фильмы из страны США онлайн</code>. Если Вам нужно написать отдельное H1 для какой-то категории, например для типа <code>фильмы</code>, Вы хотите отдельное описание, то нужно написать так:<br>
+                    <code>(фильмы) {Лучшие фильмы онлайн бесплатно в хорошем HD качестве}</code><br>
+                    <code>(default) {[type] онлайн бесплатно}</code><br>
+                    Таким образом на странице с типом <code>фильмы</code> H1 будет <code>Лучшие фильмы онлайн бесплатно в хорошем HD качестве</code>, а на страницах всех остальных типов, H1 будут браться из <code>default</code>, например на странице <code>сериалы</code>, H1 будет <code>сериалы онлайн бесплатно</code>. По такому же принципу можно писать описания для отдельных жанров, стран и т.д. Просто указывайте в скобках, для какой категории Вы пишите описание <code>(комедия)</code>, <code>(2017)</code>, <code>(Том Круз)</code>, а в фигурных скобках описание для этой категории. Не забывайте о коде <code>(default)</code>, чтобы из него брались описания всех остальных категорий.
                 </p>
             </div>
             <div class="col-md-5 col-sm-6 col-xs-12">
-                <img src="/images/admin/slider/slider.png" class="img-responsive mb-10" alt="Слайдер с фильмами" data-action="zoom">
-                <img src="/images/admin/slider/slider_example.png" class="img-responsive" alt="Слайдер с фильмами на киносайте" data-action="zoom">
+                <img src="/images/admin/seo/year.png" class="img-responsive mb-20" alt="H1 страниц с фильмами определенного года/жанра/страны/актера/режиссера/поискового запроса" data-action="zoom">
+                <img src="/images/admin/seo/type.png" class="img-responsive" alt="H1 страниц с фильмами определенного типа" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-white" id="years">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#years">H1 страниц со списком всех годов/жанров/стран/актеров/режиссеров</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Напишите H1 для страниц со списком всех категорий, будь то список всех жанров, стран, актеров или режиссеров.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/admin/seo/years.png" class="img-responsive" alt="H1 страниц со списком всех годов/жанров/стран/актеров/режиссеров" data-action="zoom">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="ptb-100 functionalities bg-gray" id="movie">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 col-sm-6 col-xs-12">
+                <div class="main-title">
+                    <h3><a href="#movie">H1 на странице фильма</a></h3>
+                    <div class="seperator"></div>
+                </div>
+                <p class="text-justify">
+                    Данное H1 будет отображаться на страницах всех фильмов на сайте. Благодаря кодам, Вы можете создать уникальное H1, к примеру, чтобы создать H1 такого вида <code>Онлайн фильм Матрица с участием Киану Ривз</code> Вы должны написать <code>Онлайн фильм [title_ru] с участием [actor]</code>. Учтите, что в коде <code>[actor]</code> будет выбран случайный актер и списка главных актеров и не всегда это будет Киану Ривз.
+                </p>
+            </div>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <img src="/images/admin/seo/movie.png" class="img-responsive" alt="H1 на странице фильма" data-action="zoom">
             </div>
         </div>
     </div>
