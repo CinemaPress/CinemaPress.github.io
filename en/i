@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CinemaPress ACMS - автоматическая система управления онлайн кинотеатром или каталогом фильмов.
+# CinemaPress ACMS - automatic control system for online cinema or movie catalog.
 
 R='\033[0;31m'
 G='\033[0;32m'
@@ -11,13 +11,13 @@ NC='\033[0m'
 
 if [ "${EUID}" -ne 0 ]
 then
-	printf "${R}WARNING:${NC} Запустите с правами root пользователя!\n${NC}"
+	printf "${R}WARNING:${NC} Run as root user!\n${NC}"
 	exit 1
 fi
 
 if [ ! -f /etc/debian_version ]
 then
-	printf "${R}WARNING:${NC} Система работает не на Debian 9 x64!\n${NC}"
+	printf "${R}WARNING:${NC} The system does not work on Debian 9 x64!\n${NC}"
 	exit 1
 fi
 
@@ -32,7 +32,7 @@ logo() {
 }
 
 read_domain() {
-    printf "${C}--------------------------[ ${Y}URL ДОМЕНА${C} ]--------------------------\n${NC}"
+    printf "${C}--------------------------[ ${Y}DOMAIN URL${C} ]--------------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -52,18 +52,18 @@ read_domain() {
                 DOMAIN_=`echo ${DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
                 AGAIN=no
             else
-                printf "${NC}         Вы ввели - ${DOMAIN} \n"
-                printf "${R}WARNING:${NC} Допускаются только латинские символы \n"
-                printf "${NC}         в нижнем регистре, цифры, точки и дефисы! \n"
+                printf "${NC}         You entered - ${DOMAIN} \n"
+                printf "${R}WARNING:${NC} Only Latin characters are allowed \n"
+                printf "${NC}         in lowercase, numbers, dots and hyphens! \n"
             fi
         else
-            printf "${R}WARNING:${NC} URL домена не может быть пустым. \n"
+            printf "${R}WARNING:${NC} Domain URL cannot be empty. \n"
         fi
     done
 }
 
 read_mirror() {
-    printf "${C}-------------------------[ ${Y}URL ЗЕРКАЛА${C} ]--------------------------\n${NC}"
+    printf "${C}-------------------------[ ${Y}MIRROR URL${C} ]---------------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -82,30 +82,30 @@ read_mirror() {
             then
                 if [ "${DOMAIN}" = "${MIRROR}" ]
                 then
-                    printf "${R}WARNING:${NC} Зеркало сайта не может быть таким же, \n"
-                    printf "${NC}         как и домен основного сайта! \n"
+                    printf "${R}WARNING:${NC} The mirror of the site cannot be the same, \n"
+                    printf "${NC}         as the domain of the main site! \n"
                 else
                     MIRROR_=`echo ${MIRROR} | sed -r "s/[^A-Za-z0-9]/_/g"`
                     AGAIN=no
                 fi
             else
-                printf "${NC}         Вы ввели - ${MIRROR} \n"
-                printf "${R}WARNING:${NC} Допускаются только латинские символы \n"
-                printf "${NC}         в нижнем регистре, цифры, точки и дефисы! \n"
+                printf "${NC}         You entered - ${MIRROR} \n"
+                printf "${R}WARNING:${NC} Only Latin characters are allowed \n"
+                printf "${NC}         in lowercase, numbers, dots and hyphens! \n"
             fi
         else
-            printf "${R}WARNING:${NC} URL зеркала не может быть пустым. \n"
+            printf "${R}WARNING:${NC} Mirror URL cannot be empty. \n"
         fi
     done
 }
 
 read_login() {
-    printf "${C}---------------[ ${Y}ВАШ ЛОГИН ОТ АДМИН-ПАНЕЛИ И FTP${C} ]----------------\n${NC}"
+    printf "${C}-------------[ ${Y}YOUR LOGIN FROM ADMIN PANEL AND FTP${C} ]--------------\n${NC}"
     echo ": ${DOMAIN}"
 }
 
 read_theme() {
-    printf "${C}-------------------------[ ${Y}НАЗВАНИЕ ТЕМЫ${C} ]------------------------\n${NC}"
+    printf "${C}--------------------------[ ${Y}THEME NAME${C} ]--------------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -127,14 +127,14 @@ read_theme() {
             then
                 AGAIN=no
             else
-                printf "${R}WARNING:${NC} Нет такой темы. На данный момент существуют темы: hodor, sansa, robb, ramsay, tyrion, cersei, joffrey, drogo, bran, arya, mormont, tarly и daenerys. \n"
+                printf "${R}WARNING:${NC} There is no such theme. At the moment there are themes: hodor, sansa, robb, ramsay, tyrion, cersei, joffrey, drogo, bran, arya, mormont, tarly and daenerys. \n"
             fi
         fi
     done
 }
 
 read_password() {
-    printf "${C}-----------[ ${Y}ПРИДУМАЙТЕ ПАРОЛЬ ОТ АДМИН-ПАНЕЛИ И FTP${C} ]------------\n${NC}"
+    printf "${C}-----------[ ${Y}CREATE PASSWORD FROM ADMIN PANEL AND FTP${C} ]-----------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -151,13 +151,13 @@ read_password() {
         then
             AGAIN=no
         else
-            printf "${R}WARNING:${NC} Пароль от админ-панели и FTP не может быть пустым. \n"
+            printf "${R}WARNING:${NC} The password from the admin panel and FTP can not be empty. \n"
         fi
     done
 }
 
 read_memcached() {
-    printf "${C}----------[ ${Y}УКАЖИТЕ ДАННЫЕ MEMCACHED СЕРВЕРА IP:PORT${C} ]------------\n${NC}"
+    printf "${C}------[ ${Y}SPECIFY THE DATA OF THE MEMCACHED SERVER IP:PORT${C} ]--------\n${NC}"
     if [ ${1} ]
     then
         MEMCACHED=${1}
@@ -174,7 +174,7 @@ read_memcached() {
 }
 
 read_sphinx() {
-    printf "${C}------------[ ${Y}УКАЖИТЕ ДАННЫЕ SPHINX СЕРВЕРА IP:PORT${C} ]-------------\n${NC}"
+    printf "${C}--------[ ${Y}SPECIFY THE DATA OF THE SPHINX SERVER IP:PORT${C} ]---------\n${NC}"
     if [ ${1} ]
     then
         MYSQL=${1}
@@ -207,7 +207,7 @@ read_nginx_main_ip() {
 }
 
 read_ip() {
-    printf "${C}---------------------------[ ${Y}IP ДОМЕНА${C} ]--------------------------\n${NC}"
+    printf "${C}---------------------------[ ${Y}DOMAIN IP${C} ]--------------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -226,17 +226,17 @@ read_ip() {
             then
                AGAIN=no
             else
-                printf "${NC}         Вы ввели - ${IP} \n"
-                printf "${R}WARNING:${NC} Допускаются только цифры и точки! \n"
+                printf "${NC}         You entered - ${IP} \n"
+                printf "${R}WARNING:${NC} Only numbers and dots are allowed! \n"
             fi
         else
-            printf "${R}WARNING:${NC} Укажите IP сервера на котором расположен сайт. \n"
+            printf "${R}WARNING:${NC} Specify the server IP on which the site is located. \n"
         fi
     done
 }
 
 read_key() {
-    printf "${C}-------------------------[ ${Y}КЛЮЧ ДОСТУПА${C} ]-------------------------\n${NC}"
+    printf "${C}--------------------------[ ${Y}ACCESS KEY${C} ]--------------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -254,17 +254,17 @@ read_key() {
             then
                AGAIN=no
             else
-                printf "${NC}         Вы ввели - ${KEY} \n"
-                printf "${R}WARNING:${NC} Допускаются только латинские символы и цифры! \n"
+                printf "${NC}         You entered - ${KEY} \n"
+                printf "${R}WARNING:${NC} Only Latin characters and numbers are allowed! \n"
             fi
         else
-            printf "${R}WARNING:${NC} Приобрести ключ можно в админ-панели Вашего сайта \n"
+            printf "${R}WARNING:${NC} You can purchase the key in the admin panel of your site. \n"
         fi
     done
 }
 
 read_mega_email() {
-    printf "${C}---------------------[ ${Y}ВАШ EMAIL НА MEGA.NZ${C} ]---------------------\n${NC}"
+    printf "${C}--------------------[ ${Y}YOUR EMAIL ON MEGA.NZ${C} ]---------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -283,18 +283,18 @@ read_mega_email() {
             then
                AGAIN=no
             else
-                printf "${NC}         Вы ввели - ${MEGA_EMAIL} \n"
-                printf "${R}WARNING:${NC} Допускаются только латинские символы, \n"
-                printf "${NC}         цифры, точки и дефисы и собака! \n"
+                printf "${NC}         You entered - ${MEGA_EMAIL} \n"
+                printf "${R}WARNING:${NC} Only Latin characters are allowed, \n"
+                printf "${NC}         numbers, dots, hyphens and @! \n"
             fi
         else
-            printf "${R}WARNING:${NC} Email пользователя не может быть пустым. \n"
+            printf "${R}WARNING:${NC} User email cannot be empty. \n"
         fi
     done
 }
 
 read_mega_password() {
-    printf "${C}--------------------[ ${Y}ВАШ ПАРОЛЬ НА MEGA.NZ${C} ]---------------------\n${NC}"
+    printf "${C}------------------[ ${Y}YOUR PASSWORD ON MEGA.NZ${C} ]--------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -311,13 +311,13 @@ read_mega_password() {
         then
             AGAIN=no
         else
-            printf "${R}WARNING:${NC} Пароль не может быть пустым. \n"
+            printf "${R}WARNING:${NC} Password cannot be empty. \n"
         fi
     done
 }
 
 read_lang() {
-    printf "${C}--------------------------[ ${Y}ЯЗЫК САЙТА${C} ]--------------------------\n${NC}"
+    printf "${C}-------------------------[ ${Y}LANGUAGE SITE${C} ]------------------------\n${NC}"
     AGAIN=yes
     while [ "${AGAIN}" = "yes" ]
     do
@@ -339,7 +339,7 @@ read_lang() {
             then
                 AGAIN=no
             else
-                printf "${R}WARNING:${NC} Нет такого языка. На данный момент существуют языки: ru и en. \n"
+                printf "${R}WARNING:${NC} There is no such language. Currently there are languages: ru and en. \n"
             fi
         fi
     done
@@ -356,7 +356,7 @@ pre_install() {
         VER=`lsb_release -cs`
         if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
         then
-            printf "${R}WARNING:${NC} lsb_release не может определить версию системы. \n"
+            printf "${R}WARNING:${NC} lsb_release cannot determine the system version. \n"
             exit 0
         fi
     fi
@@ -1146,7 +1146,7 @@ restart_cinemapress() {
 
     STR_DATE1=$(date +"%s");
     date &>> /var/log/restart_cinemapress.log
-    printf "${NC}Запуск перезагрузки ...\n"
+    printf "${NC}Starting restart ...\n"
     if [ "${HARD_RESTART_DOMAIN}" = "" ]
     then
         pm2 delete all              &>> /var/log/restart_cinemapress.log
@@ -1175,8 +1175,8 @@ restart_cinemapress() {
                 continue
             fi
             touch ${d}/.lock
-            printf "[${CURR_D}] перезагружается ...\n" &>> /var/log/restart_cinemapress.log
-            printf "\n${NC}[${Y}${CURR_D}${NC}] перезагружается ...\n"
+            printf "[${CURR_D}] restart ...\n" &>> /var/log/restart_cinemapress.log
+            printf "\n${NC}[${Y}${CURR_D}${NC}] restart ...\n"
             DATE1=$(date +"%s");
             check_config ${CURR_D}
             sed -i "/docinfo/d" "${d}/config/production/sphinx/sphinx.conf"
@@ -1230,8 +1230,8 @@ restart_cinemapress() {
             cd ${d} && pm2 flush                                             &>> /var/log/restart_cinemapress.log
             node ${d}/config/update/update_cinemapress.js                    &>> /var/log/restart_cinemapress.log
             rm -rf ${d}/.lock; DATE2=$(date +"%s");                          &>> /var/log/restart_cinemapress.log
-            printf "[${CURR_D}] за $((${DATE2}-${DATE1})) секунд(ы)\n"       &>> /var/log/restart_cinemapress.log
-            printf "${NC}[${G}${CURR_D}${NC}] за $((${DATE2}-${DATE1})) секунд(ы)\n"
+            printf "[${CURR_D}] for $((${DATE2}-${DATE1})) sec\n"       &>> /var/log/restart_cinemapress.log
+            printf "${NC}[${G}${CURR_D}${NC}] for $((${DATE2}-${DATE1})) sec\n"
         fi
     done
     service nginx stop       &>> /var/log/restart_cinemapress.log
@@ -1242,7 +1242,7 @@ restart_cinemapress() {
     service fail2ban restart &>> /var/log/restart_cinemapress.log
     for dp in /home/*; do if [ -f "$dp/process.json" ]; then rm -rf ${dp}/.lock /home/.lock; fi done
     STR_DATE2=$(date +"%s");
-    printf "\n${NC}Перезагрузка заняла $((${STR_DATE2}-${STR_DATE1})) секунд(ы)\n"
+    printf "\n${NC}Reboot took $((${STR_DATE2}-${STR_DATE1})) sec\n"
 }
 
 check_config() {
@@ -1271,11 +1271,11 @@ conf_mass() {
     if [ ! -f ${FILE_MASS} ]
     then
         printf "\n${NC}"
-        printf "${C}-------------------------[ ${Y}ФАЙЛ НЕ НАЙДЕН${C} ]------------------------\n${NC}"
+        printf "${C}-------------------------[ ${Y}FILE NOT FOUND${C} ]------------------------\n${NC}"
         printf "${C}----                                                           ${C}----\n${NC}"
-        printf "${C}----         ${R}Создайте в текущей папке файл ${NC}mass.txt${R} и${C}          ----\n${NC}"
-        printf "${C}----            ${R}пропишите в нем команды с заданиями.${C}           ----\n${NC}"
-        printf "${C}----                ${R}Подробнее в этом руководстве:${C}              ----\n${NC}"
+        printf "${C}----     ${R}Create a file in the current folder ${NC}mass.txt${R} and${C}      ----\n${NC}"
+        printf "${C}----               ${R}write teams with tasks in it.${C}               ----\n${NC}"
+        printf "${C}----                  ${R}Read more in this guide:${C}                 ----\n${NC}"
         printf "${C}----${R}cinemapress.org/article/chto-takoe-massovaya-ustanovka.html${C}----\n${NC}"
         printf "${C}----                                                           ${C}----\n${NC}"
         printf "${C}-------------------------------------------------------------------\n${NC}"
@@ -1306,11 +1306,10 @@ start_mass() {
 success_2() {
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
-    printf "${C}--------------------[ ${Y}ОБНОВЛЕНИЕ ПРОИЗВЕДЕНО${C} ]--------------------\n${NC}"
+    printf "${C}----------------------[ ${Y}UPDATE IS PRODUCED${C} ]----------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----       ${G}Если что-то не работает, свяжитесь с Нами.${C}         ----\n${NC}"
+    printf "${C}----      -- ${G}If something does not work, contact us.${C} -        ----\n${NC}"
     printf "${C}----             ${G}email: support@cinemapress.org${C}               ----\n${NC}"
-    printf "${C}----             ${G}skype: cinemapress${C}                           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1318,10 +1317,10 @@ success_2() {
 
 fail_2() {
     printf "\n${NC}"
-    printf "${C}----------------------------[ ${Y}ОТКАТ${C} ]-----------------------------\n${NC}"
+    printf "${C}-----------------------------[ ${Y}BACK${C} ]-----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----           ${NC}Откатываемся к рабочему состоянию,${C}             ----\n${NC}"
-    printf "${C}----                   ${NC}осталось 5 сек ...${C}                     ----\n${NC}"
+    printf "${C}----              ${NC}Return to working condition,${C}                ----\n${NC}"
+    printf "${C}----                   ${NC}5 seconds left ...${C}                     ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1342,11 +1341,10 @@ fail_2() {
     restart_cinemapress ${DOMAIN}
 
     printf "\n${NC}"
-    printf "${C}----------------[ ${Y}ОТКАТИЛИСЬ К РАБОЧЕМУ СОСТОЯНИЮ${C} ]---------------\n${NC}"
+    printf "${C}---------------[ ${Y}RETURNED TO OPERATIONAL CONDITION${C} ]--------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----       ${R}Свяжитесь с Нами, постараемся разобраться.${C}         ----\n${NC}"
+    printf "${C}----        ${R}Contact Us, we will try to figure it out.${C}         ----\n${NC}"
     printf "${C}----             ${R}email: support@cinemapress.org${C}               ----\n${NC}"
-    printf "${C}----             ${R}skype: cinemapress${C}                           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1503,13 +1501,13 @@ update_cinemapress() {
 
 confirm_update_cinemapress() {
     printf "\n${NC}"
-    printf "${C}-------------------------[ ${Y}ПОДТВЕРЖДЕНИЕ${C} ]------------------------\n${NC}"
+    printf "${C}--------------------------[ ${Y}CONFIRMATION${C} ]------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${NC}Перейдите в админ-панель и очистите кэш,${C}          ----\n${NC}"
-    printf "${C}----  ${NC}затем зайдите на сайт и убедитесь что всё работает.${C}     ----\n${NC}"
+    printf "${C}----       ${NC}Go to the admin panel and clear the cache,${C}         ----\n${NC}"
+    printf "${C}----  ${NC}then go to the site and make sure everything works.${C}     ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
-    printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
+    printf "     ${NC}Website - ${G}http://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Admin   - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1517,9 +1515,9 @@ confirm_update_cinemapress() {
     then
         YES=${1}
         YES=`echo ${YES} | iconv -c -t UTF-8`
-        echo "Всё работает? [ДА/нет] : ${YES}"
+        echo "Everything is working? [YES/not] : ${YES}"
     else
-        read -e -p 'Всё работает? [ДА/нет] : ' YES
+        read -e -p 'Everything is working? [YES/not] : ' YES
         YES=`echo ${YES} | iconv -c -t UTF-8`
     fi
     printf "\n${NC}"
@@ -1538,10 +1536,10 @@ update_theme() {
         git clone https://${GIT_SERVER}/CinemaPress/Theme-${THEME}.git /home/${DOMAIN}/themes/${THEME}
     else
         printf "\n${NC}"
-        printf "${C}-------------------------[ ${Y}ПОДТВЕРЖДЕНИЕ${C} ]------------------------\n${NC}"
+        printf "${C}--------------------------[ ${Y}CONFIRMATION${C} ]------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----    ${NC}Данная тема уже установлена, хотите обновить её?${C}      ----\n${NC}"
-        printf "${C}---- ${NC}Все изменения, которые Вы вносили в тему будут потеряны!${C} ----\n${NC}"
+        printf "${C}----${NC}This theme is already installed, do you want to update it?${C}----\n${NC}"
+        printf "${C}----     ${NC}All changes you made to the theme will be lost!${C}      ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -1549,9 +1547,9 @@ update_theme() {
         then
             YES=${1}
             YES=`echo ${YES} | iconv -c -t UTF-8`
-            echo "Обновить? [ДА/нет] : ${YES}"
+            echo "Update? [YES/not] : ${YES}"
         else
-            read -e -p 'Обновить? [ДА/нет] : ' YES
+            read -e -p 'Update? [YES/not] : ' YES
             YES=`echo ${YES} | iconv -c -t UTF-8`
         fi
         printf "\n${NC}"
@@ -1579,11 +1577,10 @@ success_4() {
 
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
-    printf "${C}--------------[ ${Y}БАЗА ДАННЫХ УСПЕШНО ИМПОРТИРОВАНА${C} ]---------------\n${NC}"
+    printf "${C}----------------[ ${Y}DATABASE SUCCESSFULLY IMPORTED${C} ]----------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----       ${G}Если что-то не работает, свяжитесь с Нами.${C}         ----\n${NC}"
+    printf "${C}----         ${G}If something does not work, contact us.${C}          ----\n${NC}"
     printf "${C}----             ${G}email: support@cinemapress.org${C}               ----\n${NC}"
-    printf "${C}----             ${G}skype: cinemapress${C}                           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1591,10 +1588,10 @@ success_4() {
 
 fail_4() {
     printf "\n${NC}"
-    printf "${C}----------------------------[ ${Y}ОТКАТ${C} ]-----------------------------\n${NC}"
+    printf "${C}-----------------------------[ ${Y}BACK${C} ]-----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----           ${NC}Откатываемся к рабочему состоянию,${C}             ----\n${NC}"
-    printf "${C}----                  ${NC}осталось 5 сек ...${C}                      ----\n${NC}"
+    printf "${C}----              ${NC}Return to working condition,${C}                ----\n${NC}"
+    printf "${C}----                   ${NC}5 seconds left ...${C}                     ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1612,11 +1609,10 @@ fail_4() {
     wget -q -O /dev/null -o /dev/null "http://database.cinemapress.org/${KEY}/${DOMAIN}?status=FAIL"
 
     printf "\n${NC}"
-    printf "${C}----------------[ ${Y}ОТКАТИЛИСЬ К РАБОЧЕМУ СОСТОЯНИЮ${C} ]---------------\n${NC}"
+    printf "${C}---------------[ ${Y}RETURNED TO OPERATIONAL CONDITION${C} ]--------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----       ${R}Свяжитесь с Нами, постараемся разобраться.${C}         ----\n${NC}"
+    printf "${C}----        ${R}Contact Us, we will try to figure it out.${C}         ----\n${NC}"
     printf "${C}----             ${R}email: support@cinemapress.org${C}               ----\n${NC}"
-    printf "${C}----             ${R}skype: cinemapress${C}                           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1628,10 +1624,10 @@ check_db() {
     if [ "${INDEX_TYPE}" = "" ]
     then
         printf "\n${NC}"
-        printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
+        printf "${C}------------------------------[ ${Y}ERROR${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----         ${R}Сервер базы данных временно недоступен,${C}          ----\n${NC}"
-        printf "${C}----             ${R}пожалуйста, попробуйте позже ...${C}             ----\n${NC}"
+        printf "${C}----     ${R}The database server is temporarily unavailable,${C}      ----\n${NC}"
+        printf "${C}----                ${R}please try again later ...${C}                ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -1653,14 +1649,14 @@ import_db() {
     mkdir -p /var/lib/sphinxsearch/tmp
     rm -rf /var/lib/sphinxsearch/tmp/*
 
-    printf "${G}Загрузка ...\n"
+    printf "${G}Downloading ...\n"
 
     wget -qO "/var/lib/sphinxsearch/tmp/${KEY}.tar" http://database.cinemapress.org/${KEY}/${DOMAIN} || \
     rm -f "/var/lib/sphinxsearch/tmp/${KEY}.tar"
 
     if [ -f "/var/lib/sphinxsearch/tmp/${KEY}.tar" ]
     then
-        printf "${G}Распаковка ...\n"
+        printf "${G}Unpacking ...\n"
 
         NOW=$(date +%Y-%m-%d)
 
@@ -1675,7 +1671,7 @@ import_db() {
         tar -xf "/var/lib/sphinxsearch/tmp/${KEY}.tar" -C "/var/lib/sphinxsearch/tmp" \
             &> /var/lib/sphinxsearch/data/${NOW}.log
 
-        printf "${G}Установка ...\n"
+        printf "${G}Installation ...\n"
 
         sleep 3
 
@@ -1696,7 +1692,7 @@ import_db() {
             cp -R /var/lib/sphinxsearch/old/movies_${DOMAIN_}.* /var/lib/sphinxsearch/data/
         fi
 
-        printf "${G}Запуск ...\n"
+        printf "${G}Starting ...\n"
 
         searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf" &> /var/lib/sphinxsearch/data/${NOW}.log
 
@@ -1718,12 +1714,12 @@ import_db() {
         sleep 3
     else
         printf "\n${NC}"
-        printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
+        printf "${C}------------------------------[ ${Y}ERROR${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----             ${R}База фильмов не была загружена,${C}              ----\n${NC}"
-        printf "${C}----          ${R}возможно у Вас закончились обновления${C}           ----\n${NC}"
-        printf "${C}----                   ${R}на тарифе EXPANDED,${C}                    ----\n${NC}"
-        printf "${C}----      ${R}либо Вы используете ключ START несколько раз.${C}       ----\n${NC}"
+        printf "${C}----           ${R}The movie database was not loaded,${C}             ----\n${NC}"
+        printf "${C}----            ${R}maybe you have run out of updates${C}             ----\n${NC}"
+        printf "${C}----                   ${R}at EXPANDED tariff${C}                     ----\n${NC}"
+        printf "${C}----         ${R}or you use the START key several times.${C}          ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -1733,13 +1729,13 @@ import_db() {
 
 confirm_import_db() {
     printf "\n${NC}"
-    printf "${C}-------------------------[ ${Y}ПОДТВЕРЖДЕНИЕ${C} ]------------------------\n${NC}"
+    printf "${C}--------------------------[ ${Y}CONFIRMATION${C} ]------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${NC}Перейдите в админ-панель и очистите кэш,${C}          ----\n${NC}"
-    printf "${C}----  ${NC}затем зайдите на сайт и убедитесь, что всё работает.${C}    ----\n${NC}"
+    printf "${C}----       ${NC}Go to the admin panel and clear the cache,${C}         ----\n${NC}"
+    printf "${C}----  ${NC}then go to the site and make sure everything works.${C}     ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
-    printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
+    printf "     ${NC}Website - ${G}http://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Admin   - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1747,9 +1743,9 @@ confirm_import_db() {
     then
         YES=${1}
         YES=`echo ${YES} | iconv -c -t UTF-8`
-        echo "Всё работает? [ДА/нет] : ${YES}"
+        echo "Everything is working? [YES/not] : ${YES}"
     else
-        read -e -p 'Всё работает? [ДА/нет] : ' YES
+        read -e -p 'Everything is working? [YES/not] : ' YES
         YES=`echo ${YES} | iconv -c -t UTF-8`
     fi
     printf "\n${NC}"
@@ -1773,8 +1769,8 @@ import_static() {
         wget -O /home/images.tar http://static.cinemapress.org/last.tar
     fi
     printf "\n${NC}"
-    printf "${G}Распаковка в фоновом режиме ...\n"
-    printf "${NC}Может занять несколько часов.\n"
+    printf "${G}Unpacking in the background ...\n"
+    printf "${NC}May take a few hours.\n"
     printf "\n${NC}"
     tar -xf /home/images.tar -C /var/local/images >> "/home/images.log"
 }
@@ -1795,14 +1791,14 @@ check_domain() {
     if [ "${DO}" != "" ]
     then
         printf "\n${NC}"
-        printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
+        printf "${C}------------------------------[ ${Y}ERROR${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}---- ${NC}Один из доменов недоступен, потому создание сертификата${C}  ----\n${NC}"
-        printf "${C}----     ${NC}невозможно. Исправьте ситуацию и заново создайте${C}     ----\n${NC}"
-        printf "${C}----             ${NC}сертификат для основного домена.${C}             ----\n${NC}"
+        printf "${C}----${NC}One of the domains is not available, because the creation${C} ----\n${NC}"
+        printf "${C}----   ${NC}of a certificate is impossible. Correct the situation${C}  ----\n${NC}"
+        printf "${C}----    ${NC}and re-create the certificate for the main domain.${C}    ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "     ${NC}Основной домен    : ${DOMAIN}\n${NC}"
-        printf "     ${NC}Недоступный домен : ${R}${DO}\n${NC}"
+        printf "     ${NC}Main domain        : ${DOMAIN}\n${NC}"
+        printf "     ${NC}Unavailable domain : ${R}${DO}\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -1818,9 +1814,10 @@ get_ssl() {
     if [ ! -f "/etc/certbot-auto" ] || [ "${DS}" = "" ]
     then
         printf "\n${NC}"
-        printf "${C}-----------------------------[ ${Y}ОШИБКА${C} ]---------------------------\n${NC}"
+        printf "${C}------------------------------[ ${Y}ERROR${C} ]---------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}---- ${R}Домены, для которых создается сертификат не были найдены.${C}----\n${NC}"
+        printf "${C}----           ${R}The domains for which the certificate${C}           ----\n${NC}"
+        printf "${C}----             ${R}is being created were not found.${C}              ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -1955,11 +1952,11 @@ create_mega_backup() {
         /var/${DOMAIN}/themes.tar
     sleep 3
     rm -rf /var/${DOMAIN}
-    printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
+    printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----      ${NC}Бэкап успешно создан и установлен автозапуск.${C}       ----\n${NC}"
-    printf "${C}----      ${NC}Каждый день будет создаваться новая резервная${C}       ----\n${NC}"
-    printf "${C}----       ${NC}копия конфигурационных файлов и темы сайта.${C}        ----\n${NC}"
+    printf "${C}----  ${NC}Backup is successfully created and installed autorun.${C}   ----\n${NC}"
+    printf "${C}----    ${NC}Every day a new backup copy of the configuration${C}      ----\n${NC}"
+    printf "${C}----    ${NC}files and the theme of the site will be created.${C}      ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1986,9 +1983,9 @@ recover_mega_backup() {
     restart_cinemapress ${DOMAIN}
 
     printf "\n${NC}"
-    printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
+    printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${NC}Восстановление сайта из бэкапа выполнено.${C}         ----\n${NC}"
+    printf "${C}----             ${NC}Restore site from backup done.${C}               ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2000,9 +1997,9 @@ remove_mega_backup() {
         sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
         sed -i "s/@daily root \/home\/${DOMAIN}\/config\/production\/i cron backup.*//g" /etc/crontab
     fi
-    printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
+    printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----         ${NC}Бэкап сайта больше не будет создаваться.${C}         ----\n${NC}"
+    printf "${C}----          ${NC}Site backup will no longer be created.${C}          ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2013,9 +2010,9 @@ confirm_mega_backup() {
     if [ "${MGT}" = "" ]
     then
         printf "\n${NC}"
-        printf "${C}---------------------------[ ${Y}УСТАНОВКА${C} ]--------------------------\n${NC}"
+        printf "${C}-------------------------[ ${Y}INSTALLATION${C} ]-------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----           ${NC}Выполняется установка MegaTools ...${C}            ----\n${NC}"
+        printf "${C}----          ${NC}Installing MegaTools in progress ...${C}            ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -2036,27 +2033,27 @@ confirm_mega_backup() {
     if [ "${MEGA_LS}" = "error" ]
     then
         printf "\n${NC}"
-        printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
+        printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----            ${R}Email/пароль указаны неправильно,${C}             ----\n${NC}"
-        printf "${C}----             ${R}пожалуйста, попробуйте еще раз.${C}              ----\n${NC}"
+        printf "${C}----              ${R}Email/password are incorrect,${C}               ----\n${NC}"
+        printf "${C}----                    ${R}please try again.${C}                     ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
         exit 0
     fi
-    printf "${C}-------------------------[ ${Y}СДЕЛАЙТЕ ВЫБОР${C} ]-----------------------\n${NC}"
-    printf "${C}---- ${G}1)${NC} Запустить автоматическое создание бэкапа каждый день  ${C}----\n${NC}"
-    printf "${C}---- ${G}2)${NC} Восстановить сайт из последнего бэкапа                ${C}----\n${NC}"
-    printf "${C}---- ${G}3)${NC} Остановить автоматическое создание бэкапа             ${C}----\n${NC}"
+    printf "${C}--------------------------[ ${Y}MAKE A CHOICE${C} ]-----------------------\n${NC}"
+    printf "${C}---- ${G}1)${NC} Run automatic backup every day                        ${C}----\n${NC}"
+    printf "${C}---- ${G}2)${NC} Restore site from last backup                         ${C}----\n${NC}"
+    printf "${C}---- ${G}3)${NC} Stop automatic backup creation                        ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
     if [ ${1} ]
     then
         CMB=${1}
-        echo "ВАРИАНТ [1-3]: ${CMB}"
+        echo "OPTION [1-3]: ${CMB}"
     else
-        read -e -p 'ВАРИАНТ [1-3]: ' CMB
+        read -e -p 'OPTION [1-3]: ' CMB
         CMB=`echo ${CMB} | iconv -c -t UTF-8`
     fi
     printf "\n${NC}"
@@ -2160,7 +2157,7 @@ not_domain() {
         logo
         printf "${C}-----------------------[ ${Y}CINEMAPRESS EXIST${C} ]----------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----            ${R}Сайт на этом домене не установлен!${C}            ----\n${NC}"
+        printf "${C}----          ${R}Site on this domain is not installed!${C}           ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -2172,14 +2169,14 @@ create_mirror() {
     if [ ! -f "/home/${MIRROR}/process.json" ]
     then
         printf "\n${NC}"
-        printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
+        printf "${C}----------------------------[ ${Y}ERROR${C} ]-----------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----             ${NC}Создайте вначале сайт-зеркало,${C}               ----\n${NC}"
-        printf "${C}----           ${NC}импортируйте на него базу фильмов${C}              ----\n${NC}"
-        printf "${C}----      ${NC}и настройте на нем HTTPS (если используете).${C}        ----\n${NC}"
+        printf "${C}----               ${NC}First create a mirror site,${C}                ----\n${NC}"
+        printf "${C}----              ${NC}import the movie base on it${C}                 ----\n${NC}"
+        printf "${C}----          ${NC}and configure it on HTTPS (if using).${C}           ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "Домен   : ${G}${DOMAIN}\n${NC}"
-        printf "Зеркало : ${R}${MIRROR}\n${NC}"
+        printf "Domain : ${G}${DOMAIN}\n${NC}"
+        printf "Mirror : ${R}${MIRROR}\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -2245,10 +2242,10 @@ fail_1() {
     if [ "${INST_NODE}" = "" ] || [ "${INST_NGINX}" = "" ] || [ "${INST_SPHINX}" = "" ]
     then
         printf "\n${NC}"
-        printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
+        printf "${C}----------------------------[ ${Y}ERROR${C} ]-----------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----           ${NC}Один или несколько пакетов не были${C}             ----\n${NC}"
-        printf "${C}----                ${NC}установлены в системе${C}                     ----\n${NC}"
+        printf "${C}----               ${NC}One or more packages were${C}                  ----\n${NC}"
+        printf "${C}----             ${NC}not installed on the system.${C}                 ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "SPHINX : ${G}${INST_SPHINX}\n${NC}"
         printf "NGINX  : ${G}${INST_NGINX}\n${NC}"
@@ -2265,15 +2262,15 @@ success_1() {
     logo
     printf "${C}------------------------[ ${Y}CINEMAPRESS ACMS${C} ]----------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${G}Ура! Ваш онлайн кинотеатр готов к работе!${C}         ----\n${NC}"
+    printf "${C}----         ${G}Yeah! Your online cinema is ready to go!${C}         ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
-    printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
+    printf "     ${NC}Website - ${G}http://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Admin   - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${NC}Данные для доступа к админ-панели и FTP${C}           ----\n${NC}"
+    printf "${C}----       ${NC}Data for access to the admin panel and FTP${C}         ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Логин  : ${G}${DOMAIN}\n${NC}"
-    printf "     ${NC}Пароль : ${G}${PASSWD}\n${NC}"
+    printf "     ${NC}Login    : ${G}${DOMAIN}\n${NC}"
+    printf "     ${NC}Password : ${G}${PASSWD}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2284,7 +2281,7 @@ success_3() {
     logo
     printf "${C}-----------------------[ ${Y}CINEMAPRESS THEME${C} ]----------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----                 ${G}Тема успешно установлена!${C}                ----\n${NC}"
+    printf "${C}----            ${G}The theme is successfully installed!${C}          ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2295,10 +2292,10 @@ success_5() {
     logo
     printf "${C}------------------------[ ${Y}CINEMAPRESS ACMS${C} ]----------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${G}Ура! Ваш онлайн кинотеатр готов к работе!${C}         ----\n${NC}"
+    printf "${C}----         ${G}Yeah! Your online cinema is ready to go!${C}         ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
-    printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
+    printf "     ${NC}Website - ${G}http://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Admin   - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2310,12 +2307,12 @@ success_6() {
     logo
     printf "${C}----------------------------[ ${Y}SPHINX${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----            ${G}Ура! Sphinx сервер готов к работе!${C}            ----\n${NC}"
+    printf "${C}----           ${G}Yeah! Sphinx server is ready to go!${C}            ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
-    printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
+    printf "     ${NC}Website - ${G}http://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Admin   - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----       ${G}Установите настройки Sphinx в админ-панели:${C}        ----\n${NC}"
+    printf "${C}----       ${G}Set the Sphinx settings in the admin panel:${C}        ----\n${NC}"
     printf "                       ${R}${MYSQL_IP}:${MYSQL_PORT}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
@@ -2328,12 +2325,12 @@ success_7() {
     logo
     printf "${C}--------------------------[ ${Y}MEMCACHED${C} ]---------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----          ${G}Ура! Memcached сервер готов к работе!${C}           ----\n${NC}"
+    printf "${C}----         ${G}Yeah! Memcached server is ready to go!${C}           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
-    printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
+    printf "     ${NC}Website - ${G}http://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Admin   - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----     ${G}Установите настройки Memcached в админ-панели:${C}       ----\n${NC}"
+    printf "${C}----     ${G}Set the Memcached settings in the admin panel:${C}       ----\n${NC}"
     printf "                       ${R}${MEMCACHED_IP}:${MEMCACHED_PORT}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
@@ -2343,9 +2340,9 @@ success_7() {
 success_8() {
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
-    printf "${C}----------------------[ ${Y}МАССОВЫЕ ДЕЙСТВИЯ${C} ]-----------------------\n${NC}"
+    printf "${C}-------------------------[ ${Y}MASS ACTION${C} ]--------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----          ${G}Ура! Все команды в mass.txt выполнены!${C}          ----\n${NC}"
+    printf "${C}----       ${G}Yeah! All commands in mass.txt are complete!${C}       ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2354,13 +2351,13 @@ success_8() {
 success_9() {
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
-    printf "${C}------------------[ ${Y}ИМПОРТ СТАТИЧЕСКИХ ФАЙЛОВ${C} ]-------------------\n${NC}"
+    printf "${C}--------------------[ ${Y}IMPORT OF STATIC FILES${C} ]--------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----    ${G}Скачивание и распаковка файлов займет ~5 часов ...${C}    ----\n${NC}"
-    printf "${C}----${G}Время на распаковку архива зависит от мощности сервера ...${C}----\n${NC}"
-    printf "${C}----     ${NC}Чтобы все постеры отдавались с Вашего домена${C}         ----\n${NC}"
-    printf "${C}----                ${NC}измените в админ-панели${C}                   ----\n${NC}"
-    printf "${C}----       ${NC}«Сервер картинок» на URL Вашего домена.${C}            ----\n${NC}"
+    printf "${C}----  ${G}Downloading and unpacking files will take ~5 hours ...${C}  ----\n${NC}"
+    printf "${C}---- ${G}Time to unpack the archive depends on server capacity ...${C}----\n${NC}"
+    printf "${C}----     ${NC}That all posters were given from your domain${C}         ----\n${NC}"
+    printf "${C}----                 ${NC}change in admin panel${C}                    ----\n${NC}"
+    printf "${C}----        ${NC}«Image server» on the URL of your domain.${C}         ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2369,11 +2366,11 @@ success_9() {
 success_10() {
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
-    printf "${C}------------------[ ${Y}ПОЛУЧЕНИЕ SSL-СЕРТИФИКАТА${C} ]-------------------\n${NC}"
+    printf "${C}------------------[ ${Y}OBTAINING SSL CERTIFICATE${C} ]-------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----             ${G}Ура! Сертификат успешно получен!${C}             ----\n${NC}"
+    printf "${C}----         ${G}Yeah! Certificate received successfully!${C}         ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}HTTPS-адрес сайта  - ${G}https://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Website  - ${G}https://${DOMAIN}/\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2381,11 +2378,11 @@ success_10() {
 
 success_12() {
     printf "\n${NC}"
-    printf "${C}---------------------------[ ${Y}УДАЛЕНИЕ${C} ]---------------------------\n${NC}"
+    printf "${C}----------------------------[ ${Y}DELETE${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----           ${G}Ваш сайт успешно удален с сервера.${C}             ----\n${NC}"
+    printf "${C}---- ${G}Your site has been successfully removed from the server.${C} ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Домен : ${G}${DELETE_DOMAIN}\n${NC}"
+    printf "     ${NC}Domain : ${G}${DELETE_DOMAIN}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2400,20 +2397,20 @@ option() {
     clear
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
-    printf "${C}------------------------[ ${Y}СДЕЛАЙТЕ ВЫБОР${C} ]------------------------\n${NC}"
-    printf "${C}---- ${G}1)${NC} Создание онлайн кинотеатра                            ${C}----\n${NC}"
-    printf "${C}---- ${G}2)${NC} Обновление CinemaPress ACMS                           ${C}----\n${NC}"
-    printf "${C}---- ${G}3)${NC} Установка/обновление шаблона                          ${C}----\n${NC}"
-    printf "${C}---- ${G}4)${NC} Добавление/обновление всех фильмов в мире             ${C}----\n${NC}"
-    printf "${C}---- ${G}5)${NC} Установка CinemaPress ACMS на отдельный сервер        ${C}----\n${NC}"
-    printf "${C}---- ${G}6)${NC} Установка Sphinx на отдельный сервер                  ${C}----\n${NC}"
-    printf "${C}---- ${G}7)${NC} Установка Memcached на отдельный сервер               ${C}----\n${NC}"
-    printf "${C}---- ${G}8)${NC} Массовая установка/обновление/добавление              ${C}----\n${NC}"
-    printf "${C}---- ${G}9)${NC} Импорт статических файлов на сервер                   ${C}----\n${NC}"
-    printf "${C}---- ${G}10)${NC} Получение SSL-сертификата                            ${C}----\n${NC}"
-    printf "${C}---- ${G}11)${NC} Создание/восстановление бэкапа                       ${C}----\n${NC}"
-    printf "${C}---- ${G}12)${NC} Удаление сайта с сервера                             ${C}----\n${NC}"
-    printf "${C}---- ${G}13)${NC} Добавление URL-зеркало для сайта                     ${C}----\n${NC}"
+    printf "${C}-------------------------[ ${Y}MAKE A CHOICE${C} ]------------------------\n${NC}"
+    printf "${C}---- ${G}1)${NC} Create a video streaming website                      ${C}----\n${NC}"
+    printf "${C}---- ${G}2)${NC} Update CinemaPress ACMS                               ${C}----\n${NC}"
+    printf "${C}---- ${G}3)${NC} Install/update template                               ${C}----\n${NC}"
+    printf "${C}---- ${G}4)${NC} Add/update all movies in the world                    ${C}----\n${NC}"
+    printf "${C}---- ${G}5)${NC} Installing CinemaPress ACMS on a separate server      ${C}----\n${NC}"
+    printf "${C}---- ${G}6)${NC} Installing Sphinx on a separate server                ${C}----\n${NC}"
+    printf "${C}---- ${G}7)${NC} Installing Memcached on a separate server             ${C}----\n${NC}"
+    printf "${C}---- ${G}8)${NC} Mass install/update/add                               ${C}----\n${NC}"
+    printf "${C}---- ${G}9)${NC} Import static files to server                         ${C}----\n${NC}"
+    printf "${C}---- ${G}10)${NC} SSL certificate receipt                              ${C}----\n${NC}"
+    printf "${C}---- ${G}11)${NC} Create/restore backup                                ${C}----\n${NC}"
+    printf "${C}---- ${G}12)${NC} Remove site from server                              ${C}----\n${NC}"
+    printf "${C}---- ${G}13)${NC} Adding a URL mirror for the website                  ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
     AGAIN=yes
@@ -2422,9 +2419,9 @@ option() {
         if [ ${1} ]
         then
             OPTION=${1}
-            echo "ВАРИАНТ [1-13]: ${OPTION}"
+            echo "OPTION [1-13]: ${OPTION}"
         else
-            read -e -p 'ВАРИАНТ [1-13]: ' OPTION
+            read -e -p 'OPTION [1-13]: ' OPTION
             OPTION=`echo ${OPTION} | iconv -c -t UTF-8`
         fi
         if [ "${OPTION}" != "" ]
@@ -2433,10 +2430,10 @@ option() {
             then
                AGAIN=no
             else
-                printf "${R}WARNING:${NC} Введите цифру варианта. \n"
+                printf "${R}WARNING:${NC} Enter the number of the option. \n"
             fi
         else
-            printf "${R}WARNING:${NC} Сделайте Ваш выбор. \n"
+            printf "${R}WARNING:${NC} Make your choice. \n"
         fi
     done
     printf "\n${NC}"
@@ -2462,7 +2459,7 @@ progreSh() {
     LW='\033[1;37m'
     NC='\033[0m'
     if [ "${1}" = "0" ]; then TME=$(date +"%s"); fi
-    SEC=`printf "%04d\n" $(($(date +"%s")-${TME}))`; SEC="$SEC сек"
+    SEC=`printf "%04d\n" $(($(date +"%s")-${TME}))`; SEC="$SEC sec"
     PRC=`printf "%.0f" ${1}`
     SHW=`printf "%3d\n" ${PRC}`
     LNE=`printf "%.0f" $((${PRC}/2))`
@@ -3069,10 +3066,10 @@ do
                 apt-get -y -qq purge --auto-remove nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent libcurl3 logrotate php5-curl php5-cli php5-fpm libmysqlclient18 nodejs build-essential apache2
                 printf "${C}------------------------------------------------------------------\n${NC}"
                 logo
-                printf "${C}------------------------[ ${Y}ОЧИСТКА СЕРВЕРА${C} ]-----------------------\n${NC}"
+                printf "${C}--------------------------[ ${Y}CLEAN SERVER${C} ]------------------------\n${NC}"
                 printf "${C}----                                                          ${C}----\n${NC}"
-                printf "${C}----                 ${G}Сервер полностью очищен и${C}                ----\n${NC}"
-                printf "${C}----                 ${G}отправлен на перезагрузку!${C}               ----\n${NC}"
+                printf "${C}----               ${G}The server is completely clean${C}              ---\n${NC}"
+                printf "${C}----                     ${G}and sent to reboot!${C}                  ----\n${NC}"
                 printf "${C}----                                                          ${C}----\n${NC}"
                 printf "${C}------------------------------------------------------------------\n${NC}"
                 printf "\n${NC}"

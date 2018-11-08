@@ -17,7 +17,7 @@ fi
 
 if [ ! -f /etc/debian_version ]
 then
-	printf "${R}WARNING:${NC} Система работает на Debian 9 x64!\n${NC}"
+	printf "${R}WARNING:${NC} Система работает не на Debian 9 x64!\n${NC}"
 	exit 1
 fi
 
@@ -431,13 +431,29 @@ install_full() {
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
-        wget -qO- https://deb.nodesource.com/setup_8.x | bash -
+        wget -qO- https://deb.nodesource.com/setup_10.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
-    SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
+    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
     if [ "${SPH}" = "" ]
     then
-        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        for d in /home/*; do
+            if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
+            then
+                D=`find ${d} -maxdepth 0 -printf "%f"`
+                searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
+            fi
+        done
+        dpkg -r sphinxsearch 2>/dev/null
+        userdel -r -f sphinxsearch 2>/dev/null
+        rm -rf /etc/sphinxsearch /home/sphinxsearch 2>/dev/null
+        aptitude -y -q purge sphinxsearch 2>/dev/null
+        wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
+        tar -xf s.tar.gz && rm -rf s.tar.gz
+        mkdir -p /var/lib/sphinxsearch/data/
+        cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
+        cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
+        rm -rf sphinx-3.1.1
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
@@ -544,7 +560,7 @@ install_cinemapress() {
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
-        wget -qO- https://deb.nodesource.com/setup_8.x | bash -
+        wget -qO- https://deb.nodesource.com/setup_10.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
@@ -710,10 +726,26 @@ install_sphinx() {
         aptitude -y -q update
         aptitude -y -q install mysql-client
     fi
-    SPH=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
+    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
     if [ "${SPH}" = "" ]
     then
-        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        for d in /home/*; do
+            if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
+            then
+                D=`find ${d} -maxdepth 0 -printf "%f"`
+                searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
+            fi
+        done
+        dpkg -r sphinxsearch 2>/dev/null
+        userdel -r -f sphinxsearch 2>/dev/null
+        rm -rf /etc/sphinxsearch /home/sphinxsearch 2>/dev/null
+        aptitude -y -q purge sphinxsearch 2>/dev/null
+        wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
+        tar -xf s.tar.gz && rm -rf s.tar.gz
+        mkdir -p /var/lib/sphinxsearch/data/
+        cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
+        cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
+        rm -rf sphinx-3.1.1
     fi
 }
 
@@ -732,6 +764,7 @@ add_user() {
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico /home/${DOMAIN}/
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}/
     cp -r "${0}" /home/${DOMAIN}/config/production/i && chmod +x /home/${DOMAIN}/config/production/i
+    touch /home/.lock
 }
 
 conf_nginx() {
@@ -854,8 +887,11 @@ conf_sphinx() {
     fi
     indexer --all --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf" || indexer --all --rotate --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
     searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
-    searchd --config "/etc/sphinxsearch/sphinx.conf" --stop
-    mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.simple
+    if [ -f "/etc/sphinxsearch/sphinx.conf" ]
+    then
+        searchd --config "/etc/sphinxsearch/sphinx.conf" --stop
+        mv /etc/sphinxsearch/sphinx.conf /etc/sphinxsearch/sphinx.conf.simple
+    fi
 }
 
 conf_proftpd() {
@@ -894,14 +930,14 @@ conf_memcached() {
     fi
     if [ "${VER}" = "jessie" ]
     then
-        cp /lib/systemd/system/memcached.service /lib/systemd/system/memcached_${DOMAIN}.service
-        sed -i "s/memcached\.conf/memcached_${DOMAIN}.conf/g" /lib/systemd/system/memcached_${DOMAIN}.service
-        systemctl stop memcached_${DOMAIN}.service
-        systemctl disable memcached_${DOMAIN}.service
-        systemctl enable memcached_${DOMAIN}.service
-        systemctl start memcached_${DOMAIN}.service
         systemctl stop memcached.service
         systemctl disable memcached.service
+        systemctl stop memcached_${DOMAIN}.service
+        systemctl disable memcached_${DOMAIN}.service
+        cp /lib/systemd/system/memcached.service /lib/systemd/system/memcached_${DOMAIN}.service
+        sed -i "s/memcached\.conf/memcached_${DOMAIN}.conf/g" /lib/systemd/system/memcached_${DOMAIN}.service
+        systemctl enable memcached_${DOMAIN}.service
+        systemctl start memcached_${DOMAIN}.service
     else
         service memcached stop ${DOMAIN}
         service memcached start ${DOMAIN}
@@ -1073,20 +1109,8 @@ conf_iptables() {
 }
 
 start_cinemapress() {
-    cd /home/${DOMAIN}/ && npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock
-    sleep 2
-    I=`npm list -g --depth=0 | grep "pm2"`
-    if [ ! -n "${I}" ]
-    then
-        sleep 2
-        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2 -g
-        sleep 2
-        pm2 startup
-        sleep 2
-        pm2 install pm2-logrotate
-        sleep 2
-    fi
-    sleep 2
+    rm -rf /home/.lock
+    restart_cinemapress ${DOMAIN}
     cd /home/${DOMAIN}/ && \
     CP_ALL="_${DOMAIN_}_" \
     CP_XMLPIPE2="xmlpipe2_${DOMAIN_}" \
@@ -1095,8 +1119,6 @@ start_cinemapress() {
     CP_COMMENT="comment_${DOMAIN_}" \
     CP_USER="user_${DOMAIN_}" \
     node ./config/update/insert_default.js
-    sleep 2
-    cd /home/${DOMAIN}/ && pm2 start process.json && pm2 save && pm2 flush
     hash -r
 }
 
@@ -1109,148 +1131,71 @@ stop_cinemapress() {
 }
 
 restart_cinemapress() {
-    RESTART_DOMAIN="${DOMAIN}"
-    if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
-    check_config ${RESTART_DOMAIN}
-    sleep 1
-    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
-    then
-        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
-        pm2 startup >/dev/null
-        pm2 install pm2-logrotate >/dev/null
-    else
-        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
-        pm2 update >/dev/null
-    fi
-    ADDRS=`grep "\"addr\"" "/home/${RESTART_DOMAIN}/config/default/config.js"`
-    NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
-    sed -i "s/example\.com/${RESTART_DOMAIN}/g" \
-        /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf
-    cp -rf /home/${RESTART_DOMAIN}/config/production/nginx/conf.d/* \
-        /etc/nginx/conf.d/
-    cp -rf /home/${RESTART_DOMAIN}/config/production/nginx/bots.d/* \
-        /etc/nginx/bots.d/
-    mv /etc/nginx/conf.d/nginx.conf \
-        /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
-    sed -i "s/127\.0\.0\.1:3000/${NGINX_ADDR}/g" \
-        /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
-    sed -i "s/example\.com/${RESTART_DOMAIN}/g" \
-        /etc/nginx/conf.d/${RESTART_DOMAIN}.conf
-    cp /home/${RESTART_DOMAIN}/config/production/sysctl/sysctl.conf \
-        /etc/sysctl.conf
-    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/jail.local \
-        /etc/fail2ban/jail.local
-    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/action.d/nginxrepeatoffender.conf \
-        /etc/fail2ban/action.d/nginxrepeatoffender.conf
-    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/filter.d/nginxrepeatoffender.conf \
-        /etc/fail2ban/filter.d/nginxrepeatoffender.conf
-    cp /home/${RESTART_DOMAIN}/config/production/fail2ban/filter.d/nginx-x00.conf \
-        /etc/fail2ban/filter.d/nginx-x00.conf
-    sleep 1
-    service nginx stop >/dev/null
-    service nginx start >/dev/null
-    service nginx restart >/dev/null
-    sleep 1
-    service fail2ban stop >/dev/null
-    service fail2ban start >/dev/null
-    service fail2ban restart >/dev/null
-    sleep 1
-    service memcached_${RESTART_DOMAIN} stop &> /dev/null
-    service memcached_${RESTART_DOMAIN} start &> /dev/null
-    service memcached_${RESTART_DOMAIN} restart &> /dev/null
-    sleep 1
-    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
-    sleep 1
-    cd /home/${RESTART_DOMAIN}/ && npm i --no-optional --no-shrinkwrap --no-package-lock >/dev/null
-    cd /home/${RESTART_DOMAIN}/ && pm2 start process.json >/dev/null
-    cd /home/${RESTART_DOMAIN}/ && pm2 save >/dev/null
-    cd /home/${RESTART_DOMAIN}/ && pm2 flush >/dev/null
-    node /home/${RESTART_DOMAIN}/config/update/update_cinemapress.js >/dev/null
-}
+    if [ -f "/home/.lock" ]; then echo "/home/.lock"; return 1; else touch /home/.lock; fi
 
-light_restart_cinemapress() {
-    RESTART_DOMAIN="${DOMAIN}"
-    if [ "${1}" != "" ]; then RESTART_DOMAIN="${1}"; fi
-    check_config ${RESTART_DOMAIN}
-    pm2 delete ${RESTART_DOMAIN} &> /dev/null
-    pm2 save &> /dev/null
-    sleep 1
-    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
+    HARD_RESTART_DOMAIN=""
+    if [ "${1}" != "" ]
     then
-        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
-        pm2 startup >/dev/null
-        pm2 install pm2-logrotate >/dev/null
-    else
-        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
-        pm2 update >/dev/null
+        if [ -f "/home/${1}/.lock" ]
+        then
+            echo "/home/${1}/.lock"
+            return 1
+        fi
+        HARD_RESTART_DOMAIN="${1}";
     fi
-    searchd --stop --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
-    sleep 1
-    service nginx stop >/dev/null
-    service nginx start >/dev/null
-    service nginx restart >/dev/null
-    sleep 1
-    service fail2ban stop >/dev/null
-    service fail2ban start >/dev/null
-    service fail2ban restart >/dev/null
-    sleep 1
-    service memcached_${RESTART_DOMAIN} stop &> /dev/null
-    service memcached_${RESTART_DOMAIN} start &> /dev/null
-    service memcached_${RESTART_DOMAIN} restart &> /dev/null
-    sleep 1
-    searchd --config "/home/${RESTART_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
-    sleep 1
-    cd /home/${RESTART_DOMAIN}/ && pm2 start process.json
-    cd /home/${RESTART_DOMAIN}/ && pm2 save
-    cd /home/${RESTART_DOMAIN}/ && pm2 flush
-}
 
-hard_restart_cinemapress() {
+    STR_DATE1=$(date +"%s");
+    date &>> /var/log/restart_cinemapress.log
     printf "${NC}Запуск перезагрузки ...\n"
-    pm2 delete all &> /dev/null
-    pm2 uninstall pm2-logrotate &> /dev/null
-    pm2 save &> /dev/null
-    pm2 kill &> /dev/null
-    rm -rf ~/.pm2/dump.*
-    npm remove pm2 -g &> /dev/null
-    if [ ! -f "/usr/lib/node_modules/pm2/package.json" ] || [ "`pm2 list 2> /dev/null || echo \"NOT\"`" = "NOT" ]
+    if [ "${HARD_RESTART_DOMAIN}" = "" ]
     then
-        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
-        pm2 startup >/dev/null
-        pm2 install pm2-logrotate >/dev/null
-    else
-        npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock pm2@latest -g >/dev/null
-        pm2 update >/dev/null
+        pm2 delete all              &>> /var/log/restart_cinemapress.log
+        pm2 uninstall pm2-logrotate &>> /var/log/restart_cinemapress.log
+        pm2 save                    &>> /var/log/restart_cinemapress.log
+        pm2 kill                    &>> /var/log/restart_cinemapress.log
+        rm -rf ~/.pm2/dump.*        &>> /var/log/restart_cinemapress.log
+        npm remove pm2 -g           &>> /var/log/restart_cinemapress.log
     fi
-    service nginx stop >/dev/null
-    service nginx start >/dev/null
-    service nginx restart >/dev/null
-    service fail2ban stop >/dev/null
-    service fail2ban start >/dev/null
-    service fail2ban restart >/dev/null
+    npm install --loglevel=silent --parseable --no-optional --no-shrinkwrap --no-package-lock \
+        pm2@3.x -g              &>> /var/log/restart_cinemapress.log
+    pm2 startup                 &>> /var/log/restart_cinemapress.log
+    pm2 install pm2-logrotate   &>> /var/log/restart_cinemapress.log
+    service nginx stop          &>> /var/log/restart_cinemapress.log
+    service nginx start         &>> /var/log/restart_cinemapress.log
+    service nginx restart       &>> /var/log/restart_cinemapress.log
+    service fail2ban stop       &>> /var/log/restart_cinemapress.log
+    service fail2ban start      &>> /var/log/restart_cinemapress.log
+    service fail2ban restart    &>> /var/log/restart_cinemapress.log
     for d in /home/*; do
         if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         then
+            CURR_D=`find ${d} -maxdepth 0 -printf "%f"`
+            if [ "${HARD_RESTART_DOMAIN}" != "" ] && [ "${HARD_RESTART_DOMAIN}" != "${CURR_D}" ]
+            then
+                continue
+            fi
             touch ${d}/.lock
-            DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
-            printf "\n${NC}[${Y}${DOMAIN}${NC}] перезагружается ...\n"
+            printf "[${CURR_D}] перезагружается ...\n" &>> /var/log/restart_cinemapress.log
+            printf "\n${NC}[${Y}${CURR_D}${NC}] перезагружается ...\n"
             DATE1=$(date +"%s");
-            check_config ${DOMAIN}
-            searchd --stop --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
-            ADDRS=`grep "\"addr\"" "/home/${DOMAIN}/config/default/config.js"`
+            check_config ${CURR_D}
+            sed -i "/docinfo/d" "${d}/config/production/sphinx/sphinx.conf"
+            searchd --stop --config "${d}/config/production/sphinx/sphinx.conf" &>> /var/log/restart_cinemapress.log
+            rm -rf /home/${CURR_D}/log/searchd_*
+            ADDRS=`grep "\"addr\"" "/home/${CURR_D}/config/default/config.js"`
             NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
-            sed -i "s/example\.com/${DOMAIN}/g" \
+            sed -i "s/example\.com/${CURR_D}/g" \
                 ${d}/config/production/nginx/bots.d/whitelist-domains.conf
             cp -rf ${d}/config/production/nginx/conf.d/* \
                 /etc/nginx/conf.d/
             cp -rf ${d}/config/production/nginx/bots.d/* \
                 /etc/nginx/bots.d/
             mv /etc/nginx/conf.d/nginx.conf \
-                /etc/nginx/conf.d/${DOMAIN}.conf
+                /etc/nginx/conf.d/${CURR_D}.conf
             sed -i "s/127\.0\.0\.1:3000/${NGINX_ADDR}/g" \
-                /etc/nginx/conf.d/${DOMAIN}.conf
-            sed -i "s/example\.com/${DOMAIN}/g" \
-                /etc/nginx/conf.d/${DOMAIN}.conf
+                /etc/nginx/conf.d/${CURR_D}.conf
+            sed -i "s/example\.com/${CURR_D}/g" \
+                /etc/nginx/conf.d/${CURR_D}.conf
             cp ${d}/config/production/sysctl/sysctl.conf \
                 /etc/sysctl.conf
             cp ${d}/config/production/fail2ban/jail.local \
@@ -1261,41 +1206,43 @@ hard_restart_cinemapress() {
                 /etc/fail2ban/filter.d/nginxrepeatoffender.conf
             cp ${d}/config/production/fail2ban/filter.d/nginx-x00.conf \
                 /etc/fail2ban/filter.d/nginx-x00.conf
-            if [ -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]
+            if [ -f "/etc/letsencrypt/live/${CURR_D}/privkey.pem" ]
             then
-                sed -i "s/#onlyHTTPS //g" /etc/nginx/conf.d/${DOMAIN}.conf
-                sed -i "s/#enableHTTPS //g" /etc/nginx/conf.d/${DOMAIN}.conf
-                sed -i "s/#nonWWW //g" /etc/nginx/conf.d/${DOMAIN}.conf
+                sed -i "s/#onlyHTTPS //g"   /etc/nginx/conf.d/${CURR_D}.conf
+                sed -i "s/#enableHTTPS //g" /etc/nginx/conf.d/${CURR_D}.conf
+                sed -i "s/#nonWWW //g"      /etc/nginx/conf.d/${CURR_D}.conf
             fi
-            if [ -f "/etc/nginx/ssl/${DOMAIN}/fullchain.cer" ]
+            if [ -f "/etc/nginx/ssl/${CURR_D}/fullchain.cer" ]
             then
-                sed -i "s~#onlyHTTPS ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
-                sed -i "s~#enableHTTPS ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
-                sed -i "s~#nonWWW ~~g" /etc/nginx/conf.d/${DOMAIN}.conf
-                sed -i "s~ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem; ssl_dhparam /etc/letsencrypt/live/${DOMAIN}/dhparam.pem;~ssl_certificate /etc/nginx/ssl/${DOMAIN}/fullchain.cer; ssl_certificate_key /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.key; ssl_trusted_certificate /etc/nginx/ssl/${DOMAIN}/${DOMAIN}.cer;~g" /etc/nginx/conf.d/${DOMAIN}.conf
+                sed -i "s~#onlyHTTPS ~~g"   /etc/nginx/conf.d/${CURR_D}.conf
+                sed -i "s~#enableHTTPS ~~g" /etc/nginx/conf.d/${CURR_D}.conf
+                sed -i "s~#nonWWW ~~g"      /etc/nginx/conf.d/${CURR_D}.conf
+                sed -i "s~ssl_certificate /etc/letsencrypt/live/${CURR_D}/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/${CURR_D}/privkey.pem; ssl_dhparam /etc/letsencrypt/live/${CURR_D}/dhparam.pem;~ssl_certificate /etc/nginx/ssl/${CURR_D}/fullchain.cer; ssl_certificate_key /etc/nginx/ssl/${CURR_D}/${CURR_D}.key; ssl_trusted_certificate /etc/nginx/ssl/${CURR_D}/${CURR_D}.cer;~g" /etc/nginx/conf.d/${CURR_D}.conf
             fi
-            service memcached_${DOMAIN} stop &> /dev/null
-            service memcached_${DOMAIN} start &> /dev/null
-            service memcached_${DOMAIN} restart &> /dev/null
-            searchd --config "${d}/config/production/sphinx/sphinx.conf" >/dev/null
-            sleep 3
-            cd ${d} && npm i --no-optional --no-shrinkwrap --no-package-lock >/dev/null
-            cd ${d} && pm2 start process.json >/dev/null
-            cd ${d} && pm2 save >/dev/null
-            cd ${d} && pm2 flush >/dev/null
-            node ${d}/config/update/update_cinemapress.js >/dev/null
-            rm -rf ${d}/.lock
-            DATE2=$(date +"%s");
-            printf "${NC}[${G}${DOMAIN}${NC}] за $((${DATE2}-${DATE1})) секунд.\n"
+            service memcached_${CURR_D} stop                                 &>> /var/log/restart_cinemapress.log
+            service memcached_${CURR_D} start                                &>> /var/log/restart_cinemapress.log
+            service memcached_${CURR_D} restart                              &>> /var/log/restart_cinemapress.log
+            searchd --config "${d}/config/production/sphinx/sphinx.conf"     &>> /var/log/restart_cinemapress.log
+            cd ${d} && npm i --no-optional --no-shrinkwrap --no-package-lock &>> /var/log/restart_cinemapress.log
+            cd ${d} && pm2 delete process.json                               &>> /var/log/restart_cinemapress.log
+            cd ${d} && pm2 start process.json                                &>> /var/log/restart_cinemapress.log
+            cd ${d} && pm2 save                                              &>> /var/log/restart_cinemapress.log
+            cd ${d} && pm2 flush                                             &>> /var/log/restart_cinemapress.log
+            node ${d}/config/update/update_cinemapress.js                    &>> /var/log/restart_cinemapress.log
+            rm -rf ${d}/.lock; DATE2=$(date +"%s");                          &>> /var/log/restart_cinemapress.log
+            printf "[${CURR_D}] за $((${DATE2}-${DATE1})) секунд(ы)\n"       &>> /var/log/restart_cinemapress.log
+            printf "${NC}[${G}${CURR_D}${NC}] за $((${DATE2}-${DATE1})) секунд(ы)\n"
         fi
     done
-    service nginx stop >/dev/null
-    service nginx start >/dev/null
-    service nginx restart >/dev/null
-    service fail2ban stop >/dev/null
-    service fail2ban start >/dev/null
-    service fail2ban restart >/dev/null
-    for d in /home/*; do if [ -f "$d/process.json" ]; then rm -rf ${d}/.lock; fi done
+    service nginx stop       &>> /var/log/restart_cinemapress.log
+    service nginx start      &>> /var/log/restart_cinemapress.log
+    service nginx restart    &>> /var/log/restart_cinemapress.log
+    service fail2ban stop    &>> /var/log/restart_cinemapress.log
+    service fail2ban start   &>> /var/log/restart_cinemapress.log
+    service fail2ban restart &>> /var/log/restart_cinemapress.log
+    for dp in /home/*; do if [ -f "$dp/process.json" ]; then rm -rf ${dp}/.lock /home/.lock; fi done
+    STR_DATE2=$(date +"%s");
+    printf "\n${NC}Перезагрузка заняла $((${STR_DATE2}-${STR_DATE1})) секунд(ы)\n"
 }
 
 check_config() {
@@ -1392,7 +1339,7 @@ fail_2() {
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    restart_cinemapress
+    restart_cinemapress ${DOMAIN}
 
     printf "\n${NC}"
     printf "${C}----------------[ ${Y}ОТКАТИЛИСЬ К РАБОЧЕМУ СОСТОЯНИЮ${C} ]---------------\n${NC}"
@@ -1406,22 +1353,6 @@ fail_2() {
 }
 
 update_cinemapress() {
-    DOMAIN_CREATE=`stat -c %y /home/${DOMAIN}/app.js`
-    if [ "`date -d "${DOMAIN_CREATE}" +%s`" -lt "`date -d "2017-10-01" +%s`" ];
-    then
-        printf "\n${NC}"
-        printf "${C}------------------------[ ${Y}ПРЕДУПРЕЖДЕНИЕ${C} ]------------------------\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----        ${NC}Сайт был создан до 1 октября 2017 года,${C}           ----\n${NC}"
-        printf "${C}----    ${NC}потому следует полностью переустановить систему.${C}      ----\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${NC}  cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}------------------------------------------------------------------\n${NC}"
-        printf "\n${NC}"
-        exit 0
-    fi
-
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/oldCP
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/newCP
 
@@ -1465,7 +1396,7 @@ update_cinemapress() {
         /home/${DOMAIN}/config/default/* \
         /home/${DOMAIN}/config/production
     printf "\n${C}------------------------------------------------------------------\n${NC}"
-    rsync -azh --stats --exclude default \
+    rsync -azh --stats --exclude default --exclude update \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP/config/* \
         /home/${DOMAIN}/config
     printf "\n${C}------------------------------------------------------------------\n${NC}"
@@ -1536,10 +1467,37 @@ update_cinemapress() {
     then
         sed -i "s~location /images~location /balancer/ \{\n        rewrite           \"^\\\/balancer\\\/([0-9]+)\\\.mp4\" \"/\$1.mp4\" break;\n        root              /var/local/balancer;\n        expires           30d;\n        access_log        off;\n        autoindex         off;\n        add_header        Cache-Control \"public, no-transform\";${PRX}\n        try_files \$uri    /bbb.mp4 =404;\n    \}\n\n    location /images~g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     fi
+    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
+    if [ "${SPH}" = "" ]
+    then
+        for d in /home/*; do
+            if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
+            then
+                D=`find ${d} -maxdepth 0 -printf "%f"`
+                searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
+            fi
+        done
+        dpkg -r sphinxsearch 2>/dev/null
+        userdel -r -f sphinxsearch 2>/dev/null
+        rm -rf /etc/sphinxsearch 2>/dev/null
+        aptitude -y -q purge sphinxsearch 2>/dev/null
+        wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
+        tar -xf s.tar.gz && rm -rf s.tar.gz
+        mkdir -p /var/lib/sphinxsearch/data/
+        cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
+        cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
+        rm -rf sphinx-3.1.1
+    fi
+    NOD=`node -v 2>/dev/null | grep "v10"`
+    if [ "${NOD}" = "" ]
+    then
+        wget -qO- https://deb.nodesource.com/setup_10.x | bash -
+        aptitude -y -q install nodejs build-essential
+    fi
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    restart_cinemapress
+    restart_cinemapress ${DOMAIN}
 
 }
 
@@ -1665,21 +1623,6 @@ fail_4() {
 }
 
 check_db() {
-    DOMAIN_CREATE=`stat -c %y /home/${DOMAIN}/app.js`
-    if [ "`date -d "${DOMAIN_CREATE}" +%s`" -lt "`date -d "2017-10-01" +%s`" ];
-    then
-        printf "\n${NC}"
-        printf "${C}------------------------[ ${Y}ПРЕДУПРЕЖДЕНИЕ${C} ]------------------------\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----        ${NC}Сайт был создан до 1 октября 2017 года,${C}           ----\n${NC}"
-        printf "${C}----    ${NC}потому следует полностью переустановить систему.${C}      ----\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${NC}cinemapress.org/article/pereustanovka-sayta-na-cinemapress.html#update\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}------------------------------------------------------------------\n${NC}"
-        printf "\n${NC}"
-        exit 0
-    fi
     INDEX_TYPE=`wget -qO- "http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=CHECK"`
     sleep 1
     if [ "${INDEX_TYPE}" = "" ]
@@ -1694,28 +1637,15 @@ check_db() {
         printf "\n${NC}"
         exit 0
     else
-        BAR='##################################################'
-        for ((i=1;i<=50;i++));
+        for ((io=0;io<=10;io++));
         do
-            if [ "${i}" = "4" ]
-            then
-                BAR='# Оказавшись перед Путиным, что Вы ему скажете?! #'
-            else
-                BAR='##################################################'
-            fi
-            PERCENT=$((2 * i))
-            for ((j=1;j<=50;j++));
+            for ((jo=1;jo<=10;jo++));
             do
-                echo -ne "\r${PERCENT}% ${BAR:0:$j}"
-                sleep .1
+                progreSh "$((${io} * ${jo}))"
+                sleep 3
             done
-            if [ "${i}" = "4" ]
-            then
-                sleep 5
-            fi
-            echo -ne "\r${PERCENT}%                                                   "
         done
-        printf "\n"
+        printf "\n\n"
     fi
 }
 
@@ -2053,7 +1983,7 @@ recover_mega_backup() {
 
     chown -R ${DOMAIN}:www-data /home/${DOMAIN}
 
-    restart_cinemapress
+    restart_cinemapress ${DOMAIN}
 
     printf "\n${NC}"
     printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
@@ -2197,22 +2127,13 @@ delete_cinemapress() {
     service proftpd restart
     sleep 2
     service fail2ban restart
-    printf "\n${NC}"
-    printf "${C}---------------------------[ ${Y}УДАЛЕНИЕ${C} ]---------------------------\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----           ${G}Ваш сайт успешно удален с сервера.${C}             ----\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}Домен : ${G}${DELETE_DOMAIN}\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}------------------------------------------------------------------\n${NC}"
-    printf "\n${NC}"
 }
 
 update_i() {
-    for d in /home/*; do
-        if [ -f "$d/config/production/i" ]
+    for dd in /home/*; do
+        if [ -f "$dd/config/production/i" ]
         then
-            I_DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
+            I_DOMAIN=`find ${dd} -maxdepth 0 -printf "%f"`
             I_DOMAIN_=`echo ${I_DOMAIN} | sed -r "s/[^A-Za-z0-9]/_/g"`
             cp -r ${0} /home/${I_DOMAIN}/config/production/i && \
             chmod +x /home/${I_DOMAIN}/config/production/i
@@ -2224,15 +2145,38 @@ update_i() {
     done
 }
 
+exist_domain() {
+    if [ -f "/home/${DOMAIN}/process.json" ]
+    then
+        restart_cinemapress ${DOMAIN}
+        exit 0
+    fi
+}
+
+not_domain() {
+    if [ ! -f "/home/${DOMAIN}/process.json" ]
+    then
+        printf "${C}------------------------------------------------------------------\n${NC}"
+        logo
+        printf "${C}-----------------------[ ${Y}CINEMAPRESS EXIST${C} ]----------------------\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}----            ${R}Сайт на этом домене не установлен!${C}            ----\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}------------------------------------------------------------------\n${NC}"
+        printf "\n${NC}"
+        exit 0
+    fi
+}
+
 create_mirror() {
     if [ ! -f "/home/${MIRROR}/process.json" ]
     then
         printf "\n${NC}"
         printf "${C}---------------------------[ ${Y}ОШИБКА${C} ]-----------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----           ${NC}Создайте вначале сайт-зеркало,${C}            ----\n${NC}"
-        printf "${C}----         ${NC}импортируйте на него базу фильмов${C}           ----\n${NC}"
-        printf "${C}----    ${NC}и настройте на нем HTTPS (если используете).${C}     ----\n${NC}"
+        printf "${C}----             ${NC}Создайте вначале сайт-зеркало,${C}               ----\n${NC}"
+        printf "${C}----           ${NC}импортируйте на него базу фильмов${C}              ----\n${NC}"
+        printf "${C}----      ${NC}и настройте на нем HTTPS (если используете).${C}        ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "Домен   : ${G}${DOMAIN}\n${NC}"
         printf "Зеркало : ${R}${MIRROR}\n${NC}"
@@ -2296,7 +2240,8 @@ create_mirror() {
 fail_1() {
     INST_NODE=`dpkg --status nodejs 2>/dev/null | grep "ok installed"`
     INST_NGINX=`dpkg --status nginx 2>/dev/null | grep "ok installed"`
-    INST_SPHINX=`dpkg --status sphinxsearch 2>/dev/null | grep "ok installed"`
+    INST_SPHINX=`searchd -v 2>/dev/null | grep "Sphinx"`
+    if [ "${INST_SPHINX}" != "" ]; then INST_SPHINX="ok installed"; fi
     if [ "${INST_NODE}" = "" ] || [ "${INST_NGINX}" = "" ] || [ "${INST_SPHINX}" = "" ]
     then
         printf "\n${NC}"
@@ -2320,18 +2265,15 @@ success_1() {
     logo
     printf "${C}------------------------[ ${Y}CINEMAPRESS ACMS${C} ]----------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${G}УРА! Ваш онлайн кинотеатр готов к работе!${C}         ----\n${NC}"
+    printf "${C}----        ${G}Ура! Ваш онлайн кинотеатр готов к работе!${C}         ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
     printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----           ${NC}Данные для доступа к админ-панели${C}              ----\n${NC}"
-    printf "${C}----                      ${NC}и FTP сайта${C}                         ----\n${NC}"
+    printf "${C}----        ${NC}Данные для доступа к админ-панели и FTP${C}           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "     ${NC}Логин  : ${G}${DOMAIN}\n${NC}"
     printf "     ${NC}Пароль : ${G}${PASSWD}\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----      ${NC}Если что-то не работает, перезагрузите сервер.      ${C}----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2353,12 +2295,10 @@ success_5() {
     logo
     printf "${C}------------------------[ ${Y}CINEMAPRESS ACMS${C} ]----------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----        ${G}УРА! Ваш онлайн кинотеатр готов к работе!${C}         ----\n${NC}"
+    printf "${C}----        ${G}Ура! Ваш онлайн кинотеатр готов к работе!${C}         ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
     printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----     ${NC}Если что-то не работает, перезагрузите сервер.${C}       ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2370,15 +2310,13 @@ success_6() {
     logo
     printf "${C}----------------------------[ ${Y}SPHINX${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----            ${G}УРА! Sphinx сервер готов к работе!${C}            ----\n${NC}"
+    printf "${C}----            ${G}Ура! Sphinx сервер готов к работе!${C}            ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
     printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----       ${G}Установите настройки Sphinx в админ-панели:${C}        ----\n${NC}"
     printf "                       ${R}${MYSQL_IP}:${MYSQL_PORT}\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----     ${NC}Если что-то не работает, перезагрузите сервер.${C}       ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2390,15 +2328,13 @@ success_7() {
     logo
     printf "${C}--------------------------[ ${Y}MEMCACHED${C} ]---------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----          ${G}УРА! Memcached сервер готов к работе!${C}           ----\n${NC}"
+    printf "${C}----          ${G}Ура! Memcached сервер готов к работе!${C}           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "     ${NC}Адрес сайта  - ${G}http://${DOMAIN}/\n${NC}"
     printf "     ${NC}Админ-панель - ${G}http://${DOMAIN}/admin\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----     ${G}Установите настройки Memcached в админ-панели:${C}       ----\n${NC}"
-    printf "                       ${R}${MEMCACHED_IP}:${MEMCACHED_PORT}                  \n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----     ${NC}Если что-то не работает, перезагрузите сервер.${C}       ----\n${NC}"
+    printf "                       ${R}${MEMCACHED_IP}:${MEMCACHED_PORT}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2409,9 +2345,7 @@ success_8() {
     logo
     printf "${C}----------------------[ ${Y}МАССОВЫЕ ДЕЙСТВИЯ${C} ]-----------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----          ${G}УРА! Все команды в mass.txt выполнены!${C}          ----\n${NC}"
-    printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----     ${NC}Если что-то не работает, перезагрузите сервер.${C}       ----\n${NC}"
+    printf "${C}----          ${G}Ура! Все команды в mass.txt выполнены!${C}          ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2426,8 +2360,7 @@ success_9() {
     printf "${C}----${G}Время на распаковку архива зависит от мощности сервера ...${C}----\n${NC}"
     printf "${C}----     ${NC}Чтобы все постеры отдавались с Вашего домена${C}         ----\n${NC}"
     printf "${C}----                ${NC}измените в админ-панели${C}                   ----\n${NC}"
-    printf "${C}----      ${NC}«Распределение нагрузки» -> «Сервер картинок»${C}       ----\n${NC}"
-    printf "${C}----                  ${NC}на URL Вашего домена.${C}                   ----\n${NC}"
+    printf "${C}----       ${NC}«Сервер картинок» на URL Вашего домена.${C}            ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2438,7 +2371,7 @@ success_10() {
     logo
     printf "${C}------------------[ ${Y}ПОЛУЧЕНИЕ SSL-СЕРТИФИКАТА${C} ]-------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----             ${G}УРА! Сертификат успешно получен!${C}             ----\n${NC}"
+    printf "${C}----             ${G}Ура! Сертификат успешно получен!${C}             ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "     ${NC}HTTPS-адрес сайта  - ${G}https://${DOMAIN}/\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
@@ -2446,14 +2379,13 @@ success_10() {
     printf "\n${NC}"
 }
 
-success_11() {
-    printf "${C}------------------------------------------------------------------\n${NC}"
-    logo
-    printf "${C}------------------[ ${Y}ПОЛУЧЕНИЕ SSL-СЕРТИФИКАТА${C} ]-------------------\n${NC}"
+success_12() {
+    printf "\n${NC}"
+    printf "${C}---------------------------[ ${Y}УДАЛЕНИЕ${C} ]---------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "${C}----             ${G}УРА! Сертификат успешно получен!${C}             ----\n${NC}"
+    printf "${C}----           ${G}Ваш сайт успешно удален с сервера.${C}             ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
-    printf "     ${NC}HTTPS-адрес сайта  - ${G}https://${DOMAIN}/\n${NC}"
+    printf "     ${NC}Домен : ${G}${DELETE_DOMAIN}\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -2522,6 +2454,57 @@ randomNum() {
     echo ${number}
 }
 
+progreSh() {
+    LR='\033[1;31m'
+    LG='\033[1;32m'
+    LY='\033[1;33m'
+    LC='\033[1;36m'
+    LW='\033[1;37m'
+    NC='\033[0m'
+    if [ "${1}" = "0" ]; then TME=$(date +"%s"); fi
+    SEC=`printf "%04d\n" $(($(date +"%s")-${TME}))`; SEC="$SEC сек"
+    PRC=`printf "%.0f" ${1}`
+    SHW=`printf "%3d\n" ${PRC}`
+    LNE=`printf "%.0f" $((${PRC}/2))`
+    LRR=`printf "%.0f" $((${PRC}/2-12))`; if [ ${LRR} -le 0 ]; then LRR=0; fi;
+    LYY=`printf "%.0f" $((${PRC}/2-24))`; if [ ${LYY} -le 0 ]; then LYY=0; fi;
+    LCC=`printf "%.0f" $((${PRC}/2-36))`; if [ ${LCC} -le 0 ]; then LCC=0; fi;
+    LGG=`printf "%.0f" $((${PRC}/2-48))`; if [ ${LGG} -le 0 ]; then LGG=0; fi;
+    LRR_=""
+    LYY_=""
+    LCC_=""
+    LGG_=""
+    for ((i=1;i<=13;i++))
+    do
+    	DOTS=""; for ((ii=${i};ii<13;ii++)); do DOTS="${DOTS}."; done
+    	if [ ${i} -le ${LNE} ]; then LRR_="${LRR_}#"; else LRR_="${LRR_}."; fi
+    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${DOTS}${LY}............${LC}............${LG}............ ${SHW}%${NC}\r"
+    	if [ ${LNE} -ge 1 ]; then sleep .05; fi
+    done
+    for ((i=14;i<=25;i++))
+    do
+    	DOTS=""; for ((ii=${i};ii<25;ii++)); do DOTS="${DOTS}."; done
+    	if [ ${i} -le ${LNE} ]; then LYY_="${LYY_}#"; else LYY_="${LYY_}."; fi
+    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${DOTS}${LC}............${LG}............ ${SHW}%${NC}\r"
+    	if [ ${LNE} -ge 14 ]; then sleep .05; fi
+    done
+    for ((i=26;i<=37;i++))
+    do
+    	DOTS=""; for ((ii=${i};ii<37;ii++)); do DOTS="${DOTS}."; done
+    	if [ ${i} -le ${LNE} ]; then LCC_="${LCC_}#"; else LCC_="${LCC_}."; fi
+    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${LC}${LCC_}${DOTS}${LG}............ ${SHW}%${NC}\r"
+    	if [ ${LNE} -ge 26 ]; then sleep .05; fi
+    done
+    for ((i=38;i<=49;i++))
+    do
+    	DOTS=""; for ((ii=${i};ii<49;ii++)); do DOTS="${DOTS}."; done
+    	if [ ${i} -le ${LNE} ]; then LGG_="${LGG_}#"; else LGG_="${LGG_}."; fi
+    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${LC}${LCC_}${LG}${LGG_}${DOTS} ${SHW}%${NC}\r"
+    	if [ ${LNE} -ge 38 ]; then sleep .05; fi
+    done
+    if [ "${PRC}" = "100" ]; then printf "\n\n${NC}"; fi
+}
+
 whileStop() {
     WHILE=no
 }
@@ -2548,7 +2531,7 @@ case ${INSTALL_FILE} in
     ;;
     a )
         MAIN_SERVER="cinemapress.aerobaticapp.com"
-        GIT_SERVER="git.coding.net"
+        GIT_SERVER="gitlab.com"
     ;;
     * )
         MAIN_SERVER="cinemapress.org"
@@ -2569,21 +2552,37 @@ do
 
             separator
 
-            printf "\n${G}Установка запущена ...\n${NC}"
+            exist_domain
 
-            update_server
-            upgrade_server
-            install_full
-            add_user
-            conf_nginx
-            conf_sphinx
-            conf_proftpd
-            conf_memcached
-            conf_cinemapress
-            conf_sysctl
-            conf_fail2ban
-            conf_iptables
-            start_cinemapress
+            progreSh 0
+            sleep 2
+            progreSh 7
+            update_server     &>> /var/log/install_cinemapress.log
+            progreSh 14
+            upgrade_server    &>> /var/log/install_cinemapress.log
+            progreSh 21
+            install_full      &>> /var/log/install_cinemapress.log
+            progreSh 28
+            add_user          &>> /var/log/install_cinemapress.log
+            progreSh 35
+            conf_nginx        &>> /var/log/install_cinemapress.log
+            progreSh 42
+            conf_sphinx       &>> /var/log/install_cinemapress.log
+            progreSh 49
+            conf_proftpd      &>> /var/log/install_cinemapress.log
+            progreSh 56
+            conf_memcached    &>> /var/log/install_cinemapress.log
+            progreSh 63
+            conf_cinemapress  &>> /var/log/install_cinemapress.log
+            progreSh 70
+            conf_sysctl       &>> /var/log/install_cinemapress.log
+            progreSh 77
+            conf_fail2ban     &>> /var/log/install_cinemapress.log
+            progreSh 85
+            conf_iptables     &>> /var/log/install_cinemapress.log
+            progreSh 92
+            start_cinemapress &>> /var/log/install_cinemapress.log
+            progreSh 100
             fail_1
             success_1
             whileStop
@@ -2593,7 +2592,13 @@ do
 
             separator
 
-            update_cinemapress
+            not_domain
+
+            progreSh 0
+            sleep 2
+            progreSh 53
+            update_cinemapress &>> /var/log/update_cinemapress.log
+            progreSh 100
             confirm_update_cinemapress ${3}
             whileStop
         ;;
@@ -2603,7 +2608,13 @@ do
 
             separator
 
-            update_theme ${4}
+            not_domain
+
+            progreSh 0
+            sleep 2
+            progreSh 53
+            update_theme ${4} &>> /var/log/update_theme.log
+            progreSh 100
             success_3
             whileStop
         ;;
@@ -2613,6 +2624,8 @@ do
             read_lang ${4}
 
             separator
+
+            not_domain
 
             check_db
             import_db
@@ -2631,6 +2644,8 @@ do
             read_nginx_main_ip ${9}
 
             separator
+
+            exist_domain
 
             update_server
             upgrade_server
@@ -2694,8 +2709,15 @@ do
 
             separator
 
-            check_domain
-            get_ssl
+            not_domain
+
+            progreSh 0
+            sleep 2
+            progreSh 43
+            check_domain &>> /var/log/update_theme.log
+            progreSh 63
+            get_ssl &>> /var/log/update_theme.log
+            progreSh 100
             success_10
             whileStop
         ;;
@@ -2706,6 +2728,8 @@ do
 
             separator
 
+            not_domain
+
             confirm_mega_backup ${5}
             whileStop
         ;;
@@ -2714,7 +2738,14 @@ do
 
             separator
 
-            delete_cinemapress
+            not_domain
+
+            progreSh 0
+            sleep 2
+            progreSh 53
+            delete_cinemapress &>> /var/log/delete_cinemapress.log
+            progreSh 100
+            success_12
             whileStop
         ;;
         13 )
@@ -2744,7 +2775,7 @@ do
                         if [ "${OOM}" != "" ]
                         then
                             echo ${OOM}
-                            hard_restart_cinemapress
+                            restart_cinemapress
                             reboot
                         elif [ "${ENOMEM}" != "" ]
                         then
@@ -2752,7 +2783,7 @@ do
                             sed -i '/process out of memory/d' /root/.pm2/pm2.log
                             sed -i '/spawn ENOMEM/d' /root/.pm2/pm2.log
                             sed -i '/Error caught by domain/d' /root/.pm2/pm2.log
-                            hard_restart_cinemapress
+                            restart_cinemapress
                         else
                             MINUTE=`date +"%M"`
                             if [ $((10#$MINUTE % 2)) = "0" ]
@@ -2767,18 +2798,11 @@ do
 
                                     if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
                                     then
-                                        DOMAIN=`find ${d} -maxdepth 0 -printf "%f"`
-                                        ERR_PID=`pm2 pid ${DOMAIN}`
+                                        D_LOCK=`find ${d} -maxdepth 0 -printf "%f"`
+                                        ERR_PID=`pm2 pid ${D_LOCK}`
                                         if [ "${ERR_PID}" = "" ] || [ "${ERR_PID}" = "0" ]
                                         then
-                                            touch ${d}/.lock
-                                            printf "\n${NC}[${Y}${DOMAIN}${NC}] перезагружается ...\n"
-                                            DATE1=$(date +"%s");
-                                            stop_cinemapress ${DOMAIN}
-                                            restart_cinemapress ${DOMAIN}
-                                            rm -rf ${d}/.lock
-                                            DATE2=$(date +"%s");
-                                            printf "${NC}[${G}${DOMAIN}${NC}] за $((${DATE2}-${DATE1})) секунд.\n"
+                                            restart_cinemapress ${D_LOCK}
                                         fi
                                         if [ ! -s "${CNFG}" ]
                                         then
@@ -2819,6 +2843,7 @@ do
                         fi
                     ;;
                     * )
+                        rm -rf /home/.lock
                         sleep $((RANDOM%120)) && \
                         CP_ALL="_example_com_" \
                         CP_XMLPIPE2="xmlpipe2_example_com" \
@@ -2838,35 +2863,19 @@ do
 
                 stop_cinemapress
                 exit 0
-            elif [ "${1}" = "start" ]
+            elif [ "${1}" = "start" ] || [ "${1}" = "restart" ] || [ "${1}" = "light_restart" ]
             then
                 read_domain ${2}
 
                 separator
 
-                restart_cinemapress
-                exit 0
-            elif [ "${1}" = "restart" ]
-            then
-                read_domain ${2}
-
-                separator
-
-                stop_cinemapress
-                restart_cinemapress
-                exit 0
-            elif [ "${1}" = "light_restart" ]
-            then
-                read_domain ${2}
-
-                separator
-
-                light_restart_cinemapress
+                update_i
+                restart_cinemapress ${DOMAIN}
                 exit 0
             elif [ "${1}" = "hard_restart" ]
             then
                 update_i
-                hard_restart_cinemapress
+                restart_cinemapress
                 exit 0
             elif [ "${1}" = "update" ]
             then
@@ -2972,7 +2981,7 @@ do
                     sed -i "s/\[::\]:443;/\[::\]:443;\n\n    if (\$allowed_country = '') {set \$allowed_country yes;}\n    if (\$allowed_country = no) {return 444;}/" /etc/nginx/conf.d/${DOMAIN}.conf
                 fi
 
-                light_restart_cinemapress
+                restart_cinemapress ${DOMAIN}
                 exit 0
             elif [ "${1}" = "zero" ]
             then
@@ -3055,7 +3064,7 @@ do
                 service fail2ban stop
                 dpkg -r sphinxsearch
                 userdel -r -f sphinxsearch
-                rm -rf /var/lib/sphinxsearch /etc/sphinxsearch
+                rm -rf /var/lib/sphinxsearch /etc/sphinxsearch /home/sphinxsearch
                 aptitude -y -q purge nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent libcurl3 logrotate php5-curl php5-cli php5-fpm libmysqlclient18 nodejs build-essential apache2 sphinxsearch
                 apt-get -y -qq purge --auto-remove nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent libcurl3 logrotate php5-curl php5-cli php5-fpm libmysqlclient18 nodejs build-essential apache2
                 printf "${C}------------------------------------------------------------------\n${NC}"
