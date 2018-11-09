@@ -434,26 +434,27 @@ install_full() {
         wget -qO- https://deb.nodesource.com/setup_10.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
-    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
+    SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
     if [ "${SPH}" = "" ]
     then
-        for d in /home/*; do
-            if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
-            then
-                D=`find ${d} -maxdepth 0 -printf "%f"`
-                searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
-            fi
-        done
-        dpkg -r sphinxsearch 2>/dev/null
-        userdel -r -f sphinxsearch 2>/dev/null
-        rm -rf /etc/sphinxsearch /home/sphinxsearch 2>/dev/null
-        aptitude -y -q purge sphinxsearch 2>/dev/null
-        wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
-        tar -xf s.tar.gz && rm -rf s.tar.gz
-        mkdir -p /var/lib/sphinxsearch/data/
-        cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
-        cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
-        rm -rf sphinx-3.1.1
+        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        #for d in /home/*; do
+        #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
+        #    then
+        #        D=`find ${d} -maxdepth 0 -printf "%f"`
+        #        searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
+        #    fi
+        #done
+        #dpkg -r sphinxsearch 2>/dev/null
+        #userdel -r -f sphinxsearch 2>/dev/null
+        #rm -rf /etc/sphinxsearch /var/log/sphinxsearch /home/sphinxsearch 2>/dev/null
+        #aptitude -y -q purge sphinxsearch 2>/dev/null
+        #wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
+        #tar -xf s.tar.gz && rm -rf s.tar.gz
+        #mkdir -p /var/lib/sphinxsearch/data/
+        #cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
+        #cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
+        #rm -rf sphinx-3.1.1
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
     if [ "${APC}" != "" ]
@@ -726,26 +727,27 @@ install_sphinx() {
         aptitude -y -q update
         aptitude -y -q install mysql-client
     fi
-    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
+    SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
     if [ "${SPH}" = "" ]
     then
-        for d in /home/*; do
-            if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
-            then
-                D=`find ${d} -maxdepth 0 -printf "%f"`
-                searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
-            fi
-        done
-        dpkg -r sphinxsearch 2>/dev/null
-        userdel -r -f sphinxsearch 2>/dev/null
-        rm -rf /etc/sphinxsearch /home/sphinxsearch 2>/dev/null
-        aptitude -y -q purge sphinxsearch 2>/dev/null
-        wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
-        tar -xf s.tar.gz && rm -rf s.tar.gz
-        mkdir -p /var/lib/sphinxsearch/data/
-        cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
-        cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
-        rm -rf sphinx-3.1.1
+        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        #for d in /home/*; do
+        #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
+        #    then
+        #        D=`find ${d} -maxdepth 0 -printf "%f"`
+        #        searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
+        #    fi
+        #done
+        #dpkg -r sphinxsearch 2>/dev/null
+        #userdel -r -f sphinxsearch 2>/dev/null
+        #rm -rf /etc/sphinxsearch /var/log/sphinxsearch /home/sphinxsearch 2>/dev/null
+        #aptitude -y -q purge sphinxsearch 2>/dev/null
+        #wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
+        #tar -xf s.tar.gz && rm -rf s.tar.gz
+        #mkdir -p /var/lib/sphinxsearch/data/
+        #cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
+        #cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
+        #rm -rf sphinx-3.1.1
     fi
 }
 
@@ -1467,26 +1469,27 @@ update_cinemapress() {
     then
         sed -i "s~location /images~location /balancer/ \{\n        rewrite           \"^\\\/balancer\\\/([0-9]+)\\\.mp4\" \"/\$1.mp4\" break;\n        root              /var/local/balancer;\n        expires           30d;\n        access_log        off;\n        autoindex         off;\n        add_header        Cache-Control \"public, no-transform\";${PRX}\n        try_files \$uri    /bbb.mp4 =404;\n    \}\n\n    location /images~g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     fi
-    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
+    SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
     if [ "${SPH}" = "" ]
     then
-        for d in /home/*; do
-            if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
-            then
-                D=`find ${d} -maxdepth 0 -printf "%f"`
-                searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
-            fi
-        done
-        dpkg -r sphinxsearch 2>/dev/null
-        userdel -r -f sphinxsearch 2>/dev/null
-        rm -rf /etc/sphinxsearch 2>/dev/null
-        aptitude -y -q purge sphinxsearch 2>/dev/null
-        wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
-        tar -xf s.tar.gz && rm -rf s.tar.gz
-        mkdir -p /var/lib/sphinxsearch/data/
-        cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
-        cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
-        rm -rf sphinx-3.1.1
+        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        #for d in /home/*; do
+        #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
+        #    then
+        #        D=`find ${d} -maxdepth 0 -printf "%f"`
+        #        searchd --config /home/${D}/config/production/sphinx/sphinx.conf --stop 2>/dev/null
+        #    fi
+        #done
+        #dpkg -r sphinxsearch 2>/dev/null
+        #userdel -r -f sphinxsearch 2>/dev/null
+        #rm -rf /etc/sphinxsearch /var/log/sphinxsearch 2>/dev/null
+        #aptitude -y -q purge sphinxsearch 2>/dev/null
+        #wget http://sphinxsearch.com/files/sphinx-3.1.1-612d99f-linux-amd64.tar.gz -qO s.tar.gz
+        #tar -xf s.tar.gz && rm -rf s.tar.gz
+        #mkdir -p /var/lib/sphinxsearch/data/
+        #cp -r sphinx-3.1.1/* /var/lib/sphinxsearch/
+        #cp -r /var/lib/sphinxsearch/bin/* /usr/local/bin/
+        #rm -rf sphinx-3.1.1
     fi
     NOD=`node -v 2>/dev/null | grep "v10"`
     if [ "${NOD}" = "" ]
