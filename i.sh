@@ -1312,7 +1312,6 @@ success_2() {
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----       ${G}Если что-то не работает, свяжитесь с Нами.${C}         ----\n${NC}"
     printf "${C}----             ${G}email: support@cinemapress.org${C}               ----\n${NC}"
-    printf "${C}----             ${G}skype: cinemapress${C}                           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1348,7 +1347,6 @@ fail_2() {
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----       ${R}Свяжитесь с Нами, постараемся разобраться.${C}         ----\n${NC}"
     printf "${C}----             ${R}email: support@cinemapress.org${C}               ----\n${NC}"
-    printf "${C}----             ${R}skype: cinemapress${C}                           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -1586,7 +1584,6 @@ success_4() {
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}----       ${G}Если что-то не работает, свяжитесь с Нами.${C}         ----\n${NC}"
     printf "${C}----             ${G}email: support@cinemapress.org${C}               ----\n${NC}"
-    printf "${C}----             ${G}skype: cinemapress${C}                           ----\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
     printf "${C}------------------------------------------------------------------\n${NC}"
     printf "\n${NC}"
@@ -3067,7 +3064,8 @@ do
                 service fail2ban stop
                 dpkg -r sphinxsearch
                 userdel -r -f sphinxsearch
-                rm -rf /var/lib/sphinxsearch /etc/sphinxsearch /home/sphinxsearch
+                rm -rf /var/lib/sphinxsearch /etc/sphinxsearch /home/sphinxsearch \
+                    /usr/local/bin/indexer /usr/local/bin/indextool /usr/local/bin/searchd /usr/local/bin/wordbreaker
                 aptitude -y -q purge nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent libcurl3 logrotate php5-curl php5-cli php5-fpm libmysqlclient18 nodejs build-essential apache2 sphinxsearch
                 apt-get -y -qq purge --auto-remove nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent libcurl3 logrotate php5-curl php5-cli php5-fpm libmysqlclient18 nodejs build-essential apache2
                 printf "${C}------------------------------------------------------------------\n${NC}"
