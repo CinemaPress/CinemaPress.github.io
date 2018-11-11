@@ -1172,6 +1172,7 @@ restart_cinemapress() {
         if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         then
             CURR_D=`find ${d} -maxdepth 0 -printf "%f"`
+            CURR_D_=`echo ${CURR_D} | sed -r "s/[^A-Za-z0-9]/_/g"`
             if [ "${HARD_RESTART_DOMAIN}" != "" ] && [ "${HARD_RESTART_DOMAIN}" != "${CURR_D}" ]
             then
                 continue
@@ -1183,7 +1184,8 @@ restart_cinemapress() {
             check_config ${CURR_D}
             sed -i "/docinfo/d" "${d}/config/production/sphinx/sphinx.conf"
             searchd --stop --config "${d}/config/production/sphinx/sphinx.conf" &>> /var/log/restart_cinemapress.log
-            rm -rf /home/${CURR_D}/log/searchd_*
+            sleep 2
+            rm -rf /home/${CURR_D}/log/searchd_* /var/lib/sphinxsearch/data/movies_${CURR_D_}.spl
             ADDRS=`grep "\"addr\"" "/home/${CURR_D}/config/default/config.js"`
             NGINX_ADDR=`echo ${ADDRS} | sed 's/.*\"addr\":\s*\"\([0-9a-z.]*:3[0-9]*\)\".*/\1/'`
             sed -i "s/example\.com/${CURR_D}/g" \
