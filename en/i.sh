@@ -1638,13 +1638,10 @@ check_db() {
         printf "\n${NC}"
         exit 0
     else
-        for ((io=0;io<=10;io++));
+        for ((io=1;io<=10;io++));
         do
-            for ((jo=1;jo<=10;jo++));
-            do
-                progreSh "$((${io} * ${jo}))"
-                sleep 3
-            done
+            progreSh "$((${io} * 10))"
+            sleep 30
         done
         printf "\n\n"
     fi
