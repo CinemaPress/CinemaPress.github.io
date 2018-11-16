@@ -1578,7 +1578,7 @@ update_theme() {
 }
 
 success_4() {
-    wget -q -O /dev/null -o /dev/null "http://database.cinemapress.org/${KEY}/${DOMAIN}?status=SUCCESS"
+    wget -q -O /dev/null -o /dev/null "http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=SUCCESS"
 
     printf "${C}------------------------------------------------------------------\n${NC}"
     logo
@@ -1611,7 +1611,7 @@ fail_4() {
 
     searchd --config "/home/${DOMAIN}/config/production/sphinx/sphinx.conf"
 
-    wget -q -O /dev/null -o /dev/null "http://database.cinemapress.org/${KEY}/${DOMAIN}?status=FAIL"
+    wget -q -O /dev/null -o /dev/null "http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=FAIL"
 
     printf "\n${NC}"
     printf "${C}---------------[ ${Y}RETURNED TO OPERATIONAL CONDITION${C} ]--------------\n${NC}"
@@ -1653,7 +1653,7 @@ import_db() {
 
     printf "${G}Downloading ...\n"
 
-    wget -qO "/var/lib/sphinxsearch/tmp/${KEY}.tar" http://database.cinemapress.org/${KEY}/${DOMAIN} || \
+    wget -qO "/var/lib/sphinxsearch/tmp/${KEY}.tar" "http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}" || \
     rm -f "/var/lib/sphinxsearch/tmp/${KEY}.tar"
 
     if [ -f "/var/lib/sphinxsearch/tmp/${KEY}.tar" ]
