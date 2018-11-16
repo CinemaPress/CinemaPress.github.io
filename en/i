@@ -1711,7 +1711,7 @@ import_db() {
 
         sleep 2
 
-        cd /home/${DOMAIN} && pm2 reload process.json --update-env
+        cd /home/${DOMAIN} && pm2 reload process.json --update-env &> /var/lib/sphinxsearch/data/${NOW}.log
 
         sleep 3
     else
