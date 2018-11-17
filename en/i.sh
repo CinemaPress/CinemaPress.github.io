@@ -1713,6 +1713,10 @@ import_db() {
 
         cd /home/${DOMAIN} && pm2 reload process.json --update-env &> /var/lib/sphinxsearch/data/${NOW}.log
 
+        service memcached_${DOMAIN} restart &> /var/lib/sphinxsearch/data/${NOW}.log
+        rm -rf /var/cinemacache/* /var/ngx_pagespeed_cache/* &> /var/lib/sphinxsearch/data/${NOW}.log
+        service nginx reload &> /var/lib/sphinxsearch/data/${NOW}.log
+
         sleep 3
     else
         printf "\n${NC}"
