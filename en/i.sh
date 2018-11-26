@@ -2025,10 +2025,10 @@ confirm_mega_backup() {
         aptitude update &> /dev/null
         aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf gcc make pkg-config &> /dev/null
         aptitude -y -q -R install asciidoc &> /dev/null
-        wget -q https://megatools.megous.com/builds/megatools-1.10.2.tar.gz{,.asc} &> /dev/null
-        tar -xzf megatools-1.10.2.tar.gz &> /dev/null
-        gpg --verify megatools-1.10.2.tar.gz.asc &> /dev/null
-        cd megatools-1.10.2 &> /dev/null
+        wget -q https://megatools.megous.com/builds/experimental/megatools-1.11.0-git-20181126.tar.gz{,.asc} &> /dev/null
+        tar -xzf megatools-1.11.0-git-20181126.tar.gz &> /dev/null
+        gpg --verify megatools-1.11.0-git-20181126.tar.gz.asc &> /dev/null
+        cd megatools-1.11.0-git-20181126 &> /dev/null
         CFLAGS="-std=gnu99" \
         ./configure --prefix=/etc/megatools &> /dev/null
         make -j4 &> /dev/null
