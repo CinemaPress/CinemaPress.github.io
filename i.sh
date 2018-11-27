@@ -2067,7 +2067,8 @@ confirm_mega_backup() {
         then
             exit 0
         else
-            MRG=`/etc/megatools/bin/megatools reg --register --email "${MEGA_EMAIL}" --name "${MEGA_EMAIL%@*}" --password "${MEGA_PASSWD}" 2>/dev/null | grep "verify"`
+            MEGA_NAME=`echo ${MEGA_EMAIL%@*} | sed -r "s/[^A-Za-z0-9]/_/g"`
+            MRG=`/etc/megatools/bin/megatools reg --register --email "${MEGA_EMAIL}" --name "${MEGA_NAME}" --password "${MEGA_PASSWD}" 2>/dev/null | grep "verify"`
             if [ "${MRG}" = "" ]
             then
                 printf "\n${NC}"
