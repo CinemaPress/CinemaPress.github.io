@@ -786,7 +786,7 @@ conf_nginx() {
             fi
         done
         mkdir -p /etc/nginx/html && rm -rf /etc/nginx/html/*
-        ln -s /home/${DOMAIN}/themes/default/public/admin/html/errors/* /etc/nginx/html/
+        cp -rf /home/${DOMAIN}/themes/default/public/admin/html/errors/* /etc/nginx/html/
         mkdir -p /etc/nginx/bots.d
         rm -rf /etc/nginx/conf.d/${DOMAIN}.conf
         sed -i "s/example\.com/${DOMAIN}/g" /home/${DOMAIN}/config/production/nginx/bots.d/whitelist-domains.conf
