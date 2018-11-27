@@ -1906,16 +1906,16 @@ create_mega_backup() {
     MEGA_NOW=$(date +%Y-%m-%d)
     MEGA_DELETE=$(date +%Y-%m-%d -d "30 day ago")
     THEME_NAME=`grep "\"theme\"" /home/${DOMAIN}/config/production/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
-    /etc/megatools/bin/megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
+    /etc/megatools/bin/megatools rm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
     if [ "${MEGA_DAY}" != "10" ]
     then
-        /etc/megatools/bin/megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
+        /etc/megatools/bin/megatools rm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
     fi
-    /etc/megatools/bin/megarm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest &> /dev/null
+    /etc/megatools/bin/megatools rm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest &> /dev/null
     sleep 2
-    /etc/megatools/bin/megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/ &> /dev/null
-    /etc/megatools/bin/megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/
-    /etc/megatools/bin/megamkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest/
+    /etc/megatools/bin/megatools mkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/ &> /dev/null
+    /etc/megatools/bin/megatools mkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/
+    /etc/megatools/bin/megatools mkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest/
     sleep 2
     PORT_DOMAIN=`grep "mysql41" /home/${DOMAIN}/config/production/sphinx/sphinx.conf | sed 's/.*:\([0-9]*\):mysql41.*/\1/'`
     echo "FLUSH RTINDEX rt_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
@@ -1941,19 +1941,19 @@ create_mega_backup() {
         themes/default/views/mobile \
         themes/${THEME_NAME}
     sleep 3
-    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/${MEGA_NOW}/config.tar \
         /var/${DOMAIN}/config.tar
     sleep 1
-    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/${MEGA_NOW}/themes.tar \
         /var/${DOMAIN}/themes.tar
     sleep 1
-    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/latest/config.tar \
         /var/${DOMAIN}/config.tar
     sleep 1
-    /etc/megatools/bin/megaput -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
+    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/latest/themes.tar \
         /var/${DOMAIN}/themes.tar
     sleep 3
@@ -1973,10 +1973,10 @@ recover_mega_backup() {
 
     stop_cinemapress
 
-    /etc/megatools/bin/megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
+    /etc/megatools/bin/megatools get -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
         --path /var/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/config.tar
-    /etc/megatools/bin/megaget -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
+    /etc/megatools/bin/megatools get -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
         --path /var/${DOMAIN}/ \
         /Root/${DOMAIN}/latest/themes.tar
 
@@ -2012,7 +2012,7 @@ remove_mega_backup() {
 }
 
 confirm_mega_backup() {
-    MGT=`/etc/megatools/bin/megals --help 2>/dev/null | grep "list files stored"`
+    MGT=`/etc/megatools/bin/megatools ls --help 2>/dev/null | grep "list files stored"`
     if [ "${MGT}" = "" ]
     then
         printf "\n${NC}"
@@ -2022,10 +2022,11 @@ confirm_mega_backup() {
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
+        rm -rf /etc/megatools &> /dev/null
         aptitude update &> /dev/null
         aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf gcc make pkg-config &> /dev/null
         aptitude -y -q -R install asciidoc &> /dev/null
-        wget -q https://megatools.megous.com/builds/experimental/megatools-1.11.0-git-20181126.tar.gz{,.asc} &> /dev/null
+        wget -q https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/assets/megatools/megatools-1.11.0-git-20181126.tar.gz https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/assets/megatools/megatools-1.11.0-git-20181126.tar.gz.asc &> /dev/null
         tar -xzf megatools-1.11.0-git-20181126.tar.gz &> /dev/null
         gpg --verify megatools-1.11.0-git-20181126.tar.gz.asc &> /dev/null
         cd megatools-1.11.0-git-20181126 &> /dev/null
@@ -2035,7 +2036,7 @@ confirm_mega_backup() {
         make install &> /dev/null
         cd ${HOME} &> /dev/null
     fi
-    MEGA_LS=`/etc/megatools/bin/megals -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
+    MEGA_LS=`/etc/megatools/bin/megatools ls -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
     if [ "${MEGA_LS}" = "error" ]
     then
         printf "\n${NC}"
@@ -2044,9 +2045,82 @@ confirm_mega_backup() {
         printf "${C}----              ${R}Email/password are incorrect,${C}               ----\n${NC}"
         printf "${C}----                    ${R}please try again.${C}                     ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
+        printf "${C}----           ${R}Backup works only with new accounts${C}            ----\n${NC}"
+        printf "${C}----            ${R}created through the command line!${C}             ----\n${NC}"
+        printf "${C}----          ${NC}If this email does not have an account${C}          ----\n${NC}"
+        printf "${C}----            ${NC}on MEGA, you should create it now.${C}            ----\n${NC}"
+        printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
-        exit 0
+        if [ ${1} ]
+        then
+            YES=${1}
+            YES=`echo ${YES} | iconv -c -t UTF-8`
+            echo "Create a new account on MEGA? [YES/not] : ${YES}"
+        else
+            read -e -p 'Create a new account on MEGA? [YES/not] : ' YES
+            YES=`echo ${YES} | iconv -c -t UTF-8`
+        fi
+        printf "\n${NC}"
+
+        if [ "${YES}" != "ДА" ] && [ "${YES}" != "Да" ] && [ "${YES}" != "да" ] && [ "${YES}" != "YES" ] && [ "${YES}" != "Yes" ] && [ "${YES}" != "yes" ] && [ "${YES}" != "Y" ] && [ "${YES}" != "y" ] && [ "${YES}" != "" ]
+        then
+            exit 0
+        else
+            MRG=`/etc/megatools/bin/megatools reg --register --email "${MEGA_EMAIL}" --name "${MEGA_EMAIL%@*}" --password "${MEGA_PASSWD}" 2>/dev/null | grep "verify"`
+            if [ "${MRG}" = "" ]
+            then
+                printf "\n${NC}"
+                printf "${C}-------------------------[ ${Y}REGISTRATION${C} ]-------------------------\n${NC}"
+                printf "${C}----                                                          ${C}----\n${NC}"
+                printf "${C}----                   ${R}Registration failed${C}                    ----\n${NC}"
+                printf "${C}----         ${R}please try again with a different email.${C}         ----\n${NC}"
+                printf "${C}----                                                          ${C}----\n${NC}"
+                printf "${C}------------------------------------------------------------------\n${NC}"
+                printf "\n${NC}"
+                printf "MRG: ${MRG}"
+                printf "\n${NC}"
+                exit 0
+            fi
+            printf "${C}-----------------[ ${Y}CONFIRMATION OF REGISTRATION${C} ]-----------------\n${NC}"
+            printf "${C}----                                                          ${C}----\n${NC}"
+            printf "${C}             ${NC}Check your mail ${MEGA_EMAIL}\n"
+            printf "${C}----           ${NC}Copy and paste the confirmation link.${C}          ----\n${NC}"
+            printf "${C}----                    ${NC}It looks like this:${C}                   ----\n${NC}"
+            printf "${C}               ${NC}https://mega.nz/#confirmCo8vOJPCQ...\n"
+            printf "${C}----                                                          ${C}----\n${NC}"
+            printf "${C}----                 ${NC}Insert link in terminal,${C}                 ----\n${NC}"
+            printf "${C}----               ${NC}right-click or Shift+Insert${C}                ----\n${NC}"
+            printf "${C}----                                                          ${C}----\n${NC}"
+            printf "${C}------------------------------------------------------------------\n${NC}"
+            printf "\n${NC}"
+            read -e -p 'CONFIRMATION LINK: ' CMF
+            CMF=`echo ${CMF} | iconv -c -t UTF-8`
+            MRG="${MRG/megatools/}"
+            MRG="${MRG/@LINK@/$CMF}"
+            SUC=`/etc/megatools/bin/megatools ${MRG} 2>/dev/null | grep "successfully"`
+            if [ "${SUC}" = "" ]
+            then
+                printf "\n${NC}"
+                printf "${C}-------------------------[ ${Y}REGISTRATION${C} ]-------------------------\n${NC}"
+                printf "${C}----                                                          ${C}----\n${NC}"
+                printf "${C}----                   ${R}Registration failed${C}                    ----\n${NC}"
+                printf "${C}----                    ${R}please try again.${C}                     ----\n${NC}"
+                printf "${C}----                                                          ${C}----\n${NC}"
+                printf "${C}------------------------------------------------------------------\n${NC}"
+                printf "\n${NC}"
+                printf "MRG: ${MRG}"
+                printf "CMF: ${CMF}"
+                printf "SUC: ${SUC}"
+                printf "\n${NC}"
+                exit 0
+            fi
+            if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" != "" ]
+            then
+                sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
+                sed -i "s/@daily root \/home\/${DOMAIN}\/config\/production\/i cron backup.*//g" /etc/crontab
+            fi
+        fi
     fi
     printf "${C}--------------------------[ ${Y}MAKE A CHOICE${C} ]-----------------------\n${NC}"
     printf "${C}---- ${G}1)${NC} Run automatic backup every day                        ${C}----\n${NC}"

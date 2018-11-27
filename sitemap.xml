@@ -2,7 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://cinemapress.org/</loc>
-        <lastmod>2017-10-28</lastmod>
+        <lastmod>2018-11-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://cinemapress.org/en/</loc>
+        <lastmod>2018-11-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
     </url>
