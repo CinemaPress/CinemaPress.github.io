@@ -2067,7 +2067,7 @@ confirm_mega_backup() {
         then
             exit 0
         else
-            MEGA_NAME=`echo ${MEGA_EMAIL%@*} | sed -r "s/[^A-Za-z0-9]/_/g"`
+            MEGA_NAME=`echo ${MEGA_EMAIL%@*} | sed -r "s/[^A-Za-z0-9]/ /g"`
             MRG=`/etc/megatools/bin/megatools reg --register --email "${MEGA_EMAIL}" --name "${MEGA_NAME}" --password "${MEGA_PASSWD}" 2>/dev/null | grep "verify"`
             if [ "${MRG}" = "" ]
             then
@@ -2097,12 +2097,12 @@ confirm_mega_backup() {
             printf "\n${NC}"
             read -e -p 'ССЫЛКА ПОДТВЕРЖДЕНИЯ: ' CMF
             CMF=`echo ${CMF} | iconv -c -t UTF-8`
+            printf "\n${NC}"
             MRG="${MRG/megatools/}"
             MRG="${MRG/@LINK@/$CMF}"
             SUC=`/etc/megatools/bin/megatools ${MRG} 2>/dev/null | grep "successfully"`
             if [ "${SUC}" = "" ]
             then
-                printf "\n${NC}"
                 printf "${C}--------------------------[ ${Y}РЕГИСТРАЦИЯ${C} ]-------------------------\n${NC}"
                 printf "${C}----                                                          ${C}----\n${NC}"
                 printf "${C}----                 ${R}Регистрация НЕ удалась,${C}                  ----\n${NC}"
