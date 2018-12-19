@@ -1132,6 +1132,29 @@ stop_cinemapress() {
     searchd --stop --config "/home/${STOP_DOMAIN}/config/production/sphinx/sphinx.conf" >/dev/null
 }
 
+light_restart_cinemapress() {
+    if [ -f "/home/.lock" ]; then echo "/home/.lock"; return 1; else touch /home/.lock; fi
+
+    STR_DATE1=$(date +"%s");
+    date &>> /var/log/light_restart_cinemapress.log
+    printf "${NC}Запуск перезагрузки ...\n"
+
+    pm2 kill &>> /var/log/light_restart_cinemapress.log
+    for d in /home/*; do
+        if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
+        then
+            touch ${d}/.lock                  &>> /var/log/light_restart_cinemapress.log
+            cd ${d} && pm2 start process.json &>> /var/log/light_restart_cinemapress.log
+            cd ${d} && pm2 save               &>> /var/log/light_restart_cinemapress.log
+            rm -rf ${d}/.lock                 &>> /var/log/light_restart_cinemapress.log
+        fi
+     done
+
+    for dp in /home/*; do if [ -f "$dp/process.json" ]; then rm -rf ${dp}/.lock; fi done
+    rm -rf /home/.lock; STR_DATE2=$(date +"%s");
+    printf "\n${NC}Перезагрузка заняла $((${STR_DATE2}-${STR_DATE1})) секунд(ы)\n"
+}
+
 restart_cinemapress() {
     if [ -f "/home/.lock" ]; then echo "/home/.lock"; return 1; else touch /home/.lock; fi
 
@@ -1244,8 +1267,8 @@ restart_cinemapress() {
     service fail2ban stop    &>> /var/log/restart_cinemapress.log
     service fail2ban start   &>> /var/log/restart_cinemapress.log
     service fail2ban restart &>> /var/log/restart_cinemapress.log
-    for dp in /home/*; do if [ -f "$dp/process.json" ]; then rm -rf ${dp}/.lock /home/.lock; fi done
-    STR_DATE2=$(date +"%s");
+    for dp in /home/*; do if [ -f "$dp/process.json" ]; then rm -rf ${dp}/.lock; fi done
+    rm -rf /home/.lock; STR_DATE2=$(date +"%s");
     printf "\n${NC}Перезагрузка заняла $((${STR_DATE2}-${STR_DATE1})) секунд(ы)\n"
 }
 
@@ -1374,7 +1397,7 @@ update_cinemapress() {
 
     rm -rf /home/${DOMAIN}/node_modules
 
-    rsync -azh --stats --exclude backup --remove-source-files \
+    rsync -azh --stats --exclude backup --exclude files --remove-source-files \
         /home/${DOMAIN}/* \
         /home/${DOMAIN}/backup/${B_DIR}/oldCP && \
     cd /home/${DOMAIN}/ && \
@@ -1929,6 +1952,7 @@ create_mega_backup() {
         config \
         --exclude=config/update \
         --exclude=config/default \
+        --exclude=config/locales \
         --exclude=config/production/i \
         --exclude=config/production/sphinx \
         --exclude=config/production/fail2ban \
@@ -1938,8 +1962,10 @@ create_mega_backup() {
     tar -uf /var/${DOMAIN}/themes.tar \
         themes/default/public/desktop \
         themes/default/public/mobile \
+        themes/default/views/desktop \
         themes/default/views/mobile \
-        themes/${THEME_NAME}
+        themes/${THEME_NAME} \
+        files
     sleep 3
     /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
         --path /Root/${DOMAIN}/${MEGA_NOW}/config.tar \
@@ -2285,6 +2311,7 @@ create_mirror() {
         cp -r /home/${DOMAIN}/themes/default/public/desktop/* /home/${MIRROR}/themes/default/public/desktop/
         cp -r /home/${DOMAIN}/themes/default/public/mobile/*  /home/${MIRROR}/themes/default/public/mobile/
         cp -r /home/${DOMAIN}/themes/default/views/mobile/*   /home/${MIRROR}/themes/default/views/mobile/
+        cp -r /home/${DOMAIN}/files/*                         /home/${MIRROR}/files/
     fi
     if [ "`grep \"${DOMAIN_}\" /home/${MIRROR}/process.json`" = "" ]
     then
@@ -2850,6 +2877,7 @@ do
                     oom )
                         OOM=`dmesg | grep "Out of memory"`
                         ENOMEM=`tail -n100 /root/.pm2/pm2.log | grep "process out of memory\|spawn ENOMEM\|Error caught by domain"`
+                        UNID=`tail -n100 /root/.pm2/pm2.log | grep "Unknown id"`
                         if [ "${OOM}" != "" ]
                         then
                             echo ${OOM}
@@ -2862,6 +2890,11 @@ do
                             sed -i '/spawn ENOMEM/d' /root/.pm2/pm2.log
                             sed -i '/Error caught by domain/d' /root/.pm2/pm2.log
                             restart_cinemapress
+                        elif [ "${UNID}" != "" ]
+                        then
+                            echo ${UNID}
+                            sed -i '/Unknown id/d' /root/.pm2/pm2.log
+                            light_restart_cinemapress
                         else
                             MINUTE=`date +"%M"`
                             if [ $((10#$MINUTE % 2)) = "0" ]
