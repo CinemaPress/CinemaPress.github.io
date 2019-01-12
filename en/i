@@ -434,10 +434,10 @@ install_full() {
         wget -qO- https://deb.nodesource.com/setup_10.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
-    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
+    SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
     if [ "${SPH}" = "" ]
     then
-        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        wget "https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/download/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
         #for d in /home/*; do
         #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         #    then
@@ -727,10 +727,10 @@ install_sphinx() {
         aptitude -y -q update
         aptitude -y -q install mysql-client
     fi
-    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
+    SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
     if [ "${SPH}" = "" ]
     then
-        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        wget "https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/download/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
         #for d in /home/*; do
         #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         #    then
@@ -1497,10 +1497,10 @@ update_cinemapress() {
     then
         sed -i.bak -e '57d' /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     fi
-    SPH=`searchd -v 2>/dev/null | grep "3.1.1"`
+    SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
     if [ "${SPH}" = "" ]
     then
-        wget "https://github.com/sphinxsearch/sphinx/releases/download/2.2.11-release/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        wget "https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/download/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
         #for d in /home/*; do
         #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         #    then
@@ -1795,12 +1795,14 @@ confirm_import_db() {
 import_static() {
     if [ ! -f "/var/local/images/poster/no-poster.jpg" ]
     then
-        wget -O /home/images.tar http://static.cinemapress.org/images.tar
+        wget -O /home/images.tar http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=IMAGES
         mkdir -p /var/local/images/poster
         wget http://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
         wget http://cinemapress.org/images/web/no-poster.jpg -qO /var/local/images/poster/no-poster.jpg
+        wget http://cinemapress.org/images/web/no-poster.gif -qO /home/${DOMAIN}/files/no-poster.gif
+        wget http://cinemapress.org/images/web/no-poster.jpg -qO /home/${DOMAIN}/files/no-poster.jpg
     else
-        wget -O /home/images.tar http://static.cinemapress.org/last.tar
+        wget -O /home/images.tar http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=LATEST
     fi
     printf "\n${NC}"
     printf "${G}Unpacking in the background ...\n"
@@ -1934,16 +1936,12 @@ create_mega_backup() {
     MEGA_NOW=$(date +%Y-%m-%d)
     MEGA_DELETE=$(date +%Y-%m-%d -d "30 day ago")
     THEME_NAME=`grep "\"theme\"" /home/${DOMAIN}/config/production/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
-    /etc/megatools/bin/megatools rm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/ &> /dev/null
+    mega-rm -r -f /${DOMAIN}/${MEGA_NOW} &> /dev/null
     if [ "${MEGA_DAY}" != "10" ]
     then
-        /etc/megatools/bin/megatools rm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_DELETE} &> /dev/null
+        mega-rm -r -f /${DOMAIN}/${MEGA_DELETE} &> /dev/null
     fi
-    /etc/megatools/bin/megatools rm -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest &> /dev/null
-    sleep 2
-    /etc/megatools/bin/megatools mkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/ &> /dev/null
-    /etc/megatools/bin/megatools mkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/${MEGA_NOW}/
-    /etc/megatools/bin/megatools mkdir -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Root/${DOMAIN}/latest/
+    mega-rm -r -f /${DOMAIN}/latest &> /dev/null
     sleep 2
     PORT_DOMAIN=`grep "mysql41" /home/${DOMAIN}/config/production/sphinx/sphinx.conf | sed 's/.*:\([0-9]*\):mysql41.*/\1/'`
     echo "FLUSH RTINDEX rt_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
@@ -1972,22 +1970,10 @@ create_mega_backup() {
         themes/${THEME_NAME} \
         files
     sleep 3
-    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
-        --path /Root/${DOMAIN}/${MEGA_NOW}/config.tar \
-        /var/${DOMAIN}/config.tar
-    sleep 1
-    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
-        --path /Root/${DOMAIN}/${MEGA_NOW}/themes.tar \
-        /var/${DOMAIN}/themes.tar
-    sleep 1
-    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
-        --path /Root/${DOMAIN}/latest/config.tar \
-        /var/${DOMAIN}/config.tar
-    sleep 1
-    /etc/megatools/bin/megatools put -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" --no-progress \
-        --path /Root/${DOMAIN}/latest/themes.tar \
-        /var/${DOMAIN}/themes.tar
-    sleep 3
+    mega-put -c /var/${DOMAIN}/config.tar /${DOMAIN}/${MEGA_NOW}/config.tar
+    mega-put -c /var/${DOMAIN}/themes.tar /${DOMAIN}/${MEGA_NOW}/themes.tar
+    mega-put -c /var/${DOMAIN}/config.tar /${DOMAIN}/latest/config.tar
+    mega-put -c /var/${DOMAIN}/themes.tar /${DOMAIN}/latest/themes.tar
     rm -rf /var/${DOMAIN}
     printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
@@ -2004,18 +1990,14 @@ recover_mega_backup() {
 
     stop_cinemapress
 
-    /etc/megatools/bin/megatools get -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
-        --path /var/${DOMAIN}/ \
-        /Root/${DOMAIN}/latest/config.tar
-    /etc/megatools/bin/megatools get -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" \
-        --path /var/${DOMAIN}/ \
-        /Root/${DOMAIN}/latest/themes.tar
+    mega-get /${DOMAIN}/latest/config.tar /var/${DOMAIN}/
+    mega-get /${DOMAIN}/latest/themes.tar /var/${DOMAIN}/
 
     cd /home/${DOMAIN} && \
     tar -xf /var/${DOMAIN}/config.tar && \
     tar -xf /var/${DOMAIN}/themes.tar
 
-    chown -R ${DOMAIN}:www-data /home/${DOMAIN}
+    chown -R ${DOMAIN}:www-data /home/${DOMAIN} &> /dev/null
 
     restart_cinemapress ${DOMAIN}
 
@@ -2043,32 +2025,28 @@ remove_mega_backup() {
 }
 
 confirm_mega_backup() {
-    MGT=`/etc/megatools/bin/megatools ls --help 2>/dev/null | grep "list files stored"`
+    MGT=`mega-help 2>/dev/null | grep "MEGAcmd"`
     if [ "${MGT}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}-------------------------[ ${Y}INSTALLATION${C} ]-------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----          ${NC}Installing MegaTools in progress ...${C}            ----\n${NC}"
+        printf "${C}----           ${NC}Installing MEGAcmd in progress ...${C}             ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
-        rm -rf /etc/megatools &> /dev/null
-        aptitude update &> /dev/null
-        aptitude -y -q install build-essential libglib2.0-dev libssl-dev libcurl4-openssl-dev dh-autoreconf gcc make pkg-config &> /dev/null
-        aptitude -y -q -R install asciidoc &> /dev/null
-        wget -q https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/assets/megatools/megatools-1.11.0-git-20181126.tar.gz https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/assets/megatools/megatools-1.11.0-git-20181126.tar.gz.asc &> /dev/null
-        tar -xzf megatools-1.11.0-git-20181126.tar.gz &> /dev/null
-        gpg --verify megatools-1.11.0-git-20181126.tar.gz.asc &> /dev/null
-        cd megatools-1.11.0-git-20181126 &> /dev/null
-        CFLAGS="-std=gnu99" \
-        ./configure --prefix=/etc/megatools &> /dev/null
-        make -j4 &> /dev/null
-        make install &> /dev/null
+        rm -rf megacmd-Debian_9.0_amd64.deb &> /dev/null
+        wget -q https://mega.nz/linux/MEGAsync/Debian_9.0/amd64/megacmd-Debian_9.0_amd64.deb
+        dpkg -i megacmd-Debian_9.0_amd64.deb
         cd ${HOME} &> /dev/null
     fi
-    MEGA_LS=`/etc/megatools/bin/megatools ls -u "${MEGA_EMAIL}" -p "${MEGA_PASSWD}" /Contacts 2>/dev/null || echo "error"`
-    if [ "${MEGA_LS}" = "error" ]
+    MEGA_WHOAMI=`mega-whoami 2>/dev/null | grep "@"`
+    if [ "${MEGA_WHOAMI}" = "" ]
+    then
+        mega-login "${MEGA_EMAIL}" "${MEGA_PASSWD}"
+    fi
+    MEGA_LS=`mega-whoami 2>/dev/null | grep "@"`
+    if [ "${MEGA_LS}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
@@ -2076,84 +2054,9 @@ confirm_mega_backup() {
         printf "${C}----              ${R}Email/password are incorrect,${C}               ----\n${NC}"
         printf "${C}----                    ${R}please try again.${C}                     ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----           ${R}Backup works only with new accounts${C}            ----\n${NC}"
-        printf "${C}----            ${R}created through the command line!${C}             ----\n${NC}"
-        printf "${C}----          ${NC}If this email does not have an account${C}          ----\n${NC}"
-        printf "${C}----            ${NC}on MEGA, you should create it now.${C}            ----\n${NC}"
-        printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
-        if [ ${1} ]
-        then
-            YES=${1}
-            YES=`echo ${YES} | iconv -c -t UTF-8`
-            echo "Create a new account on MEGA? [YES/not] : ${YES}"
-        else
-            read -e -p 'Create a new account on MEGA? [YES/not] : ' YES
-            YES=`echo ${YES} | iconv -c -t UTF-8`
-        fi
-        printf "\n${NC}"
-
-        if [ "${YES}" != "ДА" ] && [ "${YES}" != "Да" ] && [ "${YES}" != "да" ] && [ "${YES}" != "YES" ] && [ "${YES}" != "Yes" ] && [ "${YES}" != "yes" ] && [ "${YES}" != "Y" ] && [ "${YES}" != "y" ] && [ "${YES}" != "" ]
-        then
-            exit 0
-        else
-            MEGA_NAME=`echo ${MEGA_EMAIL%@*} | sed -r "s/[^A-Za-z0-9]/ /g"`
-            MRG=`/etc/megatools/bin/megatools reg --register --email "${MEGA_EMAIL}" --name "${MEGA_NAME}" --password "${MEGA_PASSWD}" 2>/dev/null | grep "verify"`
-            if [ "${MRG}" = "" ]
-            then
-                printf "\n${NC}"
-                printf "${C}-------------------------[ ${Y}REGISTRATION${C} ]-------------------------\n${NC}"
-                printf "${C}----                                                          ${C}----\n${NC}"
-                printf "${C}----                   ${R}Registration failed${C}                    ----\n${NC}"
-                printf "${C}----         ${R}please try again with a different email.${C}         ----\n${NC}"
-                printf "${C}----                                                          ${C}----\n${NC}"
-                printf "${C}------------------------------------------------------------------\n${NC}"
-                printf "\n${NC}"
-                printf "MRG: ${MRG}"
-                printf "\n${NC}"
-                exit 0
-            fi
-            printf "${C}-----------------[ ${Y}CONFIRMATION OF REGISTRATION${C} ]-----------------\n${NC}"
-            printf "${C}----                                                          ${C}----\n${NC}"
-            printf "${C}             ${NC}Check your mail ${MEGA_EMAIL}\n"
-            printf "${C}----           ${NC}Copy and paste the confirmation link.${C}          ----\n${NC}"
-            printf "${C}----                    ${NC}It looks like this:${C}                   ----\n${NC}"
-            printf "${C}               ${NC}https://mega.nz/#confirmCo8vOJPCQ...\n"
-            printf "${C}----                                                          ${C}----\n${NC}"
-            printf "${C}----                 ${NC}Insert link in terminal,${C}                 ----\n${NC}"
-            printf "${C}----               ${NC}right-click or Shift+Insert${C}                ----\n${NC}"
-            printf "${C}----                                                          ${C}----\n${NC}"
-            printf "${C}------------------------------------------------------------------\n${NC}"
-            printf "\n${NC}"
-            read -e -p 'CONFIRMATION LINK: ' CMF
-            CMF=`echo ${CMF} | iconv -c -t UTF-8`
-            printf "\n${NC}"
-            MRG="${MRG/megatools/}"
-            MRG="${MRG/@LINK@/$CMF}"
-            SUC=`/etc/megatools/bin/megatools ${MRG} 2>/dev/null | grep "successfully"`
-            if [ "${SUC}" = "" ]
-            then
-                printf "\n${NC}"
-                printf "${C}-------------------------[ ${Y}REGISTRATION${C} ]-------------------------\n${NC}"
-                printf "${C}----                                                          ${C}----\n${NC}"
-                printf "${C}----                   ${R}Registration failed${C}                    ----\n${NC}"
-                printf "${C}----                    ${R}please try again.${C}                     ----\n${NC}"
-                printf "${C}----                                                          ${C}----\n${NC}"
-                printf "${C}------------------------------------------------------------------\n${NC}"
-                printf "\n${NC}"
-                printf "MRG: ${MRG}"
-                printf "CMF: ${CMF}"
-                printf "SUC: ${SUC}"
-                printf "\n${NC}"
-                exit 0
-            fi
-            if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" != "" ]
-            then
-                sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
-                sed -i "s/@daily root \/home\/${DOMAIN}\/config\/production\/i cron backup.*//g" /etc/crontab
-            fi
-        fi
+        exit 0
     fi
     printf "${C}--------------------------[ ${Y}MAKE A CHOICE${C} ]-----------------------\n${NC}"
     printf "${C}---- ${G}1)${NC} Run automatic backup every day                        ${C}----\n${NC}"
@@ -2810,6 +2713,9 @@ do
             whileStop
         ;;
         9 )
+            read_domain ${2}
+            read_key ${3}
+            read_lang ${4}
             export -f import_static
             nohup bash -c import_static >/dev/null 2>&1 &
             success_9
@@ -2825,9 +2731,9 @@ do
             progreSh 0
             sleep 2
             progreSh 43
-            check_domain &>> /var/log/update_theme.log
+            check_domain &>> /var/log/get_ssl.log
             progreSh 63
-            get_ssl &>> /var/log/update_theme.log
+            get_ssl &>> /var/log/get_ssl.log
             progreSh 100
             success_10
             whileStop
@@ -2883,7 +2789,7 @@ do
                     oom )
                         OOM=`dmesg | grep "Out of memory"`
                         ENOMEM=`tail -n100 /root/.pm2/pm2.log | grep "process out of memory\|spawn ENOMEM\|Error caught by domain"`
-                        UNID=`tail -n100 /root/.pm2/pm2.log | grep "Unknown id"`
+                        UNID=`tail -n100 /root/.pm2/pm2.log | grep "Unknown id\|many unstable restarts"`
                         if [ "${OOM}" != "" ]
                         then
                             echo ${OOM}
@@ -2900,6 +2806,7 @@ do
                         then
                             echo ${UNID}
                             sed -i '/Unknown id/d' /root/.pm2/pm2.log
+                            sed -i '/many unstable restarts/d' /root/.pm2/pm2.log
                             light_restart_cinemapress
                         else
                             MINUTE=`date +"%M"`
