@@ -1497,6 +1497,11 @@ update_cinemapress() {
     then
         sed -i.bak -e '57d' /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
     fi
+    ADM=`grep "~* /admin" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
+    if [ "${ADM}" = "" ]
+    then
+        sed -i "s/\/admin/~* ^\/admin/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+    fi
     SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
     if [ "${SPH}" = "" ]
     then
