@@ -1800,20 +1800,49 @@ confirm_import_db() {
 import_static() {
     if [ ! -f "/var/local/images/poster/no-poster.jpg" ]
     then
-        wget -O /home/images.tar http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=IMAGES
+        printf "\n${NC}"
+        wget --progress=bar:force -O /home/images.tar "http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=IMAGES" 2>&1 | progressfilt
         mkdir -p /var/local/images/poster
         wget http://cinemapress.org/images/web/no-poster.gif -qO /var/local/images/poster/no-poster.gif
         wget http://cinemapress.org/images/web/no-poster.jpg -qO /var/local/images/poster/no-poster.jpg
         wget http://cinemapress.org/images/web/no-poster.gif -qO /home/${DOMAIN}/files/no-poster.gif
         wget http://cinemapress.org/images/web/no-poster.jpg -qO /home/${DOMAIN}/files/no-poster.jpg
+        if [ -f "/home/images.tar" ]
+        then
+            printf "${G}Unpacking may take a few hours.\n"
+            printf "\n${NC}"
+            tar -xf /home/images.tar -C /var/local/images
+        fi
     else
-        wget -O /home/images.tar http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=LATEST
+        printf "\n${NC}"
+        wget --progress=bar:force -O /home/images.tar "http://database.cinemapress.org/${KEY}/${DOMAIN}?lang=${LANG_}&status=LATEST" 2>&1 | progressfilt
+        if [ -f "/home/images.tar" ]
+        then
+            tar -xf /home/images.tar -C /var/local/images
+        fi
     fi
-    printf "\n${NC}"
-    printf "${G}Unpacking in the background ...\n"
-    printf "${NC}May take a few hours.\n"
-    printf "\n${NC}"
-    tar -xf /home/images.tar -C /var/local/images >> "/home/images.log"
+}
+
+progressfilt () {
+    local flag=false c count cr=$'\r' nl=$'\n'
+    while IFS='' read -d '' -rn 1 c
+    do
+        if $flag
+        then
+            printf '%s' "$c"
+        else
+            if [[ $c != $cr && $c != $nl ]]
+            then
+                count=0
+            else
+                ((count++))
+                if ((count > 1))
+                then
+                    flag=true
+                fi
+            fi
+        fi
+    done
 }
 
 check_domain() {
@@ -2723,8 +2752,7 @@ do
             read_domain ${2}
             read_key ${3}
             read_lang ${4}
-            export -f import_static
-            nohup bash -c import_static >/dev/null 2>&1 &
+            import_static
             success_9
             whileStop
         ;;
