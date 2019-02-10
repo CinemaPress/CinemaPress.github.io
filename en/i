@@ -2075,6 +2075,8 @@ confirm_mega_backup() {
         wget -q https://mega.nz/linux/MEGAsync/Debian_9.0/amd64/megacmd-Debian_9.0_amd64.deb
         dpkg -i megacmd-Debian_9.0_amd64.deb
         cd ${HOME} &> /dev/null
+        mega-whoami
+        sleep 2
     fi
     MEGA_WHOAMI=`mega-whoami 2>/dev/null | grep "@"`
     if [ "${MEGA_WHOAMI}" = "" ]
