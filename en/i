@@ -2071,7 +2071,7 @@ confirm_mega_backup() {
         printf "\n${NC}"
         rm -rf megacmd-Debian_9.0_amd64.deb &> /dev/null
         aptitude -y -q update
-        aptitude -y -q install autoconf libtool g++ libcrypto++-dev libz-dev libsqlite3-dev libssl-dev libcurl4-gnutls-dev libreadline-dev libpcre++-dev libsodium-dev libc-ares-dev libfreeimage-dev libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libmediainfo-dev libzen-dev
+        aptitude -y -q install autoconf build-essential libtool g++ libcrypto++-dev libz-dev libsqlite3-dev libssl-dev libcurl4-gnutls-dev libreadline-dev libpcre++-dev libsodium-dev libc-ares-dev libfreeimage-dev libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libmediainfo-dev libzen-dev
         wget -q https://mega.nz/linux/MEGAsync/Debian_9.0/amd64/megacmd-Debian_9.0_amd64.deb
         dpkg -i megacmd-Debian_9.0_amd64.deb
         cd ${HOME} &> /dev/null

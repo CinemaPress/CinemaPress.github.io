@@ -2071,7 +2071,7 @@ confirm_mega_backup() {
         printf "\n${NC}"
         rm -rf megacmd-Debian_9.0_amd64.deb &> /dev/null
         aptitude -y -q update &> /dev/null
-        aptitude -y -q install autoconf libtool g++ libcrypto++-dev libz-dev libsqlite3-dev libssl-dev libcurl4-gnutls-dev libreadline-dev libpcre++-dev libsodium-dev libc-ares-dev libfreeimage-dev libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libmediainfo-dev libzen-dev
+        aptitude -y -q install autoconf build-essential libtool g++ libcrypto++-dev libz-dev libsqlite3-dev libssl-dev libcurl4-gnutls-dev libreadline-dev libpcre++-dev libsodium-dev libc-ares-dev libfreeimage-dev libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libmediainfo-dev libzen-dev
         wget -q https://mega.nz/linux/MEGAsync/Debian_9.0/amd64/megacmd-Debian_9.0_amd64.deb
         dpkg -i megacmd-Debian_9.0_amd64.deb
         cd ${HOME} &> /dev/null
@@ -3017,7 +3017,7 @@ do
                 wget -q "http://nginx.org/download/nginx-${NGINX_V}.tar.gz"
                 if [ ! -f "nginx-${NGINX_V}.tar.gz" ]; then printf "\n\n${R}ERROR:${NC} Download NGINX\n\n"; exit 0; fi
                 tar -xvf "nginx-${NGINX_V}.tar.gz"
-                cp /usr/sbin/nginx /usr/sbin/nginx_back
+                cp /usr/sbin/nginx /usr/sbin/nginx_bac
                 cd "nginx-${NGINX_V}" && \
                 ./configure ${NGINX_CA} --with-http_geoip_module && \
                 make && \
