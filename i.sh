@@ -349,10 +349,10 @@ pre_install() {
     VER=`lsb_release -cs`
     if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
     then
-        apt-get -y -qq --force-yes autoremove
-        apt-get -y -qq --force-yes install -f
-        apt-get -y -qq --force-yes update
-        apt-get -y -qq --force-yes install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev locales
+        apt-get -y -qq autoremove
+        apt-get -y -qq install -f
+        apt-get -y -qq update
+        apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev locales
         VER=`lsb_release -cs`
         if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
         then
@@ -380,8 +380,8 @@ update_server() {
     export DEBIAN_FRONTEND=noninteractive
     echo 'DEBIAN_FRONTEND="noninteractive"' >> /etc/profile
     echo 'DEBIAN_FRONTEND="noninteractive"' >> ~/.profile
-    apt-get -y -qq --force-yes update
-    apt-get -y -qq --force-yes install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev socat locales
+    apt-get -y -qq update
+    apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev socat locales
     pre_install
     if [ "${VER}" = "stretch" ]
     then
