@@ -417,7 +417,7 @@ install_pagespeed() {
 }
 
 install_full() {
-    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
+    aptitude -y -q install nginx proftpd-basic openssl mysql-client memcached libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate locales
     install_pagespeed
     # aptitude -y -q install php5-curl php5-cli php5-fpm
     if [ "`lsb_release -cs`" = "stretch" ]
@@ -431,7 +431,7 @@ install_full() {
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
-        wget -qO- https://deb.nodesource.com/setup_10.x | bash -
+        wget -qO- https://deb.nodesource.com/setup_12.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
     SPH=`searchd -v 2>/dev/null | grep "2.2.11"`
@@ -548,7 +548,7 @@ install_full() {
 }
 
 install_cinemapress() {
-    aptitude -y -q install proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate
+    aptitude -y -q install proftpd-basic openssl mysql-client libltdl7 libodbc1 libpq5 fail2ban iptables-persistent curl libcurl3 logrotate locales
     # aptitude -y -q install php5-curl php5-cli php5-fpm
     if [ "`lsb_release -cs`" = "stretch" ]
     then
@@ -561,7 +561,7 @@ install_cinemapress() {
     NPM=`npm -v 2>/dev/null`
     if [ "${NOD}" = "" ] || [ "${NPM}" = "" ]
     then
-        wget -qO- https://deb.nodesource.com/setup_10.x | bash -
+        wget -qO- https://deb.nodesource.com/setup_12.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
     APC=`dpkg --status apache2 2>/dev/null | grep "ok installed"`
@@ -1527,7 +1527,7 @@ update_cinemapress() {
     NOD=`node -v 2>/dev/null | grep "v10"`
     if [ "${NOD}" = "" ]
     then
-        wget -qO- https://deb.nodesource.com/setup_10.x | bash -
+        wget -qO- https://deb.nodesource.com/setup_12.x | bash -
         aptitude -y -q install nodejs build-essential
     fi
 
@@ -1893,6 +1893,10 @@ get_ssl() {
         printf "\n${NC}"
         exit 0
     fi
+    if [ ! -d "/etc/letsencrypt/live/${DOMAIN}/" ]
+    then
+        mkdir -p /etc/letsencrypt/live/${DOMAIN}/
+    fi
     /etc/certbot-auto certonly --non-interactive --webroot --renew-by-default --agree-tos --expand --email support@${DOMAIN} --cert-path /etc/letsencrypt/live/${DOMAIN}/ --chain-path /etc/letsencrypt/live/${DOMAIN}/ --fullchain-path /etc/letsencrypt/live/${DOMAIN}/ --key-path /etc/letsencrypt/live/${DOMAIN}/ --cert-name ${DOMAIN} -w /home/${DOMAIN}/ ${DS} -d www.${DOMAIN}
     openssl dhparam -out /etc/letsencrypt/live/${DOMAIN}/dhparam.pem 2048
     if [ -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]
@@ -2125,6 +2129,8 @@ confirm_mega_backup() {
 delete_cinemapress() {
     DELETE_DOMAIN="${DOMAIN}"
     if [ "${1}" != "" ]; then DELETE_DOMAIN="${1}"; fi
+    DELETE_SSL="1"
+    if [ "${2}" != "" ]; then DELETE_SSL="0"; fi
     USERID=`id -u ${DELETE_DOMAIN}`
     stop_cinemapress
     service memcached_${DELETE_DOMAIN} stop &> /dev/null
@@ -2149,8 +2155,11 @@ delete_cinemapress() {
     rm -rf /etc/memcached_${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/conf.d/${DELETE_DOMAIN}.conf
     rm -rf /etc/nginx/pass/${DELETE_DOMAIN}.pass
-    rm -rf /etc/letsencrypt/live/${DELETE_DOMAIN}
-    rm -rf /etc/nginx/ssl/${DELETE_DOMAIN}
+    if [ "${DELETE_SSL}" != "0" ]
+    then
+        rm -rf /etc/letsencrypt/live/${DELETE_DOMAIN}
+        rm -rf /etc/nginx/ssl/${DELETE_DOMAIN}
+    fi
     userdel -r -f ${DELETE_DOMAIN} &> /dev/null
     rm -rf /home/${DELETE_DOMAIN}
     echo "DELETE" | ftpasswd --stdin --passwd --file=/etc/proftpd/ftpd.passwd --name=${DELETE_DOMAIN} --shell=/bin/false --home=/home/${DELETE_DOMAIN} --uid=${USERID} --gid=${USERID} --delete-user
@@ -2169,7 +2178,7 @@ delete_cinemapress() {
         sed -i "s/# ----- ${DELETE_DOMAIN}_backup --------------------------------------//g" /etc/crontab &> /dev/null
         sed -i "s/@daily root \/home\/${DELETE_DOMAIN}.*//g" /etc/crontab &> /dev/null
     fi
-    if [ "`grep \"${DELETE_DOMAIN}\" /root/.bashrc`" != "" ]
+    if [ "`grep \"${DELETE_DOMAIN}\" /root/.bashrc`" != "" ] && [ "${DELETE_SSL}" != "0" ]
     then
         sed -i "s/. \"\/etc\/nginx\/ssl\/${DELETE_DOMAIN}.*//g" /root/.bashrc &> /dev/null
     fi
@@ -2285,7 +2294,10 @@ create_mirror() {
         echo "server{${SSL_ON}server_name ${DOMAIN} m.${DOMAIN};rewrite ^ https://${MIRROR}\$request_uri? permanent;}" \
         >> /home/${MIRROR}/config/production/nginx/conf.d/nginx.conf
     fi
-    delete_cinemapress ${DOMAIN}
+    if [ -f "/home/${DOMAIN}/process.json" ]
+    then
+        delete_cinemapress ${DOMAIN} "NOT"
+    fi
     restart_cinemapress ${MIRROR}
 }
 
