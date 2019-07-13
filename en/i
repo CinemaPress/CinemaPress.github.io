@@ -366,6 +366,8 @@ pre_install() {
     echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | debconf-set-selections
     echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
     echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
+    echo 'libc6 glibc/restart-services string' | debconf-set-selections
+    echo 'libc6:amd64 glibc/restart-services string' | debconf-set-selections
     echo "check_certificate = off" > ~/.wgetrc
     echo "insecure" > ~/.curlrc
     echo "Acquire::https::deb.nodesource.com::Verify-Peer \"false\";" >> /etc/apt/apt.conf
