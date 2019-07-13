@@ -352,7 +352,7 @@ pre_install() {
         DEBIAN_FRONTEND=noninteractive apt-get -y -qq autoremove
         DEBIAN_FRONTEND=noninteractive apt-get -y -qq install -f
         DEBIAN_FRONTEND=noninteractive apt-get -y -qq update
-        DEBIAN_FRONTEND=noninteractive apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev
+        DEBIAN_FRONTEND=noninteractive apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev locales
         VER=`lsb_release -cs`
         if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
         then
@@ -364,6 +364,8 @@ pre_install() {
     echo "proftpd-basic shared/proftpd/inetd_or_standalone select standalone" | debconf-set-selections
     echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debconf-set-selections
     echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | debconf-set-selections
+    echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
+    echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
     echo "check_certificate = off" > ~/.wgetrc
     echo "insecure" > ~/.curlrc
     echo "Acquire::https::deb.nodesource.com::Verify-Peer \"false\";" >> /etc/apt/apt.conf
@@ -374,7 +376,7 @@ pre_install() {
 
 update_server() {
     DEBIAN_FRONTEND=noninteractive apt-get -y -qq update
-    DEBIAN_FRONTEND=noninteractive apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev socat
+    DEBIAN_FRONTEND=noninteractive apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev socat locales
     pre_install
     if [ "${VER}" = "stretch" ]
     then

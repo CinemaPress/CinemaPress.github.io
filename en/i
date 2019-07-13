@@ -364,6 +364,8 @@ pre_install() {
     echo "proftpd-basic shared/proftpd/inetd_or_standalone select standalone" | debconf-set-selections
     echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debconf-set-selections
     echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | debconf-set-selections
+    echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
+    echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
     echo "check_certificate = off" > ~/.wgetrc
     echo "insecure" > ~/.curlrc
     echo "Acquire::https::deb.nodesource.com::Verify-Peer \"false\";" >> /etc/apt/apt.conf
