@@ -1854,7 +1854,7 @@ progressfilt () {
 }
 
 check_domain() {
-    D=`grep -m 1 "server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed "s/.*server_name \([a-zA-Z0-9. -]*\).*/\1 www.${DOMAIN}/"`
+    D=`grep -m 1 "    server_name" /etc/nginx/conf.d/${DOMAIN}.conf | sed "s/.*server_name \([a-zA-Z0-9. -]*\).*/\1 www.${DOMAIN}/"`
     DO=""
     while IFS=' ' read -ra ADDR; do
         for i in "${ADDR[@]}"; do
@@ -2787,7 +2787,7 @@ do
             progreSh 0
             sleep 2
             progreSh 43
-            check_domain &>> /var/log/get_ssl.log
+            check_domain
             progreSh 63
             get_ssl &>> /var/log/get_ssl.log
             progreSh 100
