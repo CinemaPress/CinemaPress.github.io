@@ -2035,7 +2035,7 @@ confirm_backup() {
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
-        apt-get -y -qq install aptitude curl
+        apt-get -y -qq install curl
         wget -q -O - https://rclone.org/install.sh | sudo bash &>> /var/log/backup_cinemapress.log
         sleep 2
     fi
@@ -2047,7 +2047,7 @@ confirm_backup() {
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}----     ${NC}Выполните настройку RCLONE для Вашего хранилища.${C}     ----\n${NC}"
         printf "${C}----                      ${NC}rclone config${C}                       ----\n${NC}"
-        printf "${C}----               ${NC}Название укажите CINEMAPRESS${C}               ----\n${NC}"
+        printf "${C}----            ${NC}Название «name» укажите CINEMAPRESS${C}           ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
