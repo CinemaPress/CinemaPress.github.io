@@ -1970,10 +1970,10 @@ create_backup() {
         themes/${THEME_NAME} \
         files
     sleep 3
-    rclone copy /var/${DOMAIN}/config.tar CINEMAPRESS:${DOMAIN}/${BACKUP_NOW}/
-    rclone copy /var/${DOMAIN}/themes.tar CINEMAPRESS:${DOMAIN}/${BACKUP_NOW}/
-    rclone copy /var/${DOMAIN}/config.tar CINEMAPRESS:${DOMAIN}/latest/
-    rclone copy /var/${DOMAIN}/themes.tar CINEMAPRESS:${DOMAIN}/latest/
+    rclone copy /var/${DOMAIN}/config.tar CINEMAPRESS:${DOMAIN}/${BACKUP_NOW}/ >> /var/log/backup_cinemapress.log
+    rclone copy /var/${DOMAIN}/themes.tar CINEMAPRESS:${DOMAIN}/${BACKUP_NOW}/ >> /var/log/backup_cinemapress.log
+    rclone copy /var/${DOMAIN}/config.tar CINEMAPRESS:${DOMAIN}/latest/ >> /var/log/backup_cinemapress.log
+    rclone copy /var/${DOMAIN}/themes.tar CINEMAPRESS:${DOMAIN}/latest/ >> /var/log/backup_cinemapress.log
     rm -rf /var/${DOMAIN}
     printf "${C}-----------------------------[ ${Y}БЭКАП${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
@@ -1990,8 +1990,8 @@ recover_backup() {
 
     stop_cinemapress
 
-    rclone copy CINEMAPRESS:${DOMAIN}/latest/config.tar /var/${DOMAIN}/
-    rclone copy CINEMAPRESS:${DOMAIN}/latest/themes.tar /var/${DOMAIN}/
+    rclone copy CINEMAPRESS:${DOMAIN}/latest/config.tar /var/${DOMAIN}/ >> /var/log/backup_cinemapress.log
+    rclone copy CINEMAPRESS:${DOMAIN}/latest/themes.tar /var/${DOMAIN}/ >> /var/log/backup_cinemapress.log
 
     cd /home/${DOMAIN} && \
     tar -xf /var/${DOMAIN}/config.tar && \
@@ -2035,7 +2035,7 @@ confirm_backup() {
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
-        wget -O - https://rclone.org/install.sh | sudo bash
+        wget -O - https://rclone.org/install.sh | sudo bash >> /var/log/backup_cinemapress.log
         sleep 2
     fi
     RCS=`rclone config show 2>/dev/null | grep "CINEMAPRESS"`
