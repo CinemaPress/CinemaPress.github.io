@@ -2035,6 +2035,7 @@ confirm_backup() {
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
+        apt-get -y -qq install aptitude curl
         wget -q -O - https://rclone.org/install.sh | sudo bash &>> /var/log/backup_cinemapress.log
         sleep 2
     fi
