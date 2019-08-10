@@ -263,59 +263,6 @@ read_key() {
     done
 }
 
-read_mega_email() {
-    printf "${C}--------------------[ ${Y}YOUR EMAIL ON MEGA.NZ${C} ]---------------------\n${NC}"
-    AGAIN=yes
-    while [ "${AGAIN}" = "yes" ]
-    do
-        if [ ${1} ]
-        then
-            MEGA_EMAIL=${1}
-            MEGA_EMAIL=`echo ${MEGA_EMAIL} | iconv -c -t UTF-8`
-            echo ": ${MEGA_EMAIL}"
-        else
-            read -e -p ': ' MEGA_EMAIL
-            MEGA_EMAIL=`echo ${MEGA_EMAIL} | iconv -c -t UTF-8`
-        fi
-        if [ "${MEGA_EMAIL}" != "" ]
-        then
-            if echo "${MEGA_EMAIL}" | grep -qE ^\-?[.a-zA-Z0-9@-]+$
-            then
-               AGAIN=no
-            else
-                printf "${NC}         You entered - ${MEGA_EMAIL} \n"
-                printf "${R}WARNING:${NC} Only Latin characters are allowed, \n"
-                printf "${NC}         numbers, dots, hyphens and @! \n"
-            fi
-        else
-            printf "${R}WARNING:${NC} User email cannot be empty. \n"
-        fi
-    done
-}
-
-read_mega_password() {
-    printf "${C}------------------[ ${Y}YOUR PASSWORD ON MEGA.NZ${C} ]--------------------\n${NC}"
-    AGAIN=yes
-    while [ "${AGAIN}" = "yes" ]
-    do
-        if [ ${1} ]
-        then
-            MEGA_PASSWD=${1}
-            MEGA_PASSWD=`echo ${MEGA_PASSWD} | iconv -c -t UTF-8`
-            echo ": ${MEGA_PASSWD}"
-        else
-            read -e -p ': ' MEGA_PASSWD
-            MEGA_PASSWD=`echo ${MEGA_PASSWD} | iconv -c -t UTF-8`
-        fi
-        if [ "${MEGA_PASSWD}" != "" ]
-        then
-            AGAIN=no
-        else
-            printf "${R}WARNING:${NC} Password cannot be empty. \n"
-        fi
-    done
-}
-
 read_lang() {
     printf "${C}-------------------------[ ${Y}LANGUAGE SITE${C} ]------------------------\n${NC}"
     AGAIN=yes
@@ -349,7 +296,7 @@ pre_install() {
     VER=`lsb_release -cs`
     if [ "${VER}" != "stretch" ] && [ "${VER}" != "jessie" ]
     then
-        apt-get -y -qq autoremove
+        apt-get -y -qq autoremove -f
         apt-get -y -qq install -f
         apt-get -y -qq update
         apt-get -y -qq install aptitude debian-keyring debian-archive-keyring wget curl nano htop sudo lsb-release ca-certificates git-core openssl netcat debconf-utils cron gzip apt-transport-https dirmngr net-tools bzip2 build-essential zlib1g-dev libpcre3 libpcre3-dev unzip uuid-dev gcc make libssl-dev locales
@@ -674,7 +621,7 @@ install_nginx() {
     fi
     if [ "${1}" != "" ] && [ "${2}" != "" ] && [ "${3}" != "" ]
     then
-        RAW="https://raw.githubusercontent.com/CinemaPress/CinemaPress-ACMS/master"
+        RAW="https://raw.githubusercontent.com/CinemaPress/${GIT_NAME}/master"
         mkdir -p /etc/nginx/ssl/${1}
         mkdir -p /etc/nginx/html && rm -rf /etc/nginx/html/*
         mkdir -p /etc/nginx/bots.d && rm -rf /etc/nginx/bots.d/*
@@ -767,7 +714,7 @@ add_user() {
         echo -e "${PASSWD}\n${PASSWD}" | passwd ${DOMAIN}
     fi
     rm -rf /home/${DOMAIN}/*; rm -rf /home/${DOMAIN}/.??*
-    git clone https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git /home/${DOMAIN}
+    git clone https://${GIT_SERVER}/CinemaPress/${GIT_NAME}.git /home/${DOMAIN}
     cp -r /home/${DOMAIN}/config/locales/${LANG_}/* /home/${DOMAIN}/config/
     cp -r /home/${DOMAIN}/config/default/* /home/${DOMAIN}/config/production/
     cp -r /home/${DOMAIN}/themes/default/public/admin/favicon.ico /home/${DOMAIN}/
@@ -1389,7 +1336,7 @@ update_cinemapress() {
     mkdir -p /home/${DOMAIN}/backup/${B_DIR}/newCP
 
     git clone \
-        https://${GIT_SERVER}/CinemaPress/CinemaPress-ACMS.git \
+        https://${GIT_SERVER}/CinemaPress/${GIT_NAME}.git \
         /home/${DOMAIN}/backup/${B_DIR}/newCP
 
     L_=`grep "\"language\"" "/home/${DOMAIN}/config/production/config.js"`
@@ -1976,25 +1923,25 @@ install_ssl() {
     fi
 }
 
-create_mega_backup() {
+create_backup() {
     if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" = "" ]
     then
         echo -e "\n" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
-        echo "@daily root /home/${DOMAIN}/config/production/i cron backup \"${DOMAIN}\" \"${MEGA_EMAIL}\" \"${MEGA_PASSWD}\" >> /home/${DOMAIN}/log/autostart.log" >> /etc/crontab
+        echo "@daily root /home/${DOMAIN}/config/production/i cron backup \"${DOMAIN}\" >> /home/${DOMAIN}/log/autostart.log" >> /etc/crontab
         echo "# ----- ${DOMAIN}_backup --------------------------------------" >> /etc/crontab
         update_i
     fi
-    MEGA_DAY=$(date +%d)
-    MEGA_NOW=$(date +%Y-%m-%d)
-    MEGA_DELETE=$(date +%Y-%m-%d -d "30 day ago")
+    BACKUP_DAY=$(date +%d)
+    BACKUP_NOW=$(date +%Y-%m-%d)
+    BACKUP_DELETE=$(date +%Y-%m-%d -d "30 day ago")
     THEME_NAME=`grep "\"theme\"" /home/${DOMAIN}/config/production/config.js | sed 's/.*"theme":\s*"\([a-zA-Z0-9-]*\)".*/\1/'`
-    mega-rm -r -f /${DOMAIN}/${MEGA_NOW} &> /dev/null
-    if [ "${MEGA_DAY}" != "10" ]
+    rclone purge CINEMAPRESS:${DOMAIN}/${BACKUP_NOW} &> /dev/null
+    if [ "${BACKUP_DAY}" != "10" ]
     then
-        mega-rm -r -f /${DOMAIN}/${MEGA_DELETE} &> /dev/null
+        rclone purge CINEMAPRESS:${DOMAIN}/${BACKUP_DELETE} &> /dev/null
     fi
-    mega-rm -r -f /${DOMAIN}/latest &> /dev/null
+    rclone purge CINEMAPRESS:${DOMAIN}/latest &> /dev/null
     sleep 2
     PORT_DOMAIN=`grep "mysql41" /home/${DOMAIN}/config/production/sphinx/sphinx.conf | sed 's/.*:\([0-9]*\):mysql41.*/\1/'`
     echo "FLUSH RTINDEX rt_${DOMAIN_}" | mysql -h0 -P${PORT_DOMAIN}
@@ -2023,10 +1970,10 @@ create_mega_backup() {
         themes/${THEME_NAME} \
         files
     sleep 3
-    mega-put -c /var/${DOMAIN}/config.tar /${DOMAIN}/${MEGA_NOW}/config.tar
-    mega-put -c /var/${DOMAIN}/themes.tar /${DOMAIN}/${MEGA_NOW}/themes.tar
-    mega-put -c /var/${DOMAIN}/config.tar /${DOMAIN}/latest/config.tar
-    mega-put -c /var/${DOMAIN}/themes.tar /${DOMAIN}/latest/themes.tar
+    rclone copy /var/${DOMAIN}/config.tar CINEMAPRESS:${DOMAIN}/${BACKUP_NOW}/
+    rclone copy /var/${DOMAIN}/themes.tar CINEMAPRESS:${DOMAIN}/${BACKUP_NOW}/
+    rclone copy /var/${DOMAIN}/config.tar CINEMAPRESS:${DOMAIN}/latest/
+    rclone copy /var/${DOMAIN}/themes.tar CINEMAPRESS:${DOMAIN}/latest/
     rm -rf /var/${DOMAIN}
     printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
     printf "${C}----                                                          ${C}----\n${NC}"
@@ -2038,13 +1985,13 @@ create_mega_backup() {
     printf "\n${NC}"
 }
 
-recover_mega_backup() {
+recover_backup() {
     rm -rf /var/${DOMAIN} && mkdir -p /var/${DOMAIN}
 
     stop_cinemapress
 
-    mega-get /${DOMAIN}/latest/config.tar /var/${DOMAIN}/
-    mega-get /${DOMAIN}/latest/themes.tar /var/${DOMAIN}/
+    rclone copy CINEMAPRESS:${DOMAIN}/latest/config.tar /var/${DOMAIN}/
+    rclone copy CINEMAPRESS:${DOMAIN}/latest/themes.tar /var/${DOMAIN}/
 
     cd /home/${DOMAIN} && \
     tar -xf /var/${DOMAIN}/config.tar && \
@@ -2063,7 +2010,7 @@ recover_mega_backup() {
     printf "\n${NC}"
 }
 
-remove_mega_backup() {
+remove_backup() {
     if [ "`grep \"${DOMAIN}_backup\" /etc/crontab`" != "" ]
     then
         sed -i "s/# ----- ${DOMAIN}_backup --------------------------------------//g" /etc/crontab
@@ -2077,39 +2024,29 @@ remove_mega_backup() {
     printf "\n${NC}"
 }
 
-confirm_mega_backup() {
-    MGT=`mega-help 2>/dev/null | grep "MEGAcmd"`
-    if [ "${MGT}" = "" ]
+confirm_backup() {
+    RCL=`rclone version 2>/dev/null | grep "rclone v"`
+    if [ "${RCL}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}-------------------------[ ${Y}INSTALLATION${C} ]-------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----           ${NC}Installing MEGAcmd in progress ...${C}             ----\n${NC}"
+        printf "${C}----            ${NC}Installing RCLONE in progress ...${C}             ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
-        rm -rf megacmd-Debian_9.0_amd64.deb &> /dev/null
-        aptitude -y -q update
-        aptitude -y -q install autoconf build-essential libtool g++ libcrypto++-dev libz-dev libsqlite3-dev libssl-dev libcurl4-gnutls-dev libreadline-dev libpcre++-dev libsodium-dev libc-ares-dev libfreeimage-dev libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libmediainfo-dev libzen-dev
-        wget -q https://mega.nz/linux/MEGAsync/Debian_9.0/amd64/megacmd-Debian_9.0_amd64.deb
-        dpkg -i megacmd-Debian_9.0_amd64.deb
-        cd ${HOME} &> /dev/null
-        mega-whoami
+        wget -O - https://rclone.org/install.sh | sudo bash
         sleep 2
     fi
-    MEGA_WHOAMI=`mega-whoami 2>/dev/null | grep "@"`
-    if [ "${MEGA_WHOAMI}" = "" ]
-    then
-        mega-login "${MEGA_EMAIL}" "${MEGA_PASSWD}"
-    fi
-    MEGA_LS=`mega-whoami 2>/dev/null | grep "@"`
-    if [ "${MEGA_LS}" = "" ]
+    RCS=`rclone config show 2>/dev/null | grep "CINEMAPRESS"`
+    if [ "${RCS}" = "" ]
     then
         printf "\n${NC}"
         printf "${C}----------------------------[ ${Y}BACKUP${C} ]----------------------------\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
-        printf "${C}----              ${R}Email/password are incorrect,${C}               ----\n${NC}"
-        printf "${C}----                    ${R}please try again.${C}                     ----\n${NC}"
+        printf "${C}----           ${NC}Configure RCLONE for your storage.${C}             ----\n${NC}"
+        printf "${C}----                      ${NC}rclone config${C}                       ----\n${NC}"
+        printf "${C}----                  ${NC}Name write CINEMAPRESS${C}                  ----\n${NC}"
         printf "${C}----                                                          ${C}----\n${NC}"
         printf "${C}------------------------------------------------------------------\n${NC}"
         printf "\n${NC}"
@@ -2132,12 +2069,12 @@ confirm_mega_backup() {
     printf "\n${NC}"
     if [ "${CMB}" = "2" ]
     then
-        recover_mega_backup
+        recover_backup
     elif [ "${CMB}" = "3" ]
     then
-        remove_mega_backup
+        remove_backup
     else
-        create_mega_backup
+        create_backup
     fi
 }
 
@@ -2595,26 +2532,37 @@ case ${INSTALL_FILE} in
     h )
         MAIN_SERVER="cinemapress.github.io"
         GIT_SERVER="github.com"
+        GIT_NAME="CinemaPress-ACMS"
     ;;
     l )
         MAIN_SERVER="cinemapress.gitlab.io"
         GIT_SERVER="gitlab.com"
+        GIT_NAME="CinemaPress-ACMS"
     ;;
     c )
         MAIN_SERVER="cinemapress.coding.me"
         GIT_SERVER="git.coding.net"
+        GIT_NAME="CinemaPress-ACMS"
     ;;
     b )
         MAIN_SERVER="cinemapress.bitbucket.io"
         GIT_SERVER="bitbucket.org"
+        GIT_NAME="CinemaPress-ACMS"
     ;;
     a )
         MAIN_SERVER="cinemapress.aerobaticapp.com"
         GIT_SERVER="gitlab.com"
+        GIT_NAME="CinemaPress-ACMS"
+    ;;
+    beta )
+        MAIN_SERVER="cinemapress.org"
+        GIT_SERVER="github.com"
+        GIT_NAME="CinemaPress"
     ;;
     * )
         MAIN_SERVER="cinemapress.org"
         GIT_SERVER="github.com"
+        GIT_NAME="CinemaPress-ACMS"
     ;;
 esac
 
@@ -2804,14 +2752,11 @@ do
         ;;
         11 )
             read_domain ${2}
-            read_mega_email ${3}
-            read_mega_password ${4}
-
             separator
 
             not_domain
 
-            confirm_mega_backup ${5}
+            confirm_backup ${3}
             whileStop
         ;;
         12 )
@@ -3015,7 +2960,7 @@ do
                     ID_RELOAD=`echo ${line} | sed 's~[^0-9]*\([0-9]*\).*~\1~'`
                     if [ "${ID_RELOAD}" != "${ID_CURRENT}" ]
                     then
-                        pm2 reload "${ID_RELOAD}" --force
+                        pm2 reload "${ID_RELOAD}"
                     fi
                 done <<< "`pm2 show ${NAME_CURRENT} 2>/dev/null | grep 'with id'`";
                 exit 0
