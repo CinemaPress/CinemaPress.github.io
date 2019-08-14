@@ -769,6 +769,16 @@ conf_nginx() {
             mkdir -p /var/cinemacache
             sed -i "s/http {/http {\n\n    proxy_cache_path \/var\/cinemacache levels=1:2 keys_zone=cinemacache:10m max_size=1g;\n/g" /etc/nginx/nginx.conf
         fi
+        ADM=`grep "~* /admin" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
+        if [ "${ADM}" = "" ]
+        then
+            sed -i "s/\/admin/~* ^\/admin/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
+        fi
+        ADM2=`grep "~* /admin" /etc/nginx/conf.d/${DOMAIN}.conf`
+        if [ "${ADM2}" = "" ]
+        then
+            sed -i "s/\/admin/~* ^\/admin/g" /etc/nginx/conf.d/${DOMAIN}.conf
+        fi
         mkdir -p /etc/nginx/pass
         rm -rf /etc/nginx/pass/${DOMAIN}.pass
         OPENSSL=`echo "${PASSWD}" | openssl passwd -1 -stdin -salt CP`
@@ -2493,31 +2503,31 @@ progreSh() {
     LGG_=""
     for ((i=1;i<=13;i++))
     do
-    	DOTS=""; for ((ii=${i};ii<13;ii++)); do DOTS="${DOTS}."; done
-    	if [ ${i} -le ${LNE} ]; then LRR_="${LRR_}#"; else LRR_="${LRR_}."; fi
-    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${DOTS}${LY}............${LC}............${LG}............ ${SHW}%${NC}\r"
-    	if [ ${LNE} -ge 1 ]; then sleep .05; fi
+        DOTS=""; for ((ii=${i};ii<13;ii++)); do DOTS="${DOTS}."; done
+        if [ ${i} -le ${LNE} ]; then LRR_="${LRR_}#"; else LRR_="${LRR_}."; fi
+        echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${DOTS}${LY}............${LC}............${LG}............ ${SHW}%${NC}\r"
+        if [ ${LNE} -ge 1 ]; then sleep .05; fi
     done
     for ((i=14;i<=25;i++))
     do
-    	DOTS=""; for ((ii=${i};ii<25;ii++)); do DOTS="${DOTS}."; done
-    	if [ ${i} -le ${LNE} ]; then LYY_="${LYY_}#"; else LYY_="${LYY_}."; fi
-    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${DOTS}${LC}............${LG}............ ${SHW}%${NC}\r"
-    	if [ ${LNE} -ge 14 ]; then sleep .05; fi
+        DOTS=""; for ((ii=${i};ii<25;ii++)); do DOTS="${DOTS}."; done
+        if [ ${i} -le ${LNE} ]; then LYY_="${LYY_}#"; else LYY_="${LYY_}."; fi
+        echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${DOTS}${LC}............${LG}............ ${SHW}%${NC}\r"
+        if [ ${LNE} -ge 14 ]; then sleep .05; fi
     done
     for ((i=26;i<=37;i++))
     do
-    	DOTS=""; for ((ii=${i};ii<37;ii++)); do DOTS="${DOTS}."; done
-    	if [ ${i} -le ${LNE} ]; then LCC_="${LCC_}#"; else LCC_="${LCC_}."; fi
-    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${LC}${LCC_}${DOTS}${LG}............ ${SHW}%${NC}\r"
-    	if [ ${LNE} -ge 26 ]; then sleep .05; fi
+        DOTS=""; for ((ii=${i};ii<37;ii++)); do DOTS="${DOTS}."; done
+        if [ ${i} -le ${LNE} ]; then LCC_="${LCC_}#"; else LCC_="${LCC_}."; fi
+        echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${LC}${LCC_}${DOTS}${LG}............ ${SHW}%${NC}\r"
+        if [ ${LNE} -ge 26 ]; then sleep .05; fi
     done
     for ((i=38;i<=49;i++))
     do
-    	DOTS=""; for ((ii=${i};ii<49;ii++)); do DOTS="${DOTS}."; done
-    	if [ ${i} -le ${LNE} ]; then LGG_="${LGG_}#"; else LGG_="${LGG_}."; fi
-    	echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${LC}${LCC_}${LG}${LGG_}${DOTS} ${SHW}%${NC}\r"
-    	if [ ${LNE} -ge 38 ]; then sleep .05; fi
+        DOTS=""; for ((ii=${i};ii<49;ii++)); do DOTS="${DOTS}."; done
+        if [ ${i} -le ${LNE} ]; then LGG_="${LGG_}#"; else LGG_="${LGG_}."; fi
+        echo -ne "  ${LW}${SEC}  ${LR}${LRR_}${LY}${LYY_}${LC}${LCC_}${LG}${LGG_}${DOTS} ${SHW}%${NC}\r"
+        if [ ${LNE} -ge 38 ]; then sleep .05; fi
     done
     if [ "${PRC}" = "100" ]; then printf "\n\n${NC}"; fi
 }
