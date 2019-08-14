@@ -769,12 +769,12 @@ conf_nginx() {
             mkdir -p /var/cinemacache
             sed -i "s/http {/http {\n\n    proxy_cache_path \/var\/cinemacache levels=1:2 keys_zone=cinemacache:10m max_size=1g;\n/g" /etc/nginx/nginx.conf
         fi
-        ADM=`grep "~* /admin" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
+        ADM=`grep "~* ^/admin" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf`
         if [ "${ADM}" = "" ]
         then
             sed -i "s/\/admin/~* ^\/admin/g" /home/${DOMAIN}/config/production/nginx/conf.d/nginx.conf
         fi
-        ADM2=`grep "~* /admin" /etc/nginx/conf.d/${DOMAIN}.conf`
+        ADM2=`grep "~* ^/admin" /etc/nginx/conf.d/${DOMAIN}.conf`
         if [ "${ADM2}" = "" ]
         then
             sed -i "s/\/admin/~* ^\/admin/g" /etc/nginx/conf.d/${DOMAIN}.conf
