@@ -631,10 +631,14 @@ install_nginx() {
         wget ${RAW}/themes/default/public/admin/html/errors/403.html -qO /etc/nginx/html/403.html
         wget ${RAW}/themes/default/public/admin/html/errors/404.html -qO /etc/nginx/html/404.html
         wget ${RAW}/themes/default/public/admin/html/errors/50x.html -qO /etc/nginx/html/50x.html
-        wget ${RAW}/config/default/nginx/bots.d/blockbots.conf -qO /etc/nginx/bots.d/blockbots.conf
-        wget ${RAW}/config/default/nginx/bots.d/ddos.conf -qO /etc/nginx/bots.d/ddos.conf
+        wget ${RAW}/config/default/nginx/bots.d/blacklist-user-agents.conf -qO /etc/nginx/bots.d/blacklist-user-agents.conf
+        wget ${RAW}/config/default/nginx/bots.d/custom-bad-referrers.conf -qO /etc/nginx/bots.d/custom-bad-referrers.conf
+        wget ${RAW}/config/default/nginx/bots.d/bad-referrer-words.conf -qO /etc/nginx/bots.d/bad-referrer-words.conf
         wget ${RAW}/config/default/nginx/bots.d/whitelist-domains.conf -qO /etc/nginx/bots.d/whitelist-domains.conf
         wget ${RAW}/config/default/nginx/bots.d/whitelist-ips.conf -qO /etc/nginx/bots.d/whitelist-ips.conf
+        wget ${RAW}/config/default/nginx/bots.d/blacklist-ips.conf -qO /etc/nginx/bots.d/blacklist-ips.conf
+        wget ${RAW}/config/default/nginx/bots.d/blockbots.conf -qO /etc/nginx/bots.d/blockbots.conf
+        wget ${RAW}/config/default/nginx/bots.d/ddos.conf -qO /etc/nginx/bots.d/ddos.conf
         wget ${RAW}/config/default/nginx/conf.d/blacklist.conf -qO /etc/nginx/conf.d/blacklist.conf
         wget ${RAW}/config/default/nginx/conf.d/real_ip.conf -qO /etc/nginx/conf.d/real_ip.conf
         wget ${RAW}/config/default/nginx/conf.d/rewrite.conf -qO /etc/nginx/conf.d/rewrite.conf
