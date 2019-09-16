@@ -357,7 +357,48 @@ install_pagespeed() {
     then
         bash <(curl -f -L -sS https://ngxpagespeed.com/install) \
             -n latest \
-            -a "--prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'" \
+            -a "--prefix=/etc/nginx \
+--sbin-path=/usr/sbin/nginx \
+--modules-path=/usr/lib/nginx/modules \
+--conf-path=/etc/nginx/nginx.conf \
+--error-log-path=/var/log/nginx/error.log \
+--http-log-path=/var/log/nginx/access.log \
+--pid-path=/var/run/nginx.pid \
+--lock-path=/var/run/nginx.lock \
+--http-client-body-temp-path=/var/cache/nginx/client_temp \
+--http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
+--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+--user=nginx \
+--group=nginx \
+--with-compat \
+--with-file-aio \
+--with-threads \
+--with-http_addition_module \
+--with-http_auth_request_module \
+--with-http_dav_module \
+--with-http_flv_module \
+--with-http_gunzip_module \
+--with-http_gzip_static_module \
+--with-http_mp4_module \
+--with-http_random_index_module \
+--with-http_realip_module \
+--with-http_secure_link_module \
+--with-http_slice_module \
+--with-http_ssl_module \
+--with-ipv6 \
+--with-http_stub_status_module \
+--with-http_sub_module \
+--with-http_v2_module \
+--with-mail \
+--with-mail_ssl_module \
+--with-stream \
+--with-stream_realip_module \
+--with-stream_ssl_module \
+--with-stream_ssl_preread_module \
+--with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' \
+--with-ld-opt='-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'" \
             -b /usr/lib/nginx/modules \
             -y
     fi
@@ -392,6 +433,7 @@ install_full() {
     if [ "${SPH}" = "" ]
     then
         wget "https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/download/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        rm -rf /etc/init.d/searchd /etc/init.d/indexer /etc/init.d/sphinx*
         #for d in /home/*; do
         #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         #    then
@@ -689,6 +731,7 @@ install_sphinx() {
     if [ "${SPH}" = "" ]
     then
         wget "https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/download/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        rm -rf /etc/init.d/searchd /etc/init.d/indexer /etc/init.d/sphinx*
         #for d in /home/*; do
         #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         #    then
@@ -1474,6 +1517,7 @@ update_cinemapress() {
     if [ "${SPH}" = "" ]
     then
         wget "https://raw.githubusercontent.com/CinemaPress/CinemaPress.github.io/master/download/sphinxsearch_2.2.11-release-1.${VER}_${ARCH}.deb" -qO s.deb && dpkg -i s.deb && rm -rf s.deb
+        rm -rf /etc/init.d/searchd /etc/init.d/indexer /etc/init.d/sphinx*
         #for d in /home/*; do
         #    if [ -f "${d}/process.json" ] && [ ! -f "${d}/.lock" ]
         #    then
