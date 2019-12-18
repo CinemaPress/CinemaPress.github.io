@@ -108,12 +108,13 @@ function req() {
 
     var http = new XMLHttpRequest();
     var params =
-        'domain=' + domain +
+        'option=1' + 
+        '&cp_domain=' + domain +
         '&ip=' + ip +
         '&root=' + root +
-        '&theme=' + theme +
-        '&pass=' + pass +
-        '&lang=' + lang;
+        '&cp_theme=' + theme +
+        '&cp_passwd=' + pass +
+        '&cp_lang=' + lang;
     http.open('POST', 'https://fastinstall.cinemapress.org', true);
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     http.onreadystatechange = function() {
