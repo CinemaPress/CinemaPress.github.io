@@ -108,13 +108,14 @@ function req() {
 
     var http = new XMLHttpRequest();
     var params =
-        'domain=' + domain +
+        'option=1' + 
+        '&cp_domain=' + domain +
         '&ip=' + ip +
         '&root=' + root +
-        '&theme=' + theme +
-        '&pass=' + pass +
-        '&lang=' + lang;
-    http.open('POST', 'https://fastinstall.cinemapress.org', true);
+        '&cp_theme=' + theme +
+        '&cp_passwd=' + pass +
+        '&cp_lang=' + lang;
+    http.open('POST', 'https://cinemapress.sh', true);
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     http.onreadystatechange = function() {
         if (http.readyState === 4 && http.status === 200) {
